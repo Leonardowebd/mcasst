@@ -1,0 +1,9 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/frames/(.*)", "destination": "/frames/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
