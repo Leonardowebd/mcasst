@@ -9,7 +9,7 @@ import JSZip from "jszip";
 // @ts-ignore
 import videoSrc from "../../imports/Spinning_around_central_tree_202605051615.mp4";
 
-const NUM_FRAMES = 90;
+const NUM_FRAMES = 60;
 const JPEG_QUALITY = 0.88;
 
 type Status = "idle" | "loading" | "extracting" | "zipping" | "done" | "error";
