@@ -86,7 +86,12 @@ function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
     drawCover(ctx, bmp, c.width, c.height);
   }, [framesRef]);
 
-  useEffect(() => { if (ready) drawFrame(0); }, [ready, drawFrame]);
+  useEffect(() => {
+  if (ready) {
+    drawFrame(0);
+    ScrollTrigger.refresh();
+  }
+}, [ready, drawFrame]);
 
   return { canvasRef, drawFrame };
 }
