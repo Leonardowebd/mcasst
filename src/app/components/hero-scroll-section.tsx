@@ -35,8 +35,8 @@ function useStaticFrames() {
 
     (async () => {
       const promises = Array.from({ length: NUM_FRAMES }, async (_, i) => {
-        const name = `frame_${String(i + 1).padStart(3, "0")}.png`;
-        const r = await fetch(`/frames/${name}`);
+        const name = `frame_ (${i + 1}).png`;
+const r = await fetch(`/frames/${encodeURIComponent(name)}`);
           if (!r.ok) return null;
           const blob = await r.blob();
           if (!blob.size || !blob.type.startsWith("image/")) return null;
