@@ -35,32 +35,53 @@ function useStaticFrames() {
 
     (async () => {
       const promises = Array.from({ length: NUM_FRAMES }, async (_, i) => {
-        const name = `frame_ (${i + 1}).png`;
-const r = await fetch(`/frames/${encodeURIComponent(name)}`);
-          if (!r.ok) return null;
+        const name = `frame_${String(i + 1).padStart(3, "0")}.png`;
+
+        try {
+          const r = await fetch(`/frames/${name}`);
+
+          if (!r.ok) {
+            console.warn(`Frame não encontrado: /frames/${name}`);
+            return null;
+          }
+
           const blob = await r.blob();
-          if (!blob.size || !blob.type.startsWith("image/")) return null;
+
+          if (!blob.size || !blob.type.startsWith("image/")) {
+            console.warn(`Frame inválido: /frames/${name}`);
+            return null;
+          }
+
           return await createImageBitmap(blob);
-        } catch { return null; }
+        } catch (error) {
+          console.warn(`Erro ao carregar frame: /frames/${name}`, error);
+          return null;
+        }
       });
 
       const results = await Promise.all(promises);
+
       if (!cancelled) {
         const bitmaps = results.filter((b): b is ImageBitmap => b !== null);
-        if (bitmaps.length > 0) { framesRef.current = bitmaps; setReady(true); }
+
+        console.log(`Frames carregados: ${bitmaps.length}/${NUM_FRAMES}`);
+
+        if (bitmaps.length > 0) {
+          framesRef.current = bitmaps;
+          setReady(true);
+        }
       }
     })();
 
     return () => {
       cancelled = true;
-      framesRef.current.forEach(b => b.close());
+      framesRef.current.forEach((b) => b.close());
       framesRef.current = [];
     };
   }, []);
 
   return { framesRef, ready };
 }
-
 /* ── Canvas helpers ──────────────────────────────────────────────────── */
 function drawCover(ctx: CanvasRenderingContext2D, bmp: ImageBitmap, cw: number, ch: number) {
   const s = Math.max(cw / bmp.width, ch / bmp.height);
