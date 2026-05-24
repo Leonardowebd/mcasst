@@ -17,10 +17,10 @@ export default function App() {
       <Navbar />
 
       <HeroScrollSection />
-      <SessaoSection />
+      <SobreSection />
       <LogoBarSection />
       <VideoSection />
-      <SobreSection />
+      <SessaoSection />
       <ParallaxLastSection />
     </div>
   );
