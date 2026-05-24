@@ -36,7 +36,7 @@ function useStaticFrames() {
     let cancelled = false;
 
     async function loadFrame(i: number) {
-      const name = `frame_${String(i + 1).padStart(3, "0")}.png`;
+      const name = `frame_${String(i + 1).padStart(3, "0")}.webp`;
       try {
         const r = await fetch(`/frames/${name}`);
         if (!r.ok || cancelled) return;
@@ -204,6 +204,9 @@ function DesktopHeroSection() {
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", background: "#0a0a0a", zIndex: 0 }}>
         <div style={{
           position: "absolute", inset: "-6%",
+          backgroundImage: "url(/frames/frame_001.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           transform: `scale(1.08) translate(${mouse.x}px, ${mouse.y}px)`,
           transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
         }}>
@@ -339,7 +342,8 @@ function MobileHeroSection() {
 
   return (
     <div ref={wrapperRef} id="hero" style={{ position: "relative", height: `${MOBILE_VH}vh`, width: "100%" }}>
-      <div style={{ position: "sticky", top: 0, height: "100svh", overflow: "hidden", background: "#0a0a0a" }}>
+      <div style={{ position: "sticky", top: 0, height: "100svh", overflow: "hidden", background: "#0a0a0a",
+        backgroundImage: "url(/frames/frame_001.webp)", backgroundSize: "cover", backgroundPosition: "center" }}>
         <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
