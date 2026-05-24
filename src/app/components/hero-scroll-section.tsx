@@ -25,58 +25,43 @@ function useIsMobile() {
   return mob;
 }
 
+const INITIAL_BATCH = 15;
+
 /* ── useStaticFrames ─────────────────────────────────────────────────── */
 function useStaticFrames() {
-  const framesRef = useRef<ImageBitmap[]>([]);
+  const framesRef = useRef<(ImageBitmap | null)[]>(new Array(NUM_FRAMES).fill(null));
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
+    async function loadFrame(i: number) {
+      const name = `frame_${String(i + 1).padStart(3, "0")}.png`;
+      try {
+        const r = await fetch(`/frames/${name}`);
+        if (!r.ok || cancelled) return;
+        const blob = await r.blob();
+        if (!blob.size || !blob.type.startsWith("image/") || cancelled) return;
+        framesRef.current[i] = await createImageBitmap(blob);
+      } catch {}
+    }
+
     (async () => {
-      const promises = Array.from({ length: NUM_FRAMES }, async (_, i) => {
-        const name = `frame_${String(i + 1).padStart(3, "0")}.png`;
+      // First batch: parallel load for fast animation start
+      await Promise.all(Array.from({ length: INITIAL_BATCH }, (_, i) => loadFrame(i)));
+      if (!cancelled && framesRef.current.some(Boolean)) setReady(true);
 
-        try {
-          const r = await fetch(`/frames/${name}`);
-
-          if (!r.ok) {
-            console.warn(`Frame não encontrado: /frames/${name}`);
-            return null;
-          }
-
-          const blob = await r.blob();
-
-          if (!blob.size || !blob.type.startsWith("image/")) {
-            console.warn(`Frame inválido: /frames/${name}`);
-            return null;
-          }
-
-          return await createImageBitmap(blob);
-        } catch (error) {
-          console.warn(`Erro ao carregar frame: /frames/${name}`, error);
-          return null;
-        }
-      });
-
-      const results = await Promise.all(promises);
-
-      if (!cancelled) {
-        const bitmaps = results.filter((b): b is ImageBitmap => b !== null);
-
-        console.log(`Frames carregados: ${bitmaps.length}/${NUM_FRAMES}`);
-
-        if (bitmaps.length > 0) {
-          framesRef.current = bitmaps;
-          setReady(true);
-        }
+      // Remaining frames: sequential to avoid saturating the network
+      for (let i = INITIAL_BATCH; i < NUM_FRAMES; i++) {
+        if (cancelled) break;
+        await loadFrame(i);
       }
     })();
 
     return () => {
       cancelled = true;
-      framesRef.current.forEach((b) => b.close());
-      framesRef.current = [];
+      framesRef.current.forEach(b => b?.close());
+      framesRef.current = new Array(NUM_FRAMES).fill(null);
     };
   }, []);
 
@@ -100,10 +85,17 @@ function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
 
   const drawFrame = useCallback((p: number) => {
     const c = canvasRef.current; if (!c) return;
-    const frames = framesRef.current; if (!frames.length) return;
+    const frames = framesRef.current;
     const ctx = c.getContext("2d"); if (!ctx) return;
-    const idx = Math.min(Math.round(p * (frames.length - 1)), frames.length - 1);
-    const bmp = frames[idx]; if (!bmp) return;
+    const target = Math.min(Math.round(p * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
+    let bmp = frames[target];
+    if (!bmp) {
+      for (let d = 1; d < NUM_FRAMES; d++) {
+        if (target - d >= 0 && frames[target - d]) { bmp = frames[target - d]; break; }
+        if (target + d < NUM_FRAMES && frames[target + d]) { bmp = frames[target + d]; break; }
+      }
+    }
+    if (!bmp) return;
     drawCover(ctx, bmp, c.width, c.height);
   }, [framesRef]);
 

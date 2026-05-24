@@ -1,10 +1,12 @@
-import { SessaoSection }       from "./components/sessao-section";
-import { LogoBarSection }      from "./components/logo-bar-section";
-import { VideoSection }        from "./components/video-section";
-import { SobreSection }        from "./components/sobre-section";
-import { ParallaxLastSection } from "./components/parallax-last-section";
+import { lazy, Suspense }      from "react";
 import { HeroScrollSection }   from "./components/hero-scroll-section";
 import { Navbar }              from "./components/navbar";
+
+const SobreSection        = lazy(() => import("./components/sobre-section").then(m => ({ default: m.SobreSection })));
+const LogoBarSection      = lazy(() => import("./components/logo-bar-section").then(m => ({ default: m.LogoBarSection })));
+const VideoSection        = lazy(() => import("./components/video-section").then(m => ({ default: m.VideoSection })));
+const SessaoSection       = lazy(() => import("./components/sessao-section").then(m => ({ default: m.SessaoSection })));
+const ParallaxLastSection = lazy(() => import("./components/parallax-last-section").then(m => ({ default: m.ParallaxLastSection })));
 
 export default function App() {
   return (
@@ -17,11 +19,13 @@ export default function App() {
       <Navbar />
 
       <HeroScrollSection />
-      <SobreSection />
-      <LogoBarSection />
-      <VideoSection />
-      <SessaoSection />
-      <ParallaxLastSection />
+      <Suspense fallback={null}>
+        <SobreSection />
+        <LogoBarSection />
+        <VideoSection />
+        <SessaoSection />
+        <ParallaxLastSection />
+      </Suspense>
     </div>
   );
 }

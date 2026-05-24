@@ -8,17 +8,17 @@ import { useRef, useEffect, useState } from "react";
 
 const ITEMS = [
   { title: "VSE — VENDA SEM ESFORÇO",
-    bg: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1440&q=80" },
+    bg: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
   { title: "SEQUOIA",
-    bg: "https://images.unsplash.com/photo-1730658679727-ce12c0adc4ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1440&q=80" },
+    bg: "https://images.unsplash.com/photo-1730658679727-ce12c0adc4ef?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
   { title: "AGÊNCIA",
-    bg: "https://images.unsplash.com/photo-1758873271902-a63ecd5b5235?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1440&q=80" },
+    bg: "https://images.unsplash.com/photo-1758873271902-a63ecd5b5235?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
   { title: "EDUCAÇÃO",
-    bg: "https://images.unsplash.com/photo-1758599879065-46fd59235166?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1440&q=80" },
+    bg: "https://images.unsplash.com/photo-1758599879065-46fd59235166?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
   { title: "PARCEIROS",
-    bg: "https://images.unsplash.com/photo-1758519288358-86c504767112?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1440&q=80" },
+    bg: "https://images.unsplash.com/photo-1758519288358-86c504767112?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
   { title: "PRM",
-    bg: "https://images.unsplash.com/photo-1745970347652-8f22f5d7d3ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1440&q=80" },
+    bg: "https://images.unsplash.com/photo-1745970347652-8f22f5d7d3ba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
 ];
 
 const N   = ITEMS.length;
@@ -124,7 +124,7 @@ function MobileSessao() {
         {/* ── Painel glass inferior ── */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          height: "42%",
+          height: "50%",
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
           background: "rgba(28,28,28,0.58)",
@@ -312,7 +312,7 @@ function DesktopSessao() {
           WebkitBackdropFilter: "blur(163.85px)",
           backgroundColor: "rgba(58,58,58,0.31)",
           display: "flex", flexDirection: "column", justifyContent: "center",
-          alignItems: "stretch", padding: "0 37px", gap: 27, boxSizing: "border-box",
+          alignItems: "stretch", padding: "clamp(48px,7vh,96px) 37px", gap: 27, boxSizing: "border-box",
           overflowY: "hidden",
         }}>
           {ITEMS.map((item, i) => {
