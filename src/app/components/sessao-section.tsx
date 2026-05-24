@@ -311,15 +311,15 @@ function DesktopSessao() {
           backdropFilter: "blur(163.85px)",
           WebkitBackdropFilter: "blur(163.85px)",
           backgroundColor: "rgba(58,58,58,0.31)",
-          display: "flex", flexDirection: "column", justifyContent: "center",
-          alignItems: "stretch", padding: "clamp(48px,7vh,96px) 37px", gap: 27, boxSizing: "border-box",
+          display: "flex", flexDirection: "column", justifyContent: "flex-start",
+          alignItems: "stretch", padding: "clamp(40px,5vh,72px) 37px clamp(32px,4vh,56px)", gap: "clamp(6px,1.2vh,14px)", boxSizing: "border-box",
           overflowY: "hidden",
         }}>
           {ITEMS.map((item, i) => {
             const isActive = i === activeIndex;
             return (
               <div key={i} style={{
-                paddingBottom: isActive ? 16 : 11, paddingLeft: 29, paddingRight: 40,
+                paddingBottom: isActive ? 10 : 6, paddingLeft: 29, paddingRight: 40,
                 borderBottom: "1px solid rgba(255,255,255,0.35)",
                 boxSizing: "border-box",
                 transition: "padding-bottom 0.5s cubic-bezier(0.22,1,0.36,1)",
@@ -350,15 +350,15 @@ function DesktopSessao() {
           })}
           <p style={{
             fontFamily: MET, fontStyle: "italic", fontWeight: 300,
-            fontSize: "clamp(16px,1.94vw,28px)",
+            fontSize: "clamp(14px,1.6vw,24px)",
             color: "rgba(255,255,255,0.85)", textAlign: "center",
-            margin: "8px auto 0", lineHeight: 1.35, letterSpacing: "0.02em",
+            margin: "clamp(4px,0.8vh,10px) auto 0", lineHeight: 1.35, letterSpacing: "0.02em",
             width: "min(500px,100%)",
           }}>
             Sequoias não correm atrás da luz.{" "}
             <em style={{ fontWeight: 700, fontStyle: "italic", color: "white" }}>Crescem até ela</em>
           </p>
-          <div style={{ display: "flex", justifyContent: "center", marginTop: 6 }}>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "clamp(3px,0.6vh,8px)" }}>
             <a
               href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
               target="_blank" rel="noopener noreferrer"
