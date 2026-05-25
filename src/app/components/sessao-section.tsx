@@ -311,8 +311,8 @@ function DesktopSessao() {
           backdropFilter: "blur(163.85px)",
           WebkitBackdropFilter: "blur(163.85px)",
           backgroundColor: "rgba(58,58,58,0.31)",
-          display: "flex", flexDirection: "column", justifyContent: "flex-start",
-          alignItems: "stretch", padding: "clamp(40px,5vh,72px) 37px clamp(32px,4vh,56px)", gap: "clamp(6px,1.2vh,14px)", boxSizing: "border-box",
+          display: "flex", flexDirection: "column", justifyContent: "safe center",
+          alignItems: "stretch", padding: "clamp(40px,5vh,72px) 37px clamp(40px,5vh,72px)", gap: "clamp(6px,1.2vh,14px)", boxSizing: "border-box",
           overflowY: "hidden",
         }}>
           {ITEMS.map((item, i) => {
