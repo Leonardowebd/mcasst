@@ -6,6 +6,7 @@ const SobreSection        = lazy(() => import("./components/sobre-section").then
 const LogoBarSection      = lazy(() => import("./components/logo-bar-section").then(m => ({ default: m.LogoBarSection })));
 const VideoSection        = lazy(() => import("./components/video-section").then(m => ({ default: m.VideoSection })));
 const SessaoSection       = lazy(() => import("./components/sessao-section").then(m => ({ default: m.SessaoSection })));
+const GaleriaSection      = lazy(() => import("./components/galeria-section").then(m => ({ default: m.GaleriaSection })));
 const ParallaxLastSection = lazy(() => import("./components/parallax-last-section").then(m => ({ default: m.ParallaxLastSection })));
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <LogoBarSection />
         <VideoSection />
         <SessaoSection />
+        <GaleriaSection />
         <ParallaxLastSection />
       </Suspense>
     </div>
