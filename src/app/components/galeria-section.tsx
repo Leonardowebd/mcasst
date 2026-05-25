@@ -3,53 +3,51 @@ import { useRef, useEffect } from "react";
 /*
  * GaleriaSection — Horizontal scroll driven by vertical scroll
  *
- * Desktop + Mobile: (N_SCREENS * 100)vh outer div, sticky 100vh inner.
- * Scroll progress → translateX of image strip.
- * Title/subtitle stay fixed while images pan left.
+ * Strip starts shifted LEFT (translateX = -maxShift) and moves RIGHT
+ * to translateX = 0 as scroll progresses. Images enter from the left
+ * and move to the right — "da esquerda pra direita".
+ *
+ * DOM is reversed [g03, g02, g01] so the reading reveal order is
+ * g01 → g02 → g03 (left to right) even though strip moves rightward.
+ *
+ * Image width: ~75vw each → 3 imgs = ~225vw → maxShift ≈ 125vw → real movement.
  */
 
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
+// DOM order reversed so reading order (g01→g02→g03) matches strip moving right
 const IMAGES = [
-  { src: "/gallery/g01.webp", alt: "Reunião ao ar livre" },
-  { src: "/gallery/g02.webp", alt: "Mãos unidas em círculo" },
   { src: "/gallery/g03.webp", alt: "Apresentação para grupo" },
+  { src: "/gallery/g02.webp", alt: "Mãos unidas em círculo" },
+  { src: "/gallery/g01.webp", alt: "Reunião ao ar livre" },
 ];
 
-// Extra scroll room: 2 = 200vh for the horizontal travel + 1 viewport standing still at start
-const SCROLL_MULTIPLIER = 3;
+// Section height: enough scroll to travel full strip width comfortably
+const SCROLL_MULTIPLIER = 4;
 
 export function GaleriaSection() {
   const outerRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
   const rafRef   = useRef<number>(0);
 
   useEffect(() => {
     const update = () => {
       const outer = outerRef.current;
       const strip = stripRef.current;
-      const title = titleRef.current;
       if (!outer || !strip) return;
 
-      const rect    = outer.getBoundingClientRect();
-      const travel  = outer.offsetHeight - window.innerHeight;
+      const rect     = outer.getBoundingClientRect();
+      const travel   = outer.offsetHeight - window.innerHeight;
       const scrolled = Math.max(0, Math.min(travel, -rect.top));
       const progress = travel > 0 ? scrolled / travel : 0;
 
-      // Horizontal pan: strip slides left as progress goes 0→1
-      const stripW    = strip.scrollWidth;
-      const viewportW = window.innerWidth;
-      const maxShift  = Math.max(0, stripW - viewportW);
-      strip.style.transform = `translateX(${-progress * maxShift}px)`;
-
-      // Title fades out in first 20% of scroll
-      if (title) {
-        const titleOpacity = Math.max(0, 1 - progress / 0.2);
-        title.style.opacity = titleOpacity.toString();
-        title.style.transform = `translateY(${-progress * 40}px)`;
-      }
+      // Strip starts at -maxShift (far left) and moves to 0 (right)
+      // → images enter from LEFT and pan to RIGHT
+      const stripW   = strip.scrollWidth;
+      const viewW    = window.innerWidth;
+      const maxShift = Math.max(0, stripW - viewW);
+      strip.style.transform = `translateX(${(progress - 1) * maxShift}px)`;
     };
 
     const onScroll = () => {
@@ -66,9 +64,15 @@ export function GaleriaSection() {
   }, []);
 
   return (
+    /* paddingBottom = breathing room before ParallaxLastSection */
     <div
       ref={outerRef}
-      style={{ height: `${SCROLL_MULTIPLIER * 100}vh`, position: "relative" }}
+      style={{
+        height: `${SCROLL_MULTIPLIER * 100}vh`,
+        position: "relative",
+        paddingBottom: "clamp(80px,10vh,160px)",
+        boxSizing: "border-box",
+      }}
     >
       <div style={{
         position: "sticky", top: 0, height: "100vh",
@@ -76,18 +80,14 @@ export function GaleriaSection() {
         display: "flex", flexDirection: "column",
       }}>
 
-        {/* ── Header ── */}
-        <div
-          ref={titleRef}
-          style={{
-            position: "absolute", top: 0, left: 0, right: 0, zIndex: 2,
-            display: "flex", flexDirection: "column", alignItems: "center",
-            padding: "clamp(40px,6vh,72px) 20px clamp(20px,3vh,40px)",
-            gap: "clamp(8px,1.2vh,16px)",
-            pointerEvents: "none",
-            willChange: "opacity, transform",
-          }}
-        >
+        {/* ── Header — always visible ── */}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, zIndex: 2,
+          display: "flex", flexDirection: "column", alignItems: "center",
+          padding: "clamp(40px,6vh,72px) 20px clamp(20px,3vh,40px)",
+          gap: "clamp(8px,1.2vh,16px)",
+          pointerEvents: "none",
+        }}>
           <p style={{
             fontFamily: MET, fontWeight: 600,
             fontSize: "clamp(24px,3.33vw,48px)",
@@ -107,17 +107,23 @@ export function GaleriaSection() {
         </div>
 
         {/* ── Image strip ── */}
-        <div style={{
-          position: "absolute", bottom: 0, left: 0,
-          height: "clamp(260px,55vh,480px)",
-          display: "flex",
-          willChange: "transform",
-          gap: 0,
-        }} ref={stripRef}>
+        {/* Each image: ~75vw wide → 3 imgs ≈ 225vw → maxShift ≈ 125vw → real panning */}
+        <div
+          ref={stripRef}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            height: "clamp(240px,58vh,520px)",
+            display: "flex",
+            gap: "clamp(8px,1.2vw,20px)",
+            willChange: "transform",
+          }}
+        >
           {IMAGES.map((img, i) => (
             <div key={i} style={{
               flexShrink: 0,
-              width: "clamp(280px,33.33vw,540px)",
+              width: "clamp(300px,75vw,1100px)",
               height: "100%",
               overflow: "hidden",
             }}>
