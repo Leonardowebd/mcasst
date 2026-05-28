@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import imgInfinity from "../../imports/infinity-vector.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -148,43 +149,35 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   InfinitySymbol — SVG lemniscate with flowing text (Phase 2 analogy)
-   Path traces: center → right loop → center → left loop → center
-   textPath SMIL animation flows 3 phrases continuously along the curve.
+   InfinitySymbol — Figma vector (node 123:5) + "Plano de Ação" label
+   Label position from Figma: center ≈ (48.8%, 47.3%), rotate 54.32deg
 ═══════════════════════════════════════════════════════════════════════ */
-const INF_PATH =
-  "M 350 130 C 380 50 500 50 500 130 C 500 210 380 210 350 130 " +
-  "C 320 50 200 50 200 130 C 200 210 320 210 350 130 Z";
-
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
   return (
-    <svg
-      viewBox="0 0 700 260"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ width, height: "auto", display: "block" }}
-    >
-      <defs>
-        <path id="inf-path" d={INF_PATH} />
-      </defs>
-      {/* Visible ∞ stroke */}
-      <path
-        d={INF_PATH} fill="none"
-        stroke="rgba(255,255,255,0.35)" strokeWidth="2.5"
+    <div style={{ position: "relative", width, display: "inline-block" }}>
+      <img
+        src={imgInfinity}
+        alt=""
+        style={{ width: "100%", height: "auto", display: "block" }}
       />
-      {/* Static label — Plano de Ação on upper-right loop */}
-      <text
-        fill="white"
-        fontSize="15"
-        fontFamily={MET}
-        fontStyle="italic"
-        letterSpacing="0.6"
-        opacity="0.9"
-      >
-        <textPath href="#inf-path" startOffset="8%">
-          Plano de Ação
-        </textPath>
-      </text>
-    </svg>
+      <span style={{
+        position: "absolute",
+        left: "48.8%",
+        top: "47.3%",
+        transform: "translate(-50%, -50%) rotate(54.32deg)",
+        fontFamily: MET,
+        fontStyle: "italic",
+        fontWeight: 500,
+        fontSize: "clamp(10px, 1.6vw, 23px)",
+        color: "white",
+        whiteSpace: "nowrap",
+        opacity: 0.9,
+        letterSpacing: "0.5px",
+        pointerEvents: "none",
+      }}>
+        Plano de Ação
+      </span>
+    </div>
   );
 }
 
