@@ -150,20 +150,20 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
 
 /* ═══════════════════════════════════════════════════════════════════════
    InfinitySymbol — Figma PNG (visual) + SVG overlay (textPath animado)
-   Path traça as duas alças da lemniscata no viewBox 958×439 do PNG.
-   3 frases fluem continuamente pelas linhas.
+   Path traça as duas alças da lemniscata no viewBox 938×410 do PNG.
+   Dois círculos r=255, centros em (220,205) e (718,205).
+   Cruzamento em (469,150) e (469,260).
+   3 frases fluem continuamente por dentro das linhas.
 ═══════════════════════════════════════════════════════════════════════ */
 /*
- * INF_PATH — lemniscata com cruzamento real em (479,219)
- * 4 arcos: direita-cima → centro → esquerda-baixo → esquerda-cima → centro → direita-baixo
- * Tangentes no centro: Pass1 NE→SW, Pass2 NW→SE → X a 90°
+ * INF_PATH — dois arcos grandes (major arc, CW) traçam as duas alças
+ * Arc 1: (469,150) → (469,260) large CW  → alça esquerda
+ * Arc 2: (469,260) → (469,150) large CW  → alça direita
  */
 const INF_PATH =
-  "M 958,219 " +
-  "C 958,20 629,69 479,219 " +       // arco superior-direito → centro (vindo de NE)
-  "C 329,369 0,418 0,219 " +          // centro → ponta esquerda (seguindo SW)
-  "C 0,20 329,69 479,219 " +          // arco superior-esquerdo → centro (vindo de NW)
-  "C 629,369 958,418 958,219";
+  "M 469,150 " +
+  "A 255,255 0 1 1 469,260 " +   // alça esquerda (CW grande)
+  "A 255,255 0 1 1 469,150";
 
 const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
@@ -179,7 +179,7 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
       />
       {/* SVG overlay — path invisível, texto animado */}
       <svg
-        viewBox="0 0 958 439"
+        viewBox="0 0 938 410"
         xmlns="http://www.w3.org/2000/svg"
         style={{
           position: "absolute", inset: 0,
