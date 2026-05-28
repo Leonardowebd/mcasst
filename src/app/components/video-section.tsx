@@ -1,39 +1,41 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { X } from "lucide-react";
-import svgPaths  from "../../imports/Web/svg-uklupbph5w";
-import mobileSvg from "../../imports/Mobile-1/svg-ptuo52xdfo";
-import imgBg     from "../../imports/Web/7043883636bed05655a6c4c2dfccf2a51368bd79.png";
+import imgBg from "../../imports/Web/7043883636bed05655a6c4c2dfccf2a51368bd79.png";
+import svgPaths from "../../imports/Web/svg-uklupbph5w";
 
 /*
- * VideoSection — Depoimento videos
+ * VideoSection — 3 vertical tynk.ai iframes simultaneously (desktop).
+ *                1 iframe at a time on mobile.
  *
- * Desktop: Figma Web-1 reference (1440×841)
- * Mobile:  Figma Mobile-1 DepoimentoVideos1 reference (402×841)
- *   Height: 841/402*100vw = 209.2vw
- *   Left arrow:  left=10px, top=382/841*100%=45.42%
- *   Right arrow: left=calc(50%+153px), top=45.42%, translateX(-50%)
- *   Play button: centered (50%, 50%)
- *   Text:        center at top=50%+293.5px
+ * Desktop (Figma 1440×841):
+ *   - 3 videos visible at once from 7 total
+ *   - Navigation shifts by 1 video at a time (5 positions: 0–4)
+ *   - Title above, subtitle below center video
+ *   - Arrows at Figma positions (left=79px, right=1294px, top=382px)
+ *
+ * Mobile: 1 video per page, 7 pages.
  */
 
-const TESTIMONIALS = [
-  { id: 1, src: "/_videos/v1/a63a7283c203052346bde4f0ddc4fe1e972451a3", label: "Depoimento 01" },
-  { id: 2, src: "/_videos/v1/a63a7283c203052346bde4f0ddc4fe1e972451a3", label: "Depoimento 02" },
-  { id: 3, src: "/_videos/v1/a63a7283c203052346bde4f0ddc4fe1e972451a3", label: "Depoimento 03" },
+const VIDEOS = [
+  "https://play.tynk.ai/p/b7019f7a-ece7-40f4-a2c6-1b3439c70bb2",
+  "https://play.tynk.ai/p/6ae3a596-fddf-41e7-88ed-35d5bcf9cf39",
+  "https://play.tynk.ai/p/5cd52a74-eb4a-476a-b950-3557270e2c6e",
+  "https://play.tynk.ai/p/74f24375-a7ed-4e5c-8fc4-484ba12ceaf6",
+  "https://play.tynk.ai/p/c6ddced8-bfd2-407b-97d6-41a379aa7abf",
+  "https://play.tynk.ai/p/3470163e-cb75-43ba-aeec-d2f784657951",
+  "https://play.tynk.ai/p/b58e0e20-0187-4965-a632-14c221dc870b",
 ];
 
-const W  = 1440;
-const H  = 841;
-const FW = 402;
-const fw = (px: number) => `${(px / FW * 100).toFixed(3)}vw`;
+const W = 1440;
+const H = 841;
 
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
 /* ── useIsMobile ─────────────────────────────────────────────────────── */
 function useIsMobile() {
-  const [mob, setMob] = useState(() => typeof window !== "undefined" && window.innerWidth <= 640);
+  const [mob, setMob] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 640
+  );
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
     setMob(mq.matches);
@@ -44,273 +46,363 @@ function useIsMobile() {
   return mob;
 }
 
-/* ── Arrow icons ─────────────────────────────────────────────────────── */
-function ArrowIcon({ flip = false, size = 76 }: { flip?: boolean; size?: number }) {
+/* ── Arrow icon ──────────────────────────────────────────────────────── */
+function ArrowIcon({ flip = false, size = 52 }: { flip?: boolean; size?: number }) {
   return (
-    <svg viewBox="0 0 76 76" fill="none"
-      style={{ width: size, height: size, transform: flip ? "rotate(90deg)" : "rotate(-90deg)", display: "block" }}>
+    <svg
+      viewBox="0 0 76 76" fill="none"
+      style={{
+        width: size, height: size,
+        transform: flip ? "rotate(90deg)" : "rotate(-90deg)",
+        display: "block",
+      }}
+    >
       <path d={svgPaths.p10959d00} fill="white" />
     </svg>
   );
 }
 
-function MobileArrow({ flip = false }: { flip?: boolean }) {
-  return (
-    <svg viewBox="0 0 76 76" fill="none"
-      style={{ width: 76, height: 76, transform: flip ? "rotate(90deg)" : "rotate(-90deg)", display: "block" }}>
-      <path d={mobileSvg.p10959d00} fill="white" />
-    </svg>
-  );
-}
+/* ── Desktop carousel (3 videos at once) ────────────────────────────── */
+function DesktopCarousel() {
+  const [idx, setIdx]         = useState(0);
+  const sectionRef            = useRef<HTMLDivElement>(null);
+  const [secW, setSecW]       = useState(1440);
 
-/* ── Play icons ──────────────────────────────────────────────────────── */
-function MobilePlayIcon() {
-  return (
-    <svg viewBox="0 0 96 105" fill="none"
-      style={{ width: 96, height: 105, display: "block" }}>
-      <path clipRule="evenodd" d={mobileSvg.pb88b200} fill="white" fillRule="evenodd" />
-    </svg>
-  );
-}
+  const PER_PAGE = 3;
+  const maxIdx   = VIDEOS.length - PER_PAGE; // 4
 
-function DesktopPlayIcon() {
-  return (
-    <svg viewBox="0 0 141.975 155.725" fill="none"
-      style={{ width: 141.975, height: 155.725, display: "block" }}>
-      <path clipRule="evenodd" d={svgPaths.p9b24480} fill="white" fillRule="evenodd" />
-    </svg>
-  );
-}
-
-/* ── Video modal ─────────────────────────────────────────────────────── */
-function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-    };
+    const ro = new ResizeObserver(entries => {
+      setSecW(entries[0].contentRect.width);
+    });
+    if (sectionRef.current) ro.observe(sectionRef.current);
+    return () => ro.disconnect();
   }, []);
 
+  /* Figma-proportional sizing */
+  const scale  = secW / W;
+  const videoW = Math.round(250 * scale);
+  const videoH = Math.round(426 * scale);
+  const gap    = Math.round(130 * scale);
+  const step   = videoW + gap; /* pixels per navigation step */
+
+  /* Track offset */
+  const translateX = -(idx * step);
+
+  const prev = () => setIdx(i => Math.max(0, i - 1));
+  const next = () => setIdx(i => Math.min(maxIdx, i + 1));
+
+  /* Figma positions (scaled) */
+  const arrowTop     = (382 / H * 100).toFixed(2) + "%";
+  const leftArrowX   = Math.round(79  * scale);
+  const rightArrowX  = Math.round(1294 * scale);
+
+  /* Title/subtitle vertical positions */
+  const titleTop    = `calc(50% - ${Math.round(308.5 * scale)}px)`;
+  const subtitleTop = `calc(50% + ${Math.round(295   * scale)}px)`;
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      onClick={onClose}
+    <div
+      ref={sectionRef}
+      id="depoimentos"
       style={{
-        position: "fixed", inset: 0, zIndex: 200,
-        backgroundColor: "rgba(0,0,0,0.88)",
-        display: "flex", alignItems: "center", justifyContent: "center",
+        position: "relative", width: "100%",
+        height: `clamp(400px, ${(H / W * 100).toFixed(2)}vw, ${H}px)`,
+        overflow: "hidden",
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.88 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        onClick={(e) => e.stopPropagation()}
+      {/* Background */}
+      <img src={imgBg} alt="" style={{
+        position: "absolute", inset: 0,
+        width: "100%", height: "100%",
+        objectFit: "cover", pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundColor: "rgba(0,0,0,0.82)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Title */}
+      <div style={{
+        position: "absolute",
+        left: "50%", top: titleTop,
+        transform: "translate(-50%, -50%)",
+        width: `${Math.round(560 * scale)}px`,
+        textAlign: "center", color: "white", pointerEvents: "none",
+        zIndex: 2,
+      }}>
+        <p style={{
+          fontFamily: MET, fontWeight: 600,
+          fontSize: `clamp(18px, ${(40 / W * 100).toFixed(2)}vw, 40px)`,
+          lineHeight: 1.2, margin: 0,
+        }}>
+          Resultados são eles que falam por nós.
+        </p>
+      </div>
+
+      {/* Videos track viewport */}
+      <div style={{
+        position: "absolute",
+        left: `${Math.round(215 * scale)}px`,
+        top: "50%",
+        transform: "translateY(-50%)",
+        width: `${3 * videoW + 2 * gap}px`,
+        height: `${videoH}px`,
+        overflow: "hidden",
+        zIndex: 2,
+      }}>
+        {/* Sliding track */}
+        <div style={{
+          display: "flex",
+          gap: `${gap}px`,
+          transform: `translateX(${translateX}px)`,
+          transition: "transform 0.55s cubic-bezier(0.22,1,0.36,1)",
+          willChange: "transform",
+        }}>
+          {VIDEOS.map((url, i) => (
+            <div key={i} style={{
+              flexShrink: 0,
+              width: `${videoW}px`,
+              height: `${videoH}px`,
+              borderRadius: 8,
+              overflow: "hidden",
+              backgroundColor: "#111",
+            }}>
+              <iframe
+                src={url}
+                title={`Depoimento ${i + 1}`}
+                width="100%"
+                height="100%"
+                style={{ display: "block", border: "none" }}
+                allow="autoplay; fullscreen; encrypted-media"
+                allowFullScreen
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Subtitle */}
+      <div style={{
+        position: "absolute",
+        left: "50%", top: subtitleTop,
+        transform: "translate(-50%, -50%)",
+        width: `${Math.round(356 * scale)}px`,
+        textAlign: "center", color: "white", pointerEvents: "none",
+        zIndex: 2,
+      }}>
+        <p style={{
+          fontFamily: ROEL, fontWeight: 400,
+          fontSize: `clamp(13px, ${(22 / W * 100).toFixed(2)}vw, 22px)`,
+          lineHeight: 1.45, margin: 0, opacity: 0.82,
+        }}>
+          Como nosso ecossistema funciona
+        </p>
+      </div>
+
+      {/* Left arrow */}
+      <button
+        onClick={prev}
+        disabled={idx === 0}
+        aria-label="Anterior"
         style={{
-          width: "min(900px, 90vw)", backgroundColor: "#000",
-          borderRadius: 12, overflow: "hidden", position: "relative",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+          position: "absolute",
+          left: `${leftArrowX}px`,
+          top: arrowTop,
+          transform: "translateY(-50%)",
+          background: "none", border: "none",
+          cursor: idx === 0 ? "default" : "pointer",
+          padding: 0, zIndex: 5,
+          opacity: idx === 0 ? 0.25 : 0.85,
+          transition: "opacity 0.2s",
         }}
+        onMouseEnter={e => { if (idx > 0) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx === 0 ? "0.25" : "0.85"; }}
       >
-        <button onClick={onClose}
-          style={{
-            position: "absolute", top: 14, right: 14, zIndex: 10,
-            width: 38, height: 38, borderRadius: "50%",
-            backgroundColor: "rgba(255,255,255,0.15)", border: "none",
-            cursor: "pointer", display: "flex", alignItems: "center",
-            justifyContent: "center", color: "white",
-          }}
-        >
-          <X size={18} />
-        </button>
-        <video ref={videoRef} src={src} controls autoPlay
-          style={{ width: "100%", display: "block", aspectRatio: "16/9", backgroundColor: "#000" }} />
-      </motion.div>
-    </motion.div>
+        <ArrowIcon flip={false} size={Math.round(76 * scale)} />
+      </button>
+
+      {/* Right arrow */}
+      <button
+        onClick={next}
+        disabled={idx >= maxIdx}
+        aria-label="Próximo"
+        style={{
+          position: "absolute",
+          left: `${rightArrowX}px`,
+          top: arrowTop,
+          transform: "translateY(-50%)",
+          background: "none", border: "none",
+          cursor: idx >= maxIdx ? "default" : "pointer",
+          padding: 0, zIndex: 5,
+          opacity: idx >= maxIdx ? 0.25 : 0.85,
+          transition: "opacity 0.2s",
+        }}
+        onMouseEnter={e => { if (idx < maxIdx) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx >= maxIdx ? "0.25" : "0.85"; }}
+      >
+        <ArrowIcon flip={true} size={Math.round(76 * scale)} />
+      </button>
+
+      {/* Dot indicators */}
+      <div style={{
+        position: "absolute",
+        bottom: "clamp(16px,2vh,28px)",
+        left: "50%", transform: "translateX(-50%)",
+        display: "flex", gap: 8, zIndex: 5,
+      }}>
+        {Array.from({ length: maxIdx + 1 }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setIdx(i)}
+            aria-label={`Posição ${i + 1}`}
+            style={{
+              width: i === idx ? 20 : 8, height: 8,
+              borderRadius: 4,
+              backgroundColor: i === idx ? "white" : "rgba(255,255,255,0.35)",
+              border: "none", cursor: "pointer", padding: 0,
+              transition: "all 0.35s ease",
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   Main export
-═══════════════════════════════════════════════════════════════════════ */
-export function VideoSection() {
-  const [current, setCurrent]         = useState(0);
-  const [modalOpen, setModalOpen]     = useState(false);
-  const [logoHovered, setLogoHovered] = useState(false);
-  const isMobile = useIsMobile();
+/* ── Mobile carousel (1 video at a time) ────────────────────────────── */
+function MobileCarousel() {
+  const [idx, setIdx] = useState(0);
 
-  const prev = () => setCurrent((c) => (c - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
-  const next = () => setCurrent((c) => (c + 1) % TESTIMONIALS.length);
-  const progressPct = (((current + 1) / TESTIMONIALS.length) * 100).toFixed(2);
+  const videoW    = "min(75vw, 270px)";
+  const videoH    = "min(133.3vw, 480px)"; /* 9:16 */
+  const maxIdx    = VIDEOS.length - 1;
+
+  const prev = () => setIdx(i => Math.max(0, i - 1));
+  const next = () => setIdx(i => Math.min(maxIdx, i + 1));
 
   return (
-    <>
-      {isMobile ? (
-        /* ── MOBILE layout (Figma DepoimentoVideos1) ──────────────────
-           Height: 841/402*100vw = 209.2vw                             */
-        <div
-          id="depoimentos"
+    <div
+      id="depoimentos"
+      style={{
+        position: "relative",
+        width: "100%",
+        background: "#000",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "clamp(36px,9vw,56px) 0 clamp(32px,8vw,48px)",
+        gap: "clamp(20px,5vw,32px)",
+      }}
+    >
+      {/* Background */}
+      <img src={imgBg} alt="" style={{
+        position: "absolute", inset: 0,
+        width: "100%", height: "100%",
+        objectFit: "cover", pointerEvents: "none", opacity: 0.3,
+      }} />
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundColor: "rgba(0,0,0,0.75)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Title */}
+      <p style={{
+        fontFamily: MET, fontWeight: 600,
+        fontSize: "clamp(18px,5.5vw,26px)",
+        lineHeight: 1.2, margin: 0,
+        color: "white", textAlign: "center",
+        padding: "0 24px",
+        position: "relative", zIndex: 2,
+      }}>
+        Resultados são eles que falam por nós.
+      </p>
+
+      {/* Video + arrows row */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "clamp(10px,3vw,20px)",
+        position: "relative", zIndex: 2,
+      }}>
+        {/* Left arrow */}
+        <button onClick={prev} disabled={idx === 0} aria-label="Anterior"
           style={{
-            position: "relative",
-            width: "100%",
-            height: `${(H / FW * 100).toFixed(2)}vw`,   /* 209.2vw */
-            overflow: "hidden",
-          }}
-        >
-          {/* Background */}
-          <img src={imgBg} alt=""
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.6)", pointerEvents: "none" }} />
-
-          {/* Left arrow — left=10px, top=382px → 382/841=45.42% */}
-          <div style={{
-            position: "absolute",
-            left: 10,
-            top: `${(382 / H * 100).toFixed(2)}%`,
-            width: 76, height: 76,
-            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "none", border: "none",
+            cursor: idx === 0 ? "default" : "pointer",
+            opacity: idx === 0 ? 0.2 : 0.85, padding: 0, flexShrink: 0,
           }}>
-            <button onClick={prev} aria-label="Anterior"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-              <MobileArrow flip={false} />
-            </button>
-          </div>
+          <ArrowIcon flip={false} size={40} />
+        </button>
 
-          {/* Right arrow — left=calc(50%+153px), translateX(-50%), top=382px */}
-          <div style={{
-            position: "absolute",
-            left: "calc(50% + 153px)",
-            top: `${(382 / H * 100).toFixed(2)}%`,
-            width: 76, height: 76,
-            transform: "translateX(-50%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <button onClick={next} aria-label="Próximo"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-              <MobileArrow flip={true} />
-            </button>
-          </div>
-
-          {/* Play button — centered */}
-          <div style={{
-            position: "absolute",
-            left: "50%", top: "50%",
-            transform: "translate(-50%, -50%)",
-          }}>
-            <button onClick={() => setModalOpen(true)}
-              aria-label="Assistir depoimento"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-              <MobilePlayIcon />
-            </button>
-          </div>
-
-          {/* Frame4 text — centered at top=50%+293.5px */}
-          <div style={{
-            position: "absolute",
-            left: "50%",
-            top: "calc(50% + 293.5px)",
-            transform: "translate(-50%, -50%)",
-            width: fw(306),
-            textAlign: "center", color: "white",
-            display: "flex", flexDirection: "column", gap: 15,
-            pointerEvents: "none",
-          }}>
-            <div style={{ fontFamily: MET, fontWeight: 600, fontSize: fw(21), lineHeight: 0 }}>
-              <p style={{ lineHeight: "normal", marginBottom: 0 }}>Resultados não são discurso.</p>
-              <p style={{ lineHeight: "normal", margin: 0 }}>São consequência de estrutura bem construída.</p>
-            </div>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: fw(20), lineHeight: "normal", margin: 0 }}>
-              Empresas que organizaram posicionamento, vendas e processos passaram a crescer com mais clareza e previsibilidade.
-            </p>
-          </div>
+        {/* Video */}
+        <div style={{
+          width: videoW, height: videoH,
+          flexShrink: 0,
+          borderRadius: 8, overflow: "hidden",
+          backgroundColor: "#111",
+        }}>
+          <iframe
+            src={VIDEOS[idx]}
+            title={`Depoimento ${idx + 1}`}
+            width="100%"
+            height="100%"
+            style={{ display: "block", border: "none" }}
+            allow="autoplay; fullscreen; encrypted-media"
+            allowFullScreen
+          />
         </div>
-      ) : (
-        /* ── DESKTOP layout (Figma Web-1, 1440×841) ──────────────────── */
-        <div
-          id="depoimentos"
+
+        {/* Right arrow */}
+        <button onClick={next} disabled={idx >= maxIdx} aria-label="Próximo"
           style={{
-            height: `clamp(400px, ${((H / W) * 100).toFixed(2)}vw, ${H}px)`,
-            position: "relative", width: "100%", flexShrink: 0,
-            overflow: "hidden", cursor: "default",
-          }}
-        >
-          {/* Background */}
-          <img src={imgBg} alt=""
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.6)", pointerEvents: "none" }} />
+            background: "none", border: "none",
+            cursor: idx >= maxIdx ? "default" : "pointer",
+            opacity: idx >= maxIdx ? 0.2 : 0.85, padding: 0, flexShrink: 0,
+          }}>
+          <ArrowIcon flip={true} size={40} />
+        </button>
+      </div>
 
-          {/* Progress bar */}
-          <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 3, backgroundColor: "rgba(255,255,255,0.18)", pointerEvents: "none" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, height: "100%", width: `${progressPct}%`, backgroundColor: "white", transition: "width 0.6s cubic-bezier(0.22,1,0.36,1)" }} />
-          </div>
-
-          {/* Left arrow */}
-          <button onClick={prev} aria-label="Anterior"
-            style={{ position: "absolute", left: `${((79/W)*100).toFixed(4)}%`, top: `${((382/H)*100).toFixed(4)}%`, transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, opacity: 0.8 }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.opacity = "1")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.opacity = "0.8")}
-          >
-            <ArrowIcon flip={false} />
-          </button>
-
-          {/* Right arrow */}
-          <button onClick={next} aria-label="Próximo"
-            style={{ position: "absolute", left: `${((1294/W)*100).toFixed(4)}%`, top: `${((382/H)*100).toFixed(4)}%`, transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, opacity: 0.8 }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.opacity = "1")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.opacity = "0.8")}
-          >
-            <ArrowIcon flip={true} />
-          </button>
-
-          {/* Play button */}
-          <button
-            onClick={() => setModalOpen(true)}
-            onMouseEnter={() => setLogoHovered(true)}
-            onMouseLeave={() => setLogoHovered(false)}
-            aria-label="Assistir depoimento"
+      {/* Dots */}
+      <div style={{
+        display: "flex", gap: 6,
+        position: "relative", zIndex: 2,
+      }}>
+        {VIDEOS.map((_, i) => (
+          <button key={i} onClick={() => setIdx(i)}
+            aria-label={`Vídeo ${i + 1}`}
             style={{
-              position: "absolute", left: "50%", top: "50%",
-              transform: "translate(-50%, calc(-50% - 4.64px))",
-              background: "none", border: "none", cursor: "pointer", padding: 0,
-              opacity: logoHovered ? 0.75 : 1,
-              scale: logoHovered ? "1.04" : "1",
-              transition: "opacity 0.25s ease, scale 0.25s ease",
+              width: i === idx ? 18 : 7, height: 7,
+              borderRadius: 3.5,
+              backgroundColor: i === idx ? "white" : "rgba(255,255,255,0.3)",
+              border: "none", cursor: "pointer", padding: 0,
+              transition: "all 0.3s ease",
             }}
-          >
-            <DesktopPlayIcon />
-          </button>
+          />
+        ))}
+      </div>
 
-          {/* Frame22 text */}
-          <div style={{
-            position: "absolute", left: "50%",
-            top: `calc(50% + ${((295/H)*100).toFixed(2)}%)`,
-            transform: "translate(-50%, -50%)",
-            width: `${((954/W)*100).toFixed(2)}%`,
-            textAlign: "center", color: "white",
-            display: "flex", flexDirection: "column", gap: 15,
-            alignItems: "flex-start", pointerEvents: "none",
-          }}>
-            <div style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(20px,2.78vw,40px)", width: "100%", lineHeight: 0 }}>
-              <p style={{ lineHeight: "normal", marginBottom: 0 }}>Resultados não são discurso.</p>
-              <p style={{ lineHeight: "normal", margin: 0 }}>São consequência de estrutura bem construída.</p>
-            </div>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.67vw,24px)", lineHeight: "normal", width: "100%", margin: 0 }}>
-              Empresas que organizaram posicionamento, vendas e processos passaram a crescer com mais clareza e previsibilidade.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Modal */}
-      <AnimatePresence>
-        {modalOpen && (
-          <VideoModal src={TESTIMONIALS[current].src} onClose={() => setModalOpen(false)} />
-        )}
-      </AnimatePresence>
-    </>
+      {/* Subtitle */}
+      <p style={{
+        fontFamily: ROEL, fontWeight: 400,
+        fontSize: "clamp(13px,4vw,17px)",
+        lineHeight: 1.5, margin: 0,
+        color: "white", textAlign: "center",
+        padding: "0 32px",
+        opacity: 0.75,
+        position: "relative", zIndex: 2,
+      }}>
+        Como nosso ecossistema funciona
+      </p>
+    </div>
   );
+}
+
+/* ── Main export ─────────────────────────────────────────────────────── */
+export function VideoSection() {
+  const isMobile = useIsMobile();
+  return isMobile ? <MobileCarousel /> : <DesktopCarousel />;
 }

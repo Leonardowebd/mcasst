@@ -1,40 +1,33 @@
 import { useRef, useEffect, useState } from "react";
-import imgFundo2  from "../../imports/fundonovo.png";
-import imgLogo    from "../../imports/image-4.png";
-import imgBgMobile from "../../imports/Mobile-1/7043883636bed05655a6c4c2dfccf2a51368bd79.png";
-import imgArvore1 from "../../imports/Web-1/1157fca2f0edad10e429dc5595004b239f1de787.png";
-import imgArvore1Mobile from "../../imports/Mobile-1/1157fca2f0edad10e429dc5595004b239f1de787.png";
+import imgFundo2  from "../../imports/parallax-fundo2-new.png";
+import imgLogo    from "../../imports/parallax-logo-new.png";
+import imgArvore1 from "../../imports/parallax-arvore1-new.png";
 
 /*
- * ParallaxLastSection
+ * ParallaxLastSection — updated with new Figma images
  *
  * Desktop (Figma Web-1, 1440×1077):
- *   - fundo2 parallax bg  (translateY 0 → 222px)
- *   - arvore1: left=307/1440, width=826/1440, height=100%
- *   - Logo metallic: top=828/1077, left=602/1440, width=236/1440
+ *   Grid (overlapping col-1 row-1):
+ *   - fundo2:  mt=222px, 1440×1273px container, object-cover bg → parallax translateY
+ *   - arvore1: left=307/1440, top=0, width=826/1440, height=100%
+ *               inner img: h=191.34%, left=-33.18%, top=-9.52%, w=166.32%
+ *   - Logo:    left=595/1440, top=803/1077, width=249/1440, height=159/1077
+ *               inner img: h=246.25%, left=-13.43%, top=-74.29%, w=126.4%
  *
- * Mobile (Figma Mobile-1, Frame section 709px, Group 1463×647):
- *   - Group is 1463px wide, bottom-aligned, centered (items-center pr-5px)
- *   - Group left edge: -(1463-vw)/2 - 5px/2
- *   - fundo2 (bg): entire Group width, uses imgBgMobile
- *   - arvore1: ml=482px, width=496px, height=647px in Group
- *   - Logo: ml=613.5px, mt=414px, 236×121px — plain white SVG (not metallic)
+ * Mobile: same images, simplified object-cover layout.
  */
 
 const W   = 1440;
 const H   = 1077;
 const MAX = 222;
 
-/* Mobile Figma group reference */
-const GW  = 1463;   // group width
-const GH  = 647;    // group height
-const FW  = 402;    // mobile reference screen width
-
-const fw = (px: number) => `${(px / FW * 100).toFixed(3)}vw`;
+const FW  = 402; /* mobile reference */
 
 /* ── useIsMobile ─────────────────────────────────────────────────────── */
 function useIsMobile() {
-  const [mob, setMob] = useState(() => typeof window !== "undefined" && window.innerWidth <= 640);
+  const [mob, setMob] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 640
+  );
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
     setMob(mq.matches);
@@ -44,7 +37,6 @@ function useIsMobile() {
   }, []);
   return mob;
 }
-
 
 export function ParallaxLastSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -61,43 +53,42 @@ export function ParallaxLastSection() {
       const sH    = section.offsetHeight;
 
       if (isMobile) {
-        /* Começa quando seção ainda está 40% abaixo do viewport.
-           earlyStart dá tempo suficiente para o efeito ser visto. */
-        const earlyStart = viewH * 0.4;
-        const rawScrolled = viewH - rect.top + earlyStart;
-        const maxScrolled = sH + earlyStart;
+        const earlyStart      = viewH * 0.4;
+        const rawScrolled     = viewH - rect.top + earlyStart;
+        const maxScrolled     = sH + earlyStart;
         const normalizedProgress = Math.max(0, Math.min(1, rawScrolled / maxScrolled));
-        /* Ease-out: efeito mais forte no início, suaviza no final */
-        const easedProgress = 1 - Math.pow(1 - normalizedProgress, 1.6);
-        const bgY = easedProgress * 130;
-        bg.style.transform = `translateY(${bgY.toFixed(2)}px)`;
+        const easedProgress   = 1 - Math.pow(1 - normalizedProgress, 1.6);
+        bg.style.transform    = `translateY(${(easedProgress * 130).toFixed(2)}px)`;
       } else {
-        const scrolled = Math.max(0, viewH - rect.top);
-        const bgY      = Math.min(scrolled * 0.28, MAX);
+        const scrolled     = Math.max(0, viewH - rect.top);
+        const bgY          = Math.min(scrolled * 0.28, MAX);
         bg.style.transform = `translateY(${bgY.toFixed(2)}px)`;
       }
     };
-    const onScroll = () => { cancelAnimationFrame(rafRef.current); rafRef.current = requestAnimationFrame(update); };
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(update);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     update();
-    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafRef.current); };
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, [isMobile]);
 
   /* ══════════════════════════════════════════════════════════════════
-     MOBILE — Figma Frame (709px) with 1463×647 Group centered
-     Group dimensions (vw-scaled from 402px reference):
-       width:  1463/402*100vw = 363.93vw
-       height: 647/402*100vw  = 161.19vw
-     Group left = calc(50% - 363.93vw/2) with -5px/2 pr adjustment
+     MOBILE
   ══════════════════════════════════════════════════════════════════ */
   if (isMobile) {
-    /* Group width/height in vw */
-    const groupW = `${(GW / FW * 100).toFixed(2)}vw`;
-    const groupH = `${(GH / FW * 100).toFixed(2)}vw`;
-    /* Section height: 709/402*100vw */
-    const sectionH = `${(709 / FW * 100).toFixed(2)}vw`;
+    /* Mobile: simple full-width layout, section height ~176vw */
+    const GW        = 1463;
+    const GH        = 647;
+    const groupW    = `${(GW / FW * 100).toFixed(2)}vw`;
+    const groupH    = `${(GH / FW * 100).toFixed(2)}vw`;
+    const sectionH  = `${(709 / FW * 100).toFixed(2)}vw`;
 
-    /* Positions within group (as % of group dimensions) */
     const treeLeft  = `${(482 / GW * 100).toFixed(3)}%`;
     const treeW     = `${(496 / GW * 100).toFixed(3)}%`;
     const logoLeft  = `${(613.5 / GW * 100).toFixed(3)}%`;
@@ -124,32 +115,30 @@ export function ParallaxLastSection() {
             boxSizing: "border-box",
           }}
         >
-          {/* ── Group: 1463×647 inline-grid equivalent, centered */}
           <div style={{
             position: "relative",
             width: groupW,
             height: groupH,
             flexShrink: 0,
           }}>
-            {/* fundo2 — background photo com parallax */}
+            {/* fundo2 — parallax bg */}
             <div
               ref={bgRef}
-              style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", willChange: "transform" }}
+              style={{
+                position: "absolute", inset: 0,
+                overflow: "hidden", pointerEvents: "none", willChange: "transform",
+              }}
             >
-              <img src={imgBgMobile} alt=""
+              <img src={imgFundo2} alt=""
                 style={{
-                  position: "absolute",
-                  height: "312.66%",
-                  left: "-28.21%",
-                  top: "-112.85%",
-                  width: "156.41%",
-                  maxWidth: "none",
+                  width: "100%", height: "130%",
+                  objectFit: "cover", objectPosition: "center",
                   display: "block",
                 }}
               />
             </div>
 
-            {/* arvore1 — tree */}
+            {/* arvore1 */}
             <div style={{
               position: "absolute",
               left: treeLeft,
@@ -159,15 +148,11 @@ export function ParallaxLastSection() {
               overflow: "hidden",
               pointerEvents: "none",
             }}>
-              <img src={imgArvore1Mobile} alt="Árvore Sequoia"
+              <img src={imgArvore1} alt="Árvore Sequoia"
                 style={{
                   position: "absolute",
-                  height: "189.13%",
-                  left: "-78.55%",
-                  top: "-56.91%",
-                  width: "279.36%",
-                  maxWidth: "none",
-                  display: "block",
+                  height: "191.34%", left: "-33.18%", top: "-9.52%", width: "166.32%",
+                  maxWidth: "none", display: "block",
                 }}
               />
             </div>
@@ -180,8 +165,15 @@ export function ParallaxLastSection() {
               width: logoW,
               height: logoH,
               zIndex: 5,
+              overflow: "hidden",
             }}>
-              <img src={imgLogo} alt="Mascatis" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+              <img src={imgLogo} alt="Mascatis"
+                style={{
+                  position: "absolute",
+                  height: "246.25%", left: "-13.43%", top: "-74.29%", width: "126.4%",
+                  maxWidth: "none", display: "block",
+                }}
+              />
             </div>
           </div>
         </div>
@@ -190,7 +182,7 @@ export function ParallaxLastSection() {
   }
 
   /* ══════════════════════════════════════════════════════════════════
-     DESKTOP — Figma Web-1 (1440×1077) with parallax
+     DESKTOP (Figma 1440×1077)
   ══════════════════════════════════════════════════════════════════ */
   return (
     <>
@@ -204,45 +196,57 @@ export function ParallaxLastSection() {
         }}
       >
         {/* FUNDO2 — parallax bg */}
-        <div ref={bgRef} style={{
-          position: "absolute", top: 0, left: 0, width: "100%",
-          height: `${(1273 / H * 100).toFixed(2)}%`,
-          overflow: "hidden", willChange: "transform", transform: "translateY(0px)", zIndex: 1,
-        }}>
-          <img src={imgFundo2} alt="" style={{
-            position: "absolute", top: "-56.48%", left: "-28.21%",
-            width: "156.41%", height: "156.49%",
-            maxWidth: "none", pointerEvents: "none", display: "block",
-          }} />
+        <div
+          ref={bgRef}
+          style={{
+            position: "absolute", top: 0, left: 0, width: "100%",
+            height: `${(1273 / H * 100).toFixed(2)}%`,
+            overflow: "hidden", willChange: "transform", zIndex: 1,
+          }}
+        >
+          <img src={imgFundo2} alt=""
+            style={{
+              width: "100%", height: "100%",
+              objectFit: "cover", objectPosition: "center",
+              pointerEvents: "none", display: "block",
+            }}
+          />
         </div>
 
-        {/* ARVORE1 — static tree */}
+        {/* ARVORE1 */}
         <div style={{
           position: "absolute", top: 0,
-          left: `${(307 / W * 100).toFixed(4)}%`,
-          width: `${(826 / W * 100).toFixed(4)}%`,
-          height: "100%", overflow: "hidden", pointerEvents: "none", zIndex: 2,
+          left:   `${(307 / W * 100).toFixed(4)}%`,
+          width:  `${(826 / W * 100).toFixed(4)}%`,
+          height: "100%",
+          overflow: "hidden", pointerEvents: "none", zIndex: 2,
         }}>
-          <img src={imgArvore1} alt="Árvore Sequoia" style={{
-            position: "absolute", top: "-56.91%", left: "-78.55%",
-            width: "279.36%", height: "189.13%",
-            maxWidth: "none", display: "block",
-          }} />
+          <img src={imgArvore1} alt="Árvore Sequoia"
+            style={{
+              position: "absolute",
+              height: "191.34%", left: "-33.18%", top: "-9.52%", width: "166.32%",
+              maxWidth: "none", display: "block",
+            }}
+          />
         </div>
 
         {/* LOGO */}
         <div style={{
           position: "absolute",
-          top:  `${(828 / H * 100).toFixed(4)}%`,
-          left: `${(602 / W * 100).toFixed(4)}%`,
-          width: `${(236 / W * 100).toFixed(4)}%`,
+          top:    `${(803 / H * 100).toFixed(4)}%`,
+          left:   `${(595 / W * 100).toFixed(4)}%`,
+          width:  `${(249 / W * 100).toFixed(4)}%`,
+          height: `${(159 / H * 100).toFixed(4)}%`,
+          overflow: "hidden",
           pointerEvents: "auto", zIndex: 10,
         }}>
-          <div style={{ position: "relative", width: "100%", paddingBottom: `${(121 / 236 * 100).toFixed(2)}%` }}>
-            <div style={{ position: "absolute", inset: 0 }}>
-              <img src={imgLogo} alt="Mascatis" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
-            </div>
-          </div>
+          <img src={imgLogo} alt="Mascatis"
+            style={{
+              position: "absolute",
+              height: "246.25%", left: "-13.43%", top: "-74.29%", width: "126.4%",
+              maxWidth: "none", display: "block",
+            }}
+          />
         </div>
       </div>
     </>

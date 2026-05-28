@@ -1,132 +1,118 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 /*
- * GaleriaSection — Horizontal scroll driven by vertical scroll
+ * GaleriaSection — Continuous LTR marquee
  *
- * Strip starts shifted LEFT (translateX = -maxShift) and moves RIGHT
- * to translateX = 0 as scroll progresses. Images enter from the left
- * and move to the right — "da esquerda pra direita".
+ * Strip: [g03, g02, g01] × 2 (reversed so g01 enters first from left).
+ * Animation: translateX(-50%) → translateX(0%) — strip moves right.
+ * Each image has marginRight so set A width = 3 × (imgW + margin).
+ * -50% = exactly one set width → seamless loop.
  *
- * DOM is reversed [g03, g02, g01] so the reading reveal order is
- * g01 → g02 → g03 (left to right) even though strip moves rightward.
- *
- * Image width: ~75vw each → 3 imgs = ~225vw → maxShift ≈ 125vw → real movement.
+ * Title + subtitle fade-up via IntersectionObserver.
  */
 
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
-// DOM order reversed so reading order (g01→g02→g03) matches strip moving right
-const IMAGES = [
+const STRIP = [
+  { src: "/gallery/g03.webp", alt: "Apresentação para grupo" },
+  { src: "/gallery/g02.webp", alt: "Mãos unidas em círculo" },
+  { src: "/gallery/g01.webp", alt: "Reunião ao ar livre" },
   { src: "/gallery/g03.webp", alt: "Apresentação para grupo" },
   { src: "/gallery/g02.webp", alt: "Mãos unidas em círculo" },
   { src: "/gallery/g01.webp", alt: "Reunião ao ar livre" },
 ];
 
-// Section height: enough scroll to travel full strip width comfortably
-const SCROLL_MULTIPLIER = 4;
+function useIsMobile() {
+  const [mob, setMob] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 640
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    setMob(mq.matches);
+    const h = (e: MediaQueryListEvent) => setMob(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
+  return mob;
+}
 
 export function GaleriaSection() {
-  const outerRef = useRef<HTMLDivElement>(null);
-  const stripRef = useRef<HTMLDivElement>(null);
-  const rafRef   = useRef<number>(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    const update = () => {
-      const outer = outerRef.current;
-      const strip = stripRef.current;
-      if (!outer || !strip) return;
-
-      const rect     = outer.getBoundingClientRect();
-      const travel   = outer.offsetHeight - window.innerHeight;
-      const scrolled = Math.max(0, Math.min(travel, -rect.top));
-      const progress = travel > 0 ? scrolled / travel : 0;
-
-      // Strip starts at -maxShift (far left) and moves to 0 (right)
-      // → images enter from LEFT and pan to RIGHT
-      const stripW   = strip.scrollWidth;
-      const viewW    = window.innerWidth;
-      const maxShift = Math.max(0, stripW - viewW);
-      strip.style.transform = `translateX(${(progress - 1) * maxShift}px)`;
-    };
-
-    const onScroll = () => {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(update);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    update();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(rafRef.current);
-    };
+    const io = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.12 }
+    );
+    if (sectionRef.current) io.observe(sectionRef.current);
+    return () => io.disconnect();
   }, []);
 
+  /* Responsive values */
+  const imgH   = isMobile ? "clamp(160px,44vw,240px)"  : "clamp(240px,26vw,403px)";
+  const imgW   = isMobile ? "clamp(200px,55vw,300px)"  : "clamp(300px,33vw,480px)";
+  const margin = isMobile ? "clamp(8px,2vw,14px)"      : "clamp(12px,1.4vw,20px)";
+  const dur    = isMobile ? 14 : 20; /* seconds */
+
+  const titleFz   = isMobile ? "clamp(20px,6vw,30px)"   : "clamp(26px,3.33vw,48px)";
+  const subtitleFz = isMobile ? "clamp(13px,3.8vw,17px)" : "clamp(14px,1.8vw,24px)";
+
   return (
-    /* paddingBottom = breathing room before ParallaxLastSection */
     <div
-      ref={outerRef}
-      style={{
-        height: `${SCROLL_MULTIPLIER * 100}vh`,
-        position: "relative",
-        paddingBottom: "clamp(80px,10vh,160px)",
-        boxSizing: "border-box",
-      }}
+      ref={sectionRef}
+      style={{ background: "#fff", overflow: "hidden", width: "100%" }}
     >
+      <style>{`
+        @keyframes galeria-ltr {
+          0%   { transform: translateX(-50%); }
+          100% { transform: translateX(0%);   }
+        }
+      `}</style>
+
+      {/* ── Title ───────────────────────────────────────────────────── */}
       <div style={{
-        position: "sticky", top: 0, height: "100vh",
-        overflow: "hidden", background: "#fff",
-        display: "flex", flexDirection: "column",
+        padding: isMobile
+          ? "clamp(40px,10vw,60px) 20px clamp(20px,4vw,32px)"
+          : "clamp(56px,6vh,88px) clamp(40px,6vw,120px) clamp(24px,3vh,40px)",
+        textAlign: "center",
+        opacity:   visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(28px)",
+        transition: "opacity 0.75s ease, transform 0.75s ease",
       }}>
-
-        {/* ── Header — always visible ── */}
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, zIndex: 2,
-          display: "flex", flexDirection: "column", alignItems: "center",
-          padding: "clamp(40px,6vh,72px) 20px clamp(20px,3vh,40px)",
-          gap: "clamp(8px,1.2vh,16px)",
-          pointerEvents: "none",
+        <p style={{
+          fontFamily: MET, fontWeight: 600,
+          fontSize: titleFz,
+          lineHeight: 1.2, margin: 0,
+          color: "#111",
+          maxWidth: isMobile ? "100%" : "clamp(600px,70vw,1016px)",
+          marginLeft: "auto", marginRight: "auto",
         }}>
-          <p style={{
-            fontFamily: MET, fontWeight: 600,
-            fontSize: "clamp(24px,3.33vw,48px)",
-            lineHeight: 1.15, margin: 0, textAlign: "center",
-            letterSpacing: "-0.01em", color: "#111",
-          }}>
-            Estruture. Cresça. Torne previsível.
-          </p>
-          <p style={{
-            fontFamily: ROEL, fontWeight: 400,
-            fontSize: "clamp(14px,1.6vw,24px)",
-            lineHeight: 1.45, margin: 0, textAlign: "center",
-            opacity: 0.65, color: "#111",
-          }}>
-            Ecossistema de estruturação e crescimento de negócios.
-          </p>
-        </div>
+          O nosso propósito sempre foi, é e será prosperidade para pessoas e negócios
+        </p>
+      </div>
 
-        {/* ── Image strip ── */}
-        {/* Each image: ~75vw wide → 3 imgs ≈ 225vw → maxShift ≈ 125vw → real panning */}
-        <div
-          ref={stripRef}
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            height: "clamp(240px,58vh,520px)",
-            display: "flex",
-            gap: "clamp(8px,1.2vw,20px)",
-            willChange: "transform",
-          }}
-        >
-          {IMAGES.map((img, i) => (
-            <div key={i} style={{
-              flexShrink: 0,
-              width: "clamp(300px,75vw,1100px)",
-              height: "100%",
-              overflow: "hidden",
-            }}>
+      {/* ── Marquee strip ───────────────────────────────────────────── */}
+      <div style={{ overflow: "hidden", width: "100%" }}>
+        <div style={{
+          display: "flex",
+          flexWrap: "nowrap",
+          animation: `galeria-ltr ${dur}s linear infinite`,
+          willChange: "transform",
+        }}>
+          {STRIP.map((img, i) => (
+            <div
+              key={i}
+              style={{
+                flexShrink: 0,
+                width: imgW,
+                height: imgH,
+                marginRight: margin,
+                overflow: "hidden",
+              }}
+            >
               <img
                 src={img.src}
                 alt={img.alt}
@@ -141,7 +127,30 @@ export function GaleriaSection() {
             </div>
           ))}
         </div>
+      </div>
 
+      {/* ── Subtitle ────────────────────────────────────────────────── */}
+      <div style={{
+        padding: isMobile
+          ? "clamp(20px,5vw,32px) 24px clamp(40px,10vw,60px)"
+          : "clamp(28px,3.5vh,48px) clamp(80px,10vw,200px) clamp(56px,6vh,88px)",
+        textAlign: "center",
+        opacity:   visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transition: "opacity 0.9s ease 0.35s, transform 0.9s ease 0.35s",
+      }}>
+        <p style={{
+          fontFamily: ROEL, fontWeight: 400,
+          fontSize: subtitleFz,
+          lineHeight: 1.65, margin: 0,
+          color: "#111",
+          opacity: 0.72,
+          maxWidth: isMobile ? "100%" : "clamp(500px,65vw,1284px)",
+          marginLeft: "auto", marginRight: "auto",
+        }}>
+          Buscamos sempre agregar nas comunidades com o nosso know how e expertize
+          para transformar a vida de pessoas e negócios.
+        </p>
       </div>
     </div>
   );

@@ -148,6 +148,54 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   InfinitySymbol — SVG lemniscate with flowing text (Phase 2 analogy)
+   Path traces: center → right loop → center → left loop → center
+   textPath SMIL animation flows 3 phrases continuously along the curve.
+═══════════════════════════════════════════════════════════════════════ */
+const INF_PATH =
+  "M 350 130 C 380 50 500 50 500 130 C 500 210 380 210 350 130 " +
+  "C 320 50 200 50 200 130 C 200 210 320 210 350 130 Z";
+const INF_PHRASE =
+  "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
+
+function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
+  return (
+    <svg
+      viewBox="0 0 700 260"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width, height: "auto", display: "block" }}
+    >
+      <defs>
+        <path id="inf-path" d={INF_PATH} />
+      </defs>
+      {/* Visible ∞ stroke */}
+      <path
+        d={INF_PATH} fill="none"
+        stroke="rgba(255,255,255,0.28)" strokeWidth="2.5"
+      />
+      {/* Flowing text — SMIL animation on startOffset */}
+      <text
+        fill="white"
+        fontSize="13.5"
+        fontFamily={ROEL}
+        letterSpacing="1.2"
+        opacity="0.9"
+      >
+        <textPath href="#inf-path">
+          <animate
+            attributeName="startOffset"
+            from="0%" to="100%"
+            dur="18s"
+            repeatCount="indefinite"
+          />
+          {INF_PHRASE}
+        </textPath>
+      </text>
+    </svg>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    DesktopHeroSection
 ═══════════════════════════════════════════════════════════════════════ */
 function DesktopHeroSection() {
@@ -260,6 +308,15 @@ function DesktopHeroSection() {
         {/* ── Phase 2 ── */}
         <div ref={phase2Ref} style={{ height: `${WRAPPER_VH - 100}vh`, position: "relative", opacity: 0 }}>
           <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", color: "white", pointerEvents: "none" }}>
+
+            {/* ── Infinity symbol ── */}
+            <div style={{
+              position: "absolute", left: "50%", top: "50%",
+              transform: "translate(-50%, -50%)",
+              pointerEvents: "none", zIndex: 0,
+            }}>
+              <InfinitySymbol width="min(58vw, 700px)" />
+            </div>
 
             <div style={{ position: "absolute", top: "7%", right: "5.56%", maxWidth: "clamp(220px,40vw,560px)", textAlign: "right" }}>
               <Words className="d-seq" text="Sequoias não crescem em qualquer solo."
@@ -385,6 +442,16 @@ function MobileHeroSection() {
 
         {/* Phase 2 */}
         <div ref={phase2Ref} style={{ position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none" }}>
+
+          {/* ── Infinity symbol (mobile) ── */}
+          <div style={{
+            position: "absolute", left: "50%", top: "50%",
+            transform: "translate(-50%, -50%)",
+            pointerEvents: "none", zIndex: 0,
+          }}>
+            <InfinitySymbol width="min(88vw, 360px)" />
+          </div>
+
           <div style={{ position: "absolute", top: "9%", left: 24, right: 24 }}>
             <Words className="m-seq" text="Sequoias não crescem em qualquer solo."
               style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1.3, display: "block" }} />
