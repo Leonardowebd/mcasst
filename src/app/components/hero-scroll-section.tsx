@@ -155,8 +155,6 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
 const INF_PATH =
   "M 350 130 C 380 50 500 50 500 130 C 500 210 380 210 350 130 " +
   "C 320 50 200 50 200 130 C 200 210 320 210 350 130 Z";
-const INF_PHRASE =
-  "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
 
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
   return (
@@ -171,24 +169,19 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
       {/* Visible ∞ stroke */}
       <path
         d={INF_PATH} fill="none"
-        stroke="rgba(255,255,255,0.28)" strokeWidth="2.5"
+        stroke="rgba(255,255,255,0.35)" strokeWidth="2.5"
       />
-      {/* Flowing text — SMIL animation on startOffset */}
+      {/* Static label — Plano de Ação on upper-right loop */}
       <text
         fill="white"
-        fontSize="13.5"
-        fontFamily={ROEL}
-        letterSpacing="1.2"
+        fontSize="15"
+        fontFamily={MET}
+        fontStyle="italic"
+        letterSpacing="0.6"
         opacity="0.9"
       >
-        <textPath href="#inf-path">
-          <animate
-            attributeName="startOffset"
-            from="0%" to="100%"
-            dur="18s"
-            repeatCount="indefinite"
-          />
-          {INF_PHRASE}
+        <textPath href="#inf-path" startOffset="8%">
+          Plano de Ação
         </textPath>
       </text>
     </svg>
@@ -220,16 +213,9 @@ function DesktopHeroSection() {
     /* Phase 2 → in then word reveals */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.22);
 
-    reveal(tl, phase2, ".d-seq",    0.43, 0.55);
-    reveal(tl, phase2, ".d-i1t",   0.46, 0.57);
-    reveal(tl, phase2, ".d-i1d",   0.49, 0.60);
-    reveal(tl, phase2, ".d-i2t",   0.56, 0.66);
-    reveal(tl, phase2, ".d-i2d",   0.59, 0.69);
-    reveal(tl, phase2, ".d-i3t",   0.65, 0.75);
-    reveal(tl, phase2, ".d-i3d",   0.68, 0.78);
-    reveal(tl, phase2, ".d-i4t",   0.74, 0.84);
-    reveal(tl, phase2, ".d-i4d",   0.77, 0.87);
-    reveal(tl, phase2, ".d-solo",  0.87, 1.00);
+    reveal(tl, phase2, ".d-met-title", 0.32, 0.44);
+    reveal(tl, phase2, ".d-met-q1",   0.48, 0.67);
+    reveal(tl, phase2, ".d-met-q2",   0.70, 0.92);
 
     tl.to({}, { duration: 0 }, 1); // ensure timeline reaches 1.0
 
@@ -318,31 +304,20 @@ function DesktopHeroSection() {
               <InfinitySymbol width="min(58vw, 700px)" />
             </div>
 
-            <div style={{ position: "absolute", top: "7%", right: "5.56%", maxWidth: "clamp(220px,40vw,560px)", textAlign: "right" }}>
-              <Words className="d-seq" text="Sequoias não crescem em qualquer solo."
-                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(17px,2.5vw,36px)", lineHeight: 1.2 }} />
+            {/* Metodologia Sitropia title */}
+            <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%" }}>
+              <Words className="d-met-title" text="Metodologia Sitropia"
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
             </div>
 
-            <div style={{ position: "absolute", top: "13%", left: "5.56%", display: "flex", flexDirection: "column", gap: "clamp(10px,1.4vh,20px)", maxWidth: "clamp(280px,48vw,680px)" }}>
-              {[
-                { n:"1", tc:"d-i1t", dc:"d-i1d", title:"Posicionamento. Raiz que ancora.",    desc:"Clareza sobre quem você atende e por que te escolhem." },
-                { n:"2", tc:"d-i2t", dc:"d-i2d", title:"Oferta. Raiz que alimenta.",          desc:"O que você vende precisa ser irresistível antes de ser anunciado." },
-                { n:"3", tc:"d-i3t", dc:"d-i3d", title:"Processos. Raiz que sustenta.",       desc:"Sem processo, o crescimento depende de você. Com processo, ele independe." },
-                { n:"4", tc:"d-i4t", dc:"d-i4d", title:"Direção. Raiz que orienta.",          desc:"Onde você quer chegar define o que você faz hoje." },
-              ].map(({ n, tc, dc, title, desc }) => (
-                <div key={n} style={{ display: "flex", alignItems: "flex-start", gap: "clamp(10px,1.6vw,22px)" }}>
-                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(32px,4.5vw,64px)", lineHeight: 1, minWidth: "clamp(28px,4.5vw,64px)", flexShrink: 0 }}>{n}</span>
-                  <div style={{ paddingTop: "clamp(2px,.3vw,5px)", display: "flex", flexDirection: "column", gap: 4 }}>
-                    <Words className={tc} text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(12px,1.46vw,21px)", lineHeight: 1.1, display: "block" }} />
-                    <Words className={dc} text={desc}  style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,1.11vw,16px)", lineHeight: 1.5, display: "block", opacity: 0.75, maxWidth: "clamp(160px,26vw,370px)" }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ position: "absolute", bottom: "10%", left: "5.56%", maxWidth: "clamp(220px,40vw,560px)" }}>
-              <Words className="d-solo" text="Solo bem preparado. Crescimento inevitável."
-                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(15px,2.1vw,30px)", lineHeight: 1.25, display: "block" }} />
+            {/* Text block below ∞ */}
+            <div style={{ position: "absolute", bottom: "7%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)" }}>
+              <Words className="d-met-q1"
+                text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,2.22vw,32px)", lineHeight: 1.35, display: "block", textAlign: "justify" }} />
+              <Words className="d-met-q2"
+                text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
+                style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.46vw,21px)", lineHeight: 1.55, display: "block", textAlign: "justify", opacity: 0.80 }} />
             </div>
           </div>
         </div>
@@ -372,16 +347,9 @@ function MobileHeroSection() {
     tl.to(phase1,  { opacity: 0, y: "-6%", ease: "none", duration: 0.10 }, 0.20);
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.22);
 
-    reveal(tl, phase2, ".m-seq",  0.24, 0.38);
-    reveal(tl, phase2, ".m-i1t",  0.36, 0.47);
-    reveal(tl, phase2, ".m-i1d",  0.41, 0.52);
-    reveal(tl, phase2, ".m-i2t",  0.46, 0.56);
-    reveal(tl, phase2, ".m-i2d",  0.51, 0.62);
-    reveal(tl, phase2, ".m-i3t",  0.55, 0.65);
-    reveal(tl, phase2, ".m-i3d",  0.60, 0.71);
-    reveal(tl, phase2, ".m-i4t",  0.64, 0.74);
-    reveal(tl, phase2, ".m-i4d",  0.69, 0.80);
-    reveal(tl, phase2, ".m-solo", 0.85, 1.00);
+    reveal(tl, phase2, ".m-met-title", 0.26, 0.40);
+    reveal(tl, phase2, ".m-met-q1",   0.43, 0.65);
+    reveal(tl, phase2, ".m-met-q2",   0.67, 0.90);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -452,29 +420,19 @@ function MobileHeroSection() {
             <InfinitySymbol width="min(88vw, 360px)" />
           </div>
 
-          <div style={{ position: "absolute", top: "9%", left: 24, right: 24 }}>
-            <Words className="m-seq" text="Sequoias não crescem em qualquer solo."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1.3, display: "block" }} />
+          {/* Metodologia Sitropia title */}
+          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)" }}>
+            <Words className="m-met-title" text="Metodologia Sitropia"
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: 1.2, display: "block" }} />
           </div>
-          <div style={{ position: "absolute", top: "28%", left: 24, right: 24, display: "flex", flexDirection: "column", gap: 22 }}>
-            {[
-              { n:"1", tc:"m-i1t", dc:"m-i1d", title:"Posicionamento. Raiz que ancora.",    desc:"Clareza sobre quem você atende e por que te escolhem." },
-              { n:"2", tc:"m-i2t", dc:"m-i2d", title:"Oferta. Raiz que alimenta.",          desc:"O que você vende precisa ser irresistível antes de ser anunciado." },
-              { n:"3", tc:"m-i3t", dc:"m-i3d", title:"Processos. Raiz que sustenta.",       desc:"Sem processo, o crescimento depende de você. Com processo, ele independe." },
-              { n:"4", tc:"m-i4t", dc:"m-i4d", title:"Direção. Raiz que orienta.",          desc:"Onde você quer chegar define o que você faz hoje." },
-            ].map(({ n, tc, dc, title, desc }) => (
-              <div key={n} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(32px,10vw,50px)", lineHeight: 0.9, flexShrink: 0, width: "clamp(24px,7.5vw,40px)" }}>{n}</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: 5, paddingTop: 4 }}>
-                  <Words className={tc} text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.2, display: "block" }} />
-                  <Words className={dc} text={desc}  style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,3.5vw,15px)", lineHeight: 1.55, display: "block", opacity: 0.75 }} />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ position: "absolute", bottom: "10%", left: 24, right: 24 }}>
-            <Words className="m-solo" text="Solo bem preparado. Crescimento inevitável."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(16px,5vw,24px)", lineHeight: 1.3, display: "block" }} />
+          {/* Text block */}
+          <div style={{ position: "absolute", bottom: "8%", left: 20, right: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+            <Words className="m-met-q1"
+              text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,4.5vw,22px)", lineHeight: 1.35, display: "block" }} />
+            <Words className="m-met-q2"
+              text="Mais de 10 anos simplificando o complexo no mundo corporativo: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado."
+              style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.55, display: "block", opacity: 0.78 }} />
           </div>
         </div>
       </div>
