@@ -149,34 +149,66 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   InfinitySymbol — Figma vector (node 123:5) + "Plano de Ação" label
-   Label position from Figma: center ≈ (48.8%, 47.3%), rotate 54.32deg
+   InfinitySymbol — Figma PNG (visual) + SVG overlay (textPath animado)
+   Path traça as duas alças da lemniscata no viewBox 958×439 do PNG.
+   3 frases fluem continuamente pelas linhas.
 ═══════════════════════════════════════════════════════════════════════ */
+/*
+ * INF_PATH — lemniscata com cruzamento real em (479,219)
+ * 4 arcos: direita-cima → centro → esquerda-baixo → esquerda-cima → centro → direita-baixo
+ * Tangentes no centro: Pass1 NE→SW, Pass2 NW→SE → X a 90°
+ */
+const INF_PATH =
+  "M 958,219 " +
+  "C 958,20 629,69 479,219 " +       // arco superior-direito → centro (vindo de NE)
+  "C 329,369 0,418 0,219 " +          // centro → ponta esquerda (seguindo SW)
+  "C 0,20 329,69 479,219 " +          // arco superior-esquerdo → centro (vindo de NW)
+  "C 629,369 958,418 958,219";
+
+const INF_PHRASE =
+  "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
+
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
   return (
     <div style={{ position: "relative", width, display: "inline-block" }}>
+      {/* Figma vector PNG */}
       <img
         src={imgInfinity}
         alt=""
         style={{ width: "100%", height: "auto", display: "block" }}
       />
-      <span style={{
-        position: "absolute",
-        left: "48.8%",
-        top: "47.3%",
-        transform: "translate(-50%, -50%) rotate(54.32deg)",
-        fontFamily: MET,
-        fontStyle: "italic",
-        fontWeight: 500,
-        fontSize: "clamp(10px, 1.6vw, 23px)",
-        color: "white",
-        whiteSpace: "nowrap",
-        opacity: 0.9,
-        letterSpacing: "0.5px",
-        pointerEvents: "none",
-      }}>
-        Plano de Ação
-      </span>
+      {/* SVG overlay — path invisível, texto animado */}
+      <svg
+        viewBox="0 0 958 439"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          position: "absolute", inset: 0,
+          width: "100%", height: "100%",
+          overflow: "visible",
+        }}
+      >
+        <defs>
+          <path id="inf-anim-path" d={INF_PATH} />
+        </defs>
+        <text
+          fill="white"
+          fontSize="21"
+          fontFamily={MET}
+          fontStyle="italic"
+          letterSpacing="1.2"
+          opacity="0.9"
+        >
+          <textPath href="#inf-anim-path">
+            <animate
+              attributeName="startOffset"
+              from="0%" to="100%"
+              dur="18s"
+              repeatCount="indefinite"
+            />
+            {INF_PHRASE}
+          </textPath>
+        </text>
+      </svg>
     </div>
   );
 }
