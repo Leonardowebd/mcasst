@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import imgInfinity from "../../imports/infinity-vector.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -156,79 +155,165 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
    3 frases fluem continuamente por dentro das linhas.
 ═══════════════════════════════════════════════════════════════════════ */
 /*
- * INF_PATH — bezier exato do node 123:5 (Figma) escalado 957×438 → 938×410
- * Outer boundary da lemniscata completa: cobre as duas alças + cruzamento
- * Traça o contorno real da forma ∞ — texto rente às linhas do PNG
+ * INF_DUAL_PATH — Figma node 120:46 "Elemento Infinito" (viewBox 958×439)
+ * Subpath 1: inner right oval | Subpath 2: inner left oval | Subpath 3: outer boundary
+ * Stroke em cada subpath = efeito "duas linhas" (inner + outer)
+ */
+const INF_DUAL_PATH =
+  /* inner right oval */
+  "M929.5 219.5 C929.5 113.714 854.678 28.5 734.475 28.5 " +
+  "C706.088 28.5001 676.735 39.8907 648.011 58.3154 " +
+  "C619.375 76.683 592.342 101.416 568.879 126.553 " +
+  "C545.464 151.638 525.92 176.783 512.218 195.686 " +
+  "C505.376 205.124 500.012 212.977 496.373 218.446 " +
+  "C496.132 218.808 495.9 219.16 495.675 219.5 " +
+  "C495.9 219.84 496.132 220.192 496.373 220.554 " +
+  "C500.012 226.023 505.376 233.876 512.218 243.314 " +
+  "C525.92 262.217 545.464 287.362 568.879 312.447 " +
+  "C592.342 337.584 619.375 362.317 648.011 380.685 " +
+  "C676.735 399.109 706.088 410.5 734.475 410.5 " +
+  "C854.678 410.5 929.5 325.286 929.5 219.5 Z " +
+  /* inner left oval */
+  "M28.5 219.5 C28.5 325.286 103.322 410.5 223.525 410.5 " +
+  "C251.912 410.5 281.265 399.109 309.989 380.685 " +
+  "C338.625 362.317 365.658 337.584 389.121 312.447 " +
+  "C412.536 287.362 432.08 262.217 445.782 243.314 " +
+  "C452.624 233.876 457.988 226.023 461.627 220.554 " +
+  "C461.867 220.192 462.099 219.84 462.324 219.5 " +
+  "C462.099 219.16 461.867 218.808 461.627 218.446 " +
+  "C457.988 212.977 452.624 205.124 445.782 195.686 " +
+  "C432.08 176.783 412.536 151.638 389.121 126.553 " +
+  "C365.658 101.416 338.625 76.683 309.989 58.3154 " +
+  "C281.265 39.8907 251.912 28.5001 223.525 28.5 " +
+  "C103.322 28.5 28.5 113.714 28.5 219.5 Z " +
+  /* outer boundary (text path segue este) */
+  "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
+  "C698.737 438.5 664.094 424.266 632.894 404.253 " +
+  "C601.604 384.183 572.785 357.666 548.41 331.553 " +
+  "C523.987 305.388 503.708 279.283 489.548 259.748 " +
+  "C485.531 254.207 482.001 249.183 479 244.826 " +
+  "C475.999 249.183 472.469 254.207 468.452 259.748 " +
+  "C454.292 279.283 434.013 305.388 409.59 331.553 " +
+  "C385.215 357.666 356.396 384.183 325.106 404.253 " +
+  "C293.906 424.266 259.263 438.5 223.525 438.5 " +
+  "C87.232 438.5 0.5 340.116 0.5 219.5 " +
+  "C0.5 98.8838 87.232 0.5 223.525 0.5 " +
+  "C259.263 0.5001 293.906 14.7345 325.106 34.7471 " +
+  "C356.396 54.8169 385.215 81.3341 409.59 107.447 " +
+  "C434.013 133.612 454.292 159.717 468.452 179.252 " +
+  "C472.469 184.793 475.999 189.816 479 194.173 " +
+  "C482.001 189.816 485.531 184.793 489.548 179.252 " +
+  "C503.708 159.717 523.987 133.612 548.41 107.447 " +
+  "C572.785 81.3341 601.604 54.8169 632.894 34.7471 " +
+  "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
+  "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
+
+/*
+ * INF_PATH — outer boundary apenas, para o textPath animado
+ * Figma node 120:46, viewBox 958×439, sem escala
  */
 const INF_PATH =
-  "M 938,205 " +
-  "C 938,317.91 852.99,410 719.4,410 " +
-  "C 684.37,410 650.42,396.68 619.84,377.94 " +
-  "C 589.17,359.16 560.92,334.33 537.03,309.89 " +
-  "C 513.09,285.4 493.22,260.96 479.34,242.68 " +
-  "C 475.4,237.49 471.94,232.79 469,228.71 " +
-  "C 466.06,232.79 462.6,237.49 458.66,242.68 " +
-  "C 444.78,260.96 424.91,285.4 400.97,309.89 " +
-  "C 377.08,334.33 348.83,359.16 318.16,377.94 " +
-  "C 287.58,396.68 253.63,410 218.6,410 " +
-  "C 85.01,410 0,317.91 0,205 " +
-  "C 0,92.09 85.01,0 218.6,0 " +
-  "C 253.63,0 287.58,13.32 318.16,32.06 " +
-  "C 348.83,50.84 377.08,75.67 400.97,100.11 " +
-  "C 424.91,124.6 444.78,149.04 458.66,167.32 " +
-  "C 462.6,172.51 466.06,177.21 469,181.29 " +
-  "C 471.94,177.21 475.4,172.51 479.34,167.32 " +
-  "C 493.22,149.04 513.09,124.6 537.03,100.11 " +
-  "C 560.92,75.67 589.17,50.84 619.84,32.06 " +
-  "C 650.42,13.32 684.37,0 719.4,0 " +
-  "C 852.99,0 938,92.09 938,205 Z";
+  "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
+  "C698.737 438.5 664.094 424.266 632.894 404.253 " +
+  "C601.604 384.183 572.785 357.666 548.41 331.553 " +
+  "C523.987 305.388 503.708 279.283 489.548 259.748 " +
+  "C485.531 254.207 482.001 249.183 479 244.826 " +
+  "C475.999 249.183 472.469 254.207 468.452 259.748 " +
+  "C454.292 279.283 434.013 305.388 409.59 331.553 " +
+  "C385.215 357.666 356.396 384.183 325.106 404.253 " +
+  "C293.906 424.266 259.263 438.5 223.525 438.5 " +
+  "C87.232 438.5 0.5 340.116 0.5 219.5 " +
+  "C0.5 98.8838 87.232 0.5 223.525 0.5 " +
+  "C259.263 0.5001 293.906 14.7345 325.106 34.7471 " +
+  "C356.396 54.8169 385.215 81.3341 409.59 107.447 " +
+  "C434.013 133.612 454.292 159.717 468.452 179.252 " +
+  "C472.469 184.793 475.999 189.816 479 194.173 " +
+  "C482.001 189.816 485.531 184.793 489.548 179.252 " +
+  "C503.708 159.717 523.987 133.612 548.41 107.447 " +
+  "C572.785 81.3341 601.604 54.8169 632.894 34.7471 " +
+  "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
+  "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
 
 const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
 
+/* 6 repetições garantem que o path esteja sempre coberto de texto */
+const INF_PHRASE_N = 6;
+const INF_PHRASE_FULL = Array(INF_PHRASE_N).fill(INF_PHRASE).join("");
+
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
+  const pathRef     = useRef<SVGPathElement>(null);
+  const textPathRef = useRef<SVGTextPathElement>(null);
+  const tweenRef    = useRef<gsap.core.Tween | null>(null);
+
+  useEffect(() => {
+    const path = pathRef.current;
+    const tp   = textPathRef.current;
+    if (!path || !tp) return;
+
+    const run = () => {
+      const pathLen = path.getTotalLength();
+      const textEl  = tp.parentElement as SVGTextElement | null;
+      const textLen = textEl ? textEl.getComputedTextLength() : 0;
+      if (!pathLen || !textLen) return;
+
+      /* um ciclo = deslocar exatamente 1 frase (1/N do texto total)
+         → no fim do ciclo, a posição é idêntica ao início → loop seamless */
+      const phraseLen = textLen / INF_PHRASE_N;
+      const pct       = (phraseLen / pathLen) * 100;
+
+      tweenRef.current?.kill();
+      tweenRef.current = gsap.fromTo(
+        tp,
+        { attr: { startOffset: "0%" } },
+        {
+          attr: { startOffset: `${pct.toFixed(3)}%` },
+          duration: 18,
+          ease: "none",
+          repeat: -1,
+          repeatDelay: 0,
+        }
+      );
+    };
+
+    /* aguarda fontes carregarem para getComputedTextLength() ser preciso */
+    (document.fonts?.ready ?? Promise.resolve()).then(run);
+
+    return () => tweenRef.current?.kill();
+  }, []);
+
   return (
-    <div style={{ position: "relative", width, display: "inline-block" }}>
-      {/* Figma vector PNG */}
-      <img
-        src={imgInfinity}
-        alt=""
-        style={{ width: "100%", height: "auto", display: "block" }}
+    /* SVG inline — visual "duas linhas" + texto animado no mesmo elemento */
+    <svg
+      viewBox="0 0 958 439"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width, height: "auto", display: "block", overflow: "visible" }}
+    >
+      {/* Figma node 120:46 — visual das duas linhas */}
+      <path
+        d={INF_DUAL_PATH}
+        fill="none"
+        stroke="rgba(255,255,255,0.75)"
+        strokeWidth="1"
       />
-      {/* SVG overlay — path invisível, texto animado */}
-      <svg
-        viewBox="0 0 938 410"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          position: "absolute", inset: 0,
-          width: "100%", height: "100%",
-          overflow: "visible",
-        }}
+      <defs>
+        {/* Path invisível para o textPath animado */}
+        <path ref={pathRef} id="inf-anim-path" d={INF_PATH} />
+      </defs>
+      <text
+        fill="white"
+        fontSize="21"
+        fontFamily={MET}
+        fontStyle="italic"
+        letterSpacing="1.2"
+        opacity="0.9"
+        dominantBaseline="central"
       >
-        <defs>
-          <path id="inf-anim-path" d={INF_PATH} />
-        </defs>
-        <text
-          fill="white"
-          fontSize="21"
-          fontFamily={MET}
-          fontStyle="italic"
-          letterSpacing="1.2"
-          opacity="0.9"
-          dominantBaseline="central"
-        >
-          <textPath href="#inf-anim-path">
-            <animate
-              attributeName="startOffset"
-              from="0%" to="100%"
-              dur="18s"
-              repeatCount="indefinite"
-            />
-            {INF_PHRASE}
-          </textPath>
-        </text>
-      </svg>
-    </div>
+        <textPath ref={textPathRef} href="#inf-anim-path" startOffset="0%">
+          {INF_PHRASE_FULL}
+        </textPath>
+      </text>
+    </svg>
   );
 }
 
