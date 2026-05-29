@@ -156,14 +156,18 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
    3 frases fluem continuamente por dentro das linhas.
 ═══════════════════════════════════════════════════════════════════════ */
 /*
- * INF_PATH — dois arcos grandes (major arc, CW) traçam as duas alças
- * Arc 1: (469,150) → (469,260) large CW  → alça esquerda
- * Arc 2: (469,260) → (469,150) large CW  → alça direita
+ * INF_PATH — medido por pixel análise da PNG real (938×410)
+ * Left circle: cx=234, cy=205, rx=234, ry=206  (toca x=0 e x=468)
+ * Right circle: cx=704, cy=205, rx=234, ry=206 (toca x=470 e x=938)
+ * Tangente em (469,205) — círculos quase tocam aqui
+ * Crossing points: (469,203) e (469,207) — 2px acima/abaixo do tangente
+ * Arc 1 CW large: (469,203)→(469,207) → alça direita (SVG escolhe cx=704)
+ * Arc 2 CW large: (469,207)→(469,203) → alça esquerda (SVG escolhe cx=234)
  */
 const INF_PATH =
-  "M 469,150 " +
-  "A 255,255 0 1 1 469,260 " +   // alça esquerda (CW grande)
-  "A 255,255 0 1 1 469,150";
+  "M 469,203 " +
+  "A 235,206 0 1 1 469,207 " +   // alça direita CW
+  "A 235,206 0 1 1 469,203";
 
 const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
@@ -197,6 +201,7 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
           fontStyle="italic"
           letterSpacing="1.2"
           opacity="0.9"
+          dominantBaseline="central"
         >
           <textPath href="#inf-anim-path">
             <animate
