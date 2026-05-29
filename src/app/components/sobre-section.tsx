@@ -108,7 +108,7 @@ function DesktopSobre() {
         </div>
       </div>
 
-      {/* ── Portrait — absolute, left:680px → 47.22%, 760×811px ── */}
+      {/* ── Portrait — cobre todo lado direito, centrado verticalmente ── */}
       <motion.div
         initial={{ opacity: 0, x: 30 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -116,10 +116,9 @@ function DesktopSobre() {
         style={{
           position: "absolute",
           left: "47.22%",    /* 680 / 1440 */
-          top: "50%",
-          transform: "translateY(-50%)",
+          top: 0,
+          bottom: 0,
           width: "52.78%",   /* 760 / 1440 */
-          height: "811px",
           overflow: "hidden",
           zIndex: 2,
           pointerEvents: "none",
