@@ -453,7 +453,7 @@ function DesktopHeroSection() {
 
             {/* ── Infinity symbol ── */}
             <div style={{
-              position: "absolute", left: "50%", top: "50%",
+              position: "absolute", left: "50%", top: "42%",
               transform: "translate(-50%, -50%)",
               pointerEvents: "none", zIndex: 0,
             }}>
@@ -461,13 +461,13 @@ function DesktopHeroSection() {
             </div>
 
             {/* Metodologia Sitropia title */}
-            <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%" }}>
+            <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%", zIndex: 2 }}>
               <Words className="d-met-title" text="Metodologia Sitropia"
                 style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
             </div>
 
             {/* Text block below ∞ */}
-            <div style={{ position: "absolute", bottom: "7%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)" }}>
+            <div style={{ position: "absolute", bottom: "4%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)", zIndex: 2 }}>
               <Words className="d-met-q1"
                 text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
                 style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,2.22vw,32px)", lineHeight: 1.35, display: "block", textAlign: "justify" }} />
@@ -569,7 +569,7 @@ function MobileHeroSection() {
 
           {/* ── Infinity symbol (mobile) ── */}
           <div style={{
-            position: "absolute", left: "50%", top: "50%",
+            position: "absolute", left: "50%", top: "42%",
             transform: "translate(-50%, -50%)",
             pointerEvents: "none", zIndex: 0,
           }}>
@@ -577,12 +577,12 @@ function MobileHeroSection() {
           </div>
 
           {/* Metodologia Sitropia title */}
-          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)" }}>
+          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)", zIndex: 2 }}>
             <Words className="m-met-title" text="Metodologia Sitropia"
               style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: 1.2, display: "block" }} />
           </div>
           {/* Text block */}
-          <div style={{ position: "absolute", bottom: "8%", left: 20, right: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ position: "absolute", bottom: "4%", left: 20, right: 20, display: "flex", flexDirection: "column", gap: 12, zIndex: 2 }}>
             <Words className="m-met-q1"
               text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
               style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,4.5vw,22px)", lineHeight: 1.35, display: "block" }} />
