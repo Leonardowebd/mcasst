@@ -150,9 +150,10 @@ export function ParallaxLastSection() {
             }}>
               <img src={imgArvore1} alt="Árvore Sequoia"
                 style={{
-                  position: "absolute",
-                  height: "191.34%", left: "-33.18%", top: "-9.52%", width: "166.32%",
-                  maxWidth: "none", display: "block",
+                  width: "100%", height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center 37%",
+                  display: "block",
                 }}
               />
             </div>
@@ -222,9 +223,12 @@ export function ParallaxLastSection() {
         }}>
           <img src={imgArvore1} alt="Árvore Sequoia"
             style={{
-              position: "absolute",
-              height: "191.34%", left: "-33.18%", top: "-9.52%", width: "166.32%",
-              maxWidth: "none", display: "block",
+              width: "100%", height: "100%",
+              objectFit: "cover",
+              /* objectFit cover renders at ~826×1240; Figma crop starts at ~y=76/1536=5%.
+                 objectPosition y≈37% aligns crop top to match Figma framing. */
+              objectPosition: "center 37%",
+              display: "block",
             }}
           />
         </div>
