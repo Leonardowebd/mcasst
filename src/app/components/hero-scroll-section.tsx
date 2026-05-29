@@ -237,53 +237,62 @@ const INF_PATH =
 const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
 
-/* 6 repetições garantem que o path esteja sempre coberto de texto */
-const INF_PHRASE_N = 6;
-const INF_PHRASE_FULL = Array(INF_PHRASE_N).fill(INF_PHRASE).join("");
+/* duração total de um ciclo completo (segundos) */
+const INF_DUR = 18;
 
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
-  const pathRef     = useRef<SVGPathElement>(null);
-  const textPathRef = useRef<SVGTextPathElement>(null);
-  const tweenRef    = useRef<gsap.core.Tween | null>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const tp1Ref  = useRef<SVGTextPathElement>(null);
+  const tp2Ref  = useRef<SVGTextPathElement>(null);
+  const tp3Ref  = useRef<SVGTextPathElement>(null);
 
   useEffect(() => {
     const path = pathRef.current;
-    const tp   = textPathRef.current;
-    if (!path || !tp) return;
+    const tps  = [tp1Ref.current, tp2Ref.current, tp3Ref.current];
+    if (!path || tps.some(r => !r)) return;
 
-    const run = () => {
+    let raf: number;
+
+    const start = () => {
       const pathLen = path.getTotalLength();
-      const textEl  = tp.parentElement as SVGTextElement | null;
-      const textLen = textEl ? textEl.getComputedTextLength() : 0;
-      if (!pathLen || !textLen) return;
+      if (!pathLen) return;
 
-      /* um ciclo = deslocar exatamente 1 frase (1/N do texto total)
-         → no fim do ciclo, a posição é idêntica ao início → loop seamless */
-      const phraseLen = textLen / INF_PHRASE_N;
-      const pct       = (phraseLen / pathLen) * 100;
+      /* pixels percorridos por frame @ 60fps durante INF_DUR segundos */
+      const speed = pathLen / (INF_DUR * 60);
 
-      tweenRef.current?.kill();
-      tweenRef.current = gsap.fromTo(
-        tp,
-        { attr: { startOffset: "0%" } },
-        {
-          attr: { startOffset: `${pct.toFixed(3)}%` },
-          duration: 18,
-          ease: "none",
-          repeat: -1,
-          repeatDelay: 0,
-        }
-      );
+      /* os 3 textos começam espaçados 1/3 do path */
+      const offsets = [0, pathLen / 3, (2 * pathLen) / 3];
+
+      const tick = () => {
+        offsets.forEach((_, i) => {
+          offsets[i] = (offsets[i] + speed) % pathLen;
+          tps[i]!.setAttribute(
+            "startOffset",
+            `${((offsets[i] / pathLen) * 100).toFixed(3)}%`
+          );
+        });
+        raf = requestAnimationFrame(tick);
+      };
+
+      raf = requestAnimationFrame(tick);
     };
 
-    /* aguarda fontes carregarem para getComputedTextLength() ser preciso */
-    (document.fonts?.ready ?? Promise.resolve()).then(run);
-
-    return () => tweenRef.current?.kill();
+    (document.fonts?.ready ?? Promise.resolve()).then(start);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
+  const textProps = {
+    fill: "white",
+    fontSize: "21",
+    fontFamily: MET,
+    fontStyle: "italic",
+    letterSpacing: "1.2",
+    opacity: "0.9",
+    dominantBaseline: "central",
+  } as const;
+
   return (
-    /* SVG inline — visual "duas linhas" + texto animado no mesmo elemento */
+    /* SVG inline — visual "duas linhas" + 3 textos soltos animados */
     <svg
       viewBox="0 0 958 439"
       xmlns="http://www.w3.org/2000/svg"
@@ -297,20 +306,23 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
         strokeWidth="1"
       />
       <defs>
-        {/* Path invisível para o textPath animado */}
         <path ref={pathRef} id="inf-anim-path" d={INF_PATH} />
       </defs>
-      <text
-        fill="white"
-        fontSize="21"
-        fontFamily={MET}
-        fontStyle="italic"
-        letterSpacing="1.2"
-        opacity="0.9"
-        dominantBaseline="central"
-      >
-        <textPath ref={textPathRef} href="#inf-anim-path" startOffset="0%">
-          {INF_PHRASE_FULL}
+
+      {/* 3 textos soltos, espaçados 1/3 do path, com RAF + modulo */}
+      <text {...textProps}>
+        <textPath ref={tp1Ref} href="#inf-anim-path" startOffset="0%">
+          {INF_PHRASE}
+        </textPath>
+      </text>
+      <text {...textProps}>
+        <textPath ref={tp2Ref} href="#inf-anim-path" startOffset="33.333%">
+          {INF_PHRASE}
+        </textPath>
+      </text>
+      <text {...textProps}>
+        <textPath ref={tp3Ref} href="#inf-anim-path" startOffset="66.666%">
+          {INF_PHRASE}
         </textPath>
       </text>
     </svg>
