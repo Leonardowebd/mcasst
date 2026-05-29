@@ -303,10 +303,11 @@ function DesktopSessao() {
           ))}
         </div>
 
-        {/* Blur panel right 55.35% */}
+        {/* Blur panel right 55.35% — capped at 797px to avoid over-stretching on large screens */}
         <div style={{
           position: "absolute", top: 0, right: 0,
           width: `${(797 / 1440 * 100).toFixed(4)}%`,
+          maxWidth: "797px",
           height: "100%",
           backdropFilter: "blur(163.85px)",
           WebkitBackdropFilter: "blur(163.85px)",

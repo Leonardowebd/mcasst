@@ -64,9 +64,10 @@ function ArrowIcon({ flip = false, size = 52 }: { flip?: boolean; size?: number 
 
 /* ── Desktop carousel (3 videos at once) ────────────────────────────── */
 function DesktopCarousel() {
-  const [idx, setIdx]         = useState(0);
-  const sectionRef            = useRef<HTMLDivElement>(null);
-  const [secW, setSecW]       = useState(1440);
+  const [idx, setIdx]   = useState(0);
+  const sectionRef      = useRef<HTMLDivElement>(null);
+  const contentRef      = useRef<HTMLDivElement>(null); /* inner — capped at W */
+  const [secW, setSecW] = useState(W);
 
   const PER_PAGE = 3;
   const maxIdx   = VIDEOS.length - PER_PAGE; // 4
@@ -75,31 +76,27 @@ function DesktopCarousel() {
     const ro = new ResizeObserver(entries => {
       setSecW(entries[0].contentRect.width);
     });
-    if (sectionRef.current) ro.observe(sectionRef.current);
+    /* Observe the INNER container so scale never exceeds 1 when viewport > W */
+    if (contentRef.current) ro.observe(contentRef.current);
     return () => ro.disconnect();
   }, []);
 
-  /* Figma-proportional sizing */
+  /* scale ≤ 1 because contentRef.width = min(viewport, W) */
   const scale  = secW / W;
   const videoW = Math.round(250 * scale);
   const videoH = Math.round(426 * scale);
   const gap    = Math.round(130 * scale);
-  const step   = videoW + gap; /* pixels per navigation step */
+  const step   = videoW + gap;
 
-  /* Track offset */
   const translateX = -(idx * step);
-
   const prev = () => setIdx(i => Math.max(0, i - 1));
   const next = () => setIdx(i => Math.min(maxIdx, i + 1));
 
-  /* Figma positions (scaled) */
   const arrowTop     = (382 / H * 100).toFixed(2) + "%";
-  const leftArrowX   = Math.round(79  * scale);
+  const leftArrowX   = Math.round(79   * scale);
   const rightArrowX  = Math.round(1294 * scale);
-
-  /* Title/subtitle vertical positions */
-  const titleTop    = `calc(50% - ${Math.round(308.5 * scale)}px)`;
-  const subtitleTop = `calc(50% + ${Math.round(295   * scale)}px)`;
+  const titleTop     = `calc(50% - ${Math.round(308.5 * scale)}px)`;
+  const subtitleTop  = `calc(50% + ${Math.round(295   * scale)}px)`;
 
   return (
     <div
@@ -111,7 +108,7 @@ function DesktopCarousel() {
         overflow: "hidden",
       }}
     >
-      {/* Background */}
+      {/* Background — full-bleed */}
       <img src={imgBg} alt="" style={{
         position: "absolute", inset: 0,
         width: "100%", height: "100%",
@@ -123,149 +120,158 @@ function DesktopCarousel() {
         pointerEvents: "none",
       }} />
 
-      {/* Title */}
-      <div style={{
-        position: "absolute",
-        left: "50%", top: titleTop,
-        transform: "translate(-50%, -50%)",
-        width: `${Math.round(560 * scale)}px`,
-        textAlign: "center", color: "white", pointerEvents: "none",
-        zIndex: 2,
-      }}>
-        <p style={{
-          fontFamily: MET, fontWeight: 600,
-          fontSize: `clamp(18px, ${(40 / W * 100).toFixed(2)}vw, 40px)`,
-          lineHeight: 1.2, margin: 0,
-        }}>
-          Resultados são eles que falam por nós.
-        </p>
-      </div>
-
-      {/* Videos track viewport */}
-      <div style={{
-        position: "absolute",
-        left: `${Math.round(215 * scale)}px`,
-        top: "50%",
-        transform: "translateY(-50%)",
-        width: `${3 * videoW + 2 * gap}px`,
-        height: `${videoH}px`,
-        overflow: "hidden",
-        zIndex: 2,
-      }}>
-        {/* Sliding track */}
+      {/* Content wrapper — caps at 1440px, centered on wider viewports */}
+      <div
+        ref={contentRef}
+        style={{
+          position: "absolute", top: 0, bottom: 0,
+          left: "50%", transform: "translateX(-50%)",
+          width: `min(100%, ${W}px)`,
+        }}
+      >
+        {/* Title */}
         <div style={{
-          display: "flex",
-          gap: `${gap}px`,
-          transform: `translateX(${translateX}px)`,
-          transition: "transform 0.55s cubic-bezier(0.22,1,0.36,1)",
-          willChange: "transform",
+          position: "absolute",
+          left: "50%", top: titleTop,
+          transform: "translate(-50%, -50%)",
+          width: `${Math.round(560 * scale)}px`,
+          textAlign: "center", color: "white", pointerEvents: "none",
+          zIndex: 2,
         }}>
-          {VIDEOS.map((url, i) => (
-            <div key={i} style={{
-              flexShrink: 0,
-              width: `${videoW}px`,
-              height: `${videoH}px`,
-              borderRadius: 8,
-              overflow: "hidden",
-              backgroundColor: "#111",
-            }}>
-              <iframe
-                src={url}
-                title={`Depoimento ${i + 1}`}
-                width="100%"
-                height="100%"
-                style={{ display: "block", border: "none" }}
-                allow="autoplay; fullscreen; encrypted-media"
-                allowFullScreen
-              />
-            </div>
+          <p style={{
+            fontFamily: MET, fontWeight: 600,
+            fontSize: `clamp(18px, ${(40 / W * 100).toFixed(2)}vw, 40px)`,
+            lineHeight: 1.2, margin: 0,
+          }}>
+            Resultados são eles que falam por nós.
+          </p>
+        </div>
+
+        {/* Videos track viewport */}
+        <div style={{
+          position: "absolute",
+          left: `${Math.round(215 * scale)}px`,
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: `${3 * videoW + 2 * gap}px`,
+          height: `${videoH}px`,
+          overflow: "hidden",
+          zIndex: 2,
+        }}>
+          <div style={{
+            display: "flex",
+            gap: `${gap}px`,
+            transform: `translateX(${translateX}px)`,
+            transition: "transform 0.55s cubic-bezier(0.22,1,0.36,1)",
+            willChange: "transform",
+          }}>
+            {VIDEOS.map((url, i) => (
+              <div key={i} style={{
+                flexShrink: 0,
+                width: `${videoW}px`,
+                height: `${videoH}px`,
+                borderRadius: 8,
+                overflow: "hidden",
+                backgroundColor: "#111",
+              }}>
+                <iframe
+                  src={url}
+                  title={`Depoimento ${i + 1}`}
+                  width="100%"
+                  height="100%"
+                  style={{ display: "block", border: "none" }}
+                  allow="autoplay; fullscreen; encrypted-media"
+                  allowFullScreen
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Subtitle */}
+        <div style={{
+          position: "absolute",
+          left: "50%", top: subtitleTop,
+          transform: "translate(-50%, -50%)",
+          width: `${Math.round(356 * scale)}px`,
+          textAlign: "center", color: "white", pointerEvents: "none",
+          zIndex: 2,
+        }}>
+          <p style={{
+            fontFamily: ROEL, fontWeight: 400,
+            fontSize: `clamp(13px, ${(22 / W * 100).toFixed(2)}vw, 22px)`,
+            lineHeight: 1.45, margin: 0, opacity: 0.82,
+          }}>
+            Como nosso ecossistema funciona
+          </p>
+        </div>
+
+        {/* Left arrow */}
+        <button
+          onClick={prev}
+          disabled={idx === 0}
+          aria-label="Anterior"
+          style={{
+            position: "absolute",
+            left: `${leftArrowX}px`,
+            top: arrowTop,
+            transform: "translateY(-50%)",
+            background: "none", border: "none",
+            cursor: idx === 0 ? "default" : "pointer",
+            padding: 0, zIndex: 5,
+            opacity: idx === 0 ? 0.25 : 0.85,
+            transition: "opacity 0.2s",
+          }}
+          onMouseEnter={e => { if (idx > 0) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx === 0 ? "0.25" : "0.85"; }}
+        >
+          <ArrowIcon flip={false} size={Math.round(76 * scale)} />
+        </button>
+
+        {/* Right arrow */}
+        <button
+          onClick={next}
+          disabled={idx >= maxIdx}
+          aria-label="Próximo"
+          style={{
+            position: "absolute",
+            left: `${rightArrowX}px`,
+            top: arrowTop,
+            transform: "translateY(-50%)",
+            background: "none", border: "none",
+            cursor: idx >= maxIdx ? "default" : "pointer",
+            padding: 0, zIndex: 5,
+            opacity: idx >= maxIdx ? 0.25 : 0.85,
+            transition: "opacity 0.2s",
+          }}
+          onMouseEnter={e => { if (idx < maxIdx) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx >= maxIdx ? "0.25" : "0.85"; }}
+        >
+          <ArrowIcon flip={true} size={Math.round(76 * scale)} />
+        </button>
+
+        {/* Dot indicators */}
+        <div style={{
+          position: "absolute",
+          bottom: "clamp(16px,2vh,28px)",
+          left: "50%", transform: "translateX(-50%)",
+          display: "flex", gap: 8, zIndex: 5,
+        }}>
+          {Array.from({ length: maxIdx + 1 }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              aria-label={`Posição ${i + 1}`}
+              style={{
+                width: i === idx ? 20 : 8, height: 8,
+                borderRadius: 4,
+                backgroundColor: i === idx ? "white" : "rgba(255,255,255,0.35)",
+                border: "none", cursor: "pointer", padding: 0,
+                transition: "all 0.35s ease",
+              }}
+            />
           ))}
         </div>
-      </div>
-
-      {/* Subtitle */}
-      <div style={{
-        position: "absolute",
-        left: "50%", top: subtitleTop,
-        transform: "translate(-50%, -50%)",
-        width: `${Math.round(356 * scale)}px`,
-        textAlign: "center", color: "white", pointerEvents: "none",
-        zIndex: 2,
-      }}>
-        <p style={{
-          fontFamily: ROEL, fontWeight: 400,
-          fontSize: `clamp(13px, ${(22 / W * 100).toFixed(2)}vw, 22px)`,
-          lineHeight: 1.45, margin: 0, opacity: 0.82,
-        }}>
-          Como nosso ecossistema funciona
-        </p>
-      </div>
-
-      {/* Left arrow */}
-      <button
-        onClick={prev}
-        disabled={idx === 0}
-        aria-label="Anterior"
-        style={{
-          position: "absolute",
-          left: `${leftArrowX}px`,
-          top: arrowTop,
-          transform: "translateY(-50%)",
-          background: "none", border: "none",
-          cursor: idx === 0 ? "default" : "pointer",
-          padding: 0, zIndex: 5,
-          opacity: idx === 0 ? 0.25 : 0.85,
-          transition: "opacity 0.2s",
-        }}
-        onMouseEnter={e => { if (idx > 0) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx === 0 ? "0.25" : "0.85"; }}
-      >
-        <ArrowIcon flip={false} size={Math.round(76 * scale)} />
-      </button>
-
-      {/* Right arrow */}
-      <button
-        onClick={next}
-        disabled={idx >= maxIdx}
-        aria-label="Próximo"
-        style={{
-          position: "absolute",
-          left: `${rightArrowX}px`,
-          top: arrowTop,
-          transform: "translateY(-50%)",
-          background: "none", border: "none",
-          cursor: idx >= maxIdx ? "default" : "pointer",
-          padding: 0, zIndex: 5,
-          opacity: idx >= maxIdx ? 0.25 : 0.85,
-          transition: "opacity 0.2s",
-        }}
-        onMouseEnter={e => { if (idx < maxIdx) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx >= maxIdx ? "0.25" : "0.85"; }}
-      >
-        <ArrowIcon flip={true} size={Math.round(76 * scale)} />
-      </button>
-
-      {/* Dot indicators */}
-      <div style={{
-        position: "absolute",
-        bottom: "clamp(16px,2vh,28px)",
-        left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 8, zIndex: 5,
-      }}>
-        {Array.from({ length: maxIdx + 1 }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => setIdx(i)}
-            aria-label={`Posição ${i + 1}`}
-            style={{
-              width: i === idx ? 20 : 8, height: 8,
-              borderRadius: 4,
-              backgroundColor: i === idx ? "white" : "rgba(255,255,255,0.35)",
-              border: "none", cursor: "pointer", padding: 0,
-              transition: "all 0.35s ease",
-            }}
-          />
-        ))}
       </div>
     </div>
   );
