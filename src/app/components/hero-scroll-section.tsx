@@ -156,18 +156,32 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
    3 frases fluem continuamente por dentro das linhas.
 ═══════════════════════════════════════════════════════════════════════ */
 /*
- * INF_PATH — medido por pixel análise da PNG real (938×410)
- * Left circle: cx=234, cy=205, rx=234, ry=206  (toca x=0 e x=468)
- * Right circle: cx=704, cy=205, rx=234, ry=206 (toca x=470 e x=938)
- * Tangente em (469,205) — círculos quase tocam aqui
- * Crossing points: (469,203) e (469,207) — 2px acima/abaixo do tangente
- * Arc 1 CW large: (469,203)→(469,207) → alça direita (SVG escolhe cx=704)
- * Arc 2 CW large: (469,207)→(469,203) → alça esquerda (SVG escolhe cx=234)
+ * INF_PATH — bezier exato do node 123:5 (Figma) escalado 957×438 → 938×410
+ * Outer boundary da lemniscata completa: cobre as duas alças + cruzamento
+ * Traça o contorno real da forma ∞ — texto rente às linhas do PNG
  */
 const INF_PATH =
-  "M 469,203 " +
-  "A 235,206 0 1 1 469,207 " +   // alça direita CW
-  "A 235,206 0 1 1 469,203";
+  "M 938,205 " +
+  "C 938,317.91 852.99,410 719.4,410 " +
+  "C 684.37,410 650.42,396.68 619.84,377.94 " +
+  "C 589.17,359.16 560.92,334.33 537.03,309.89 " +
+  "C 513.09,285.4 493.22,260.96 479.34,242.68 " +
+  "C 475.4,237.49 471.94,232.79 469,228.71 " +
+  "C 466.06,232.79 462.6,237.49 458.66,242.68 " +
+  "C 444.78,260.96 424.91,285.4 400.97,309.89 " +
+  "C 377.08,334.33 348.83,359.16 318.16,377.94 " +
+  "C 287.58,396.68 253.63,410 218.6,410 " +
+  "C 85.01,410 0,317.91 0,205 " +
+  "C 0,92.09 85.01,0 218.6,0 " +
+  "C 253.63,0 287.58,13.32 318.16,32.06 " +
+  "C 348.83,50.84 377.08,75.67 400.97,100.11 " +
+  "C 424.91,124.6 444.78,149.04 458.66,167.32 " +
+  "C 462.6,172.51 466.06,177.21 469,181.29 " +
+  "C 471.94,177.21 475.4,172.51 479.34,167.32 " +
+  "C 493.22,149.04 513.09,124.6 537.03,100.11 " +
+  "C 560.92,75.67 589.17,50.84 619.84,32.06 " +
+  "C 650.42,13.32 684.37,0 719.4,0 " +
+  "C 852.99,0 938,92.09 938,205 Z";
 
 const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
