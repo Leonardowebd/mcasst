@@ -152,7 +152,7 @@ export function ParallaxLastSection() {
                 style={{
                   width: "100%", height: "100%",
                   objectFit: "cover",
-                  objectPosition: "center 37%",
+                  objectPosition: "center 0%",
                   display: "block",
                 }}
               />
@@ -227,7 +227,7 @@ export function ParallaxLastSection() {
               objectFit: "cover",
               /* objectFit cover renders at ~826×1240; Figma crop starts at ~y=76/1536=5%.
                  objectPosition y≈37% aligns crop top to match Figma framing. */
-              objectPosition: "center 37%",
+              objectPosition: "center 0%",
               display: "block",
             }}
           />
