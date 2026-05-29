@@ -129,13 +129,11 @@ function DesktopSobre() {
           alt="Tácio Ladeia"
           src={imgPortrait}
           style={{
-            position: "absolute",
-            height: "140.55%",
             width: "100%",
-            left: 0,
-            top: "-8.85%",
-            maxWidth: "none",
+            height: "100%",
             objectFit: "cover",
+            objectPosition: "center center",
+            display: "block",
           }}
         />
       </motion.div>
