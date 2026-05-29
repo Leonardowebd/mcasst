@@ -176,11 +176,9 @@ function MobileSobre() {
           src={imgPortrait}
           style={{
             width: "100%",
-            height: "140%",
+            height: "100%",
             objectFit: "cover",
-            position: "absolute",
-            top: "-8%",
-            left: 0,
+            objectPosition: "center 15%",
           }}
         />
       </motion.div>
