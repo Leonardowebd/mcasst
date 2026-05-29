@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import imgFundo2  from "../../imports/parallax-fundo2-new.png";
-import imgLogo    from "../../imports/parallax-logo-new.png";
+import imgLogo    from "../../imports/parallax-logo-cropped.png";
 import imgArvore1 from "../../imports/parallax-arvore1-new.png";
 
 /*
@@ -165,13 +165,12 @@ export function ParallaxLastSection() {
               width: logoW,
               height: logoH,
               zIndex: 5,
-              overflow: "hidden",
             }}>
               <img src={imgLogo} alt="Mascatis"
                 style={{
-                  position: "absolute",
-                  height: "246.25%", left: "-13.43%", top: "-74.29%", width: "126.4%",
-                  maxWidth: "none", display: "block",
+                  width: "100%", height: "100%",
+                  objectFit: "contain", objectPosition: "center",
+                  display: "block",
                 }}
               />
             </div>
@@ -237,14 +236,13 @@ export function ParallaxLastSection() {
           left:   `${(595 / W * 100).toFixed(4)}%`,
           width:  `${(249 / W * 100).toFixed(4)}%`,
           height: `${(159 / H * 100).toFixed(4)}%`,
-          overflow: "hidden",
           pointerEvents: "auto", zIndex: 10,
         }}>
           <img src={imgLogo} alt="Mascatis"
             style={{
-              position: "absolute",
-              height: "246.25%", left: "-13.43%", top: "-74.29%", width: "126.4%",
-              maxWidth: "none", display: "block",
+              width: "100%", height: "100%",
+              objectFit: "contain", objectPosition: "center",
+              display: "block",
             }}
           />
         </div>
