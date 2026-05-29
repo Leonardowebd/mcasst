@@ -238,7 +238,18 @@ const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
 
 /* duração total de um ciclo completo (segundos) */
-const INF_DUR = 18;
+const INF_DUR = 45;
+
+/*
+ * INF_PATH_2X — same path traced twice consecutively.
+ * Trick: remove leading M + trailing Z from second copy, append raw C-commands.
+ * Result: browser sees one continuous path of 2x length.
+ * Text placed anywhere in first half always has room ahead → no end-of-path clip.
+ */
+const _INF_CMDS = INF_PATH
+  .replace(/^M[\d.]+ [\d.]+ /, "") // remove leading "M x y "
+  .replace(/ Z$/, "");              // remove trailing " Z"
+const INF_PATH_2X = INF_PATH.replace(/ Z$/, "") + " " + _INF_CMDS + " Z";
 
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
   const pathRef = useRef<SVGPathElement>(null);
@@ -254,21 +265,24 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
     let raf: number;
 
     const start = () => {
-      const pathLen = path.getTotalLength();
+      const pathLen2x = path.getTotalLength(); // 2x the visual loop
+      const pathLen   = pathLen2x / 2;         // one full loop in px
       if (!pathLen) return;
 
-      /* pixels percorridos por frame @ 60fps durante INF_DUR segundos */
+      /* pixels por frame: velocidade baseada no loop original */
       const speed = pathLen / (INF_DUR * 60);
 
-      /* os 3 textos começam espaçados 1/3 do path */
+      /* 3 textos espaçados em 1/3 do loop original (em px) */
       const offsets = [0, pathLen / 3, (2 * pathLen) / 3];
 
       const tick = () => {
         offsets.forEach((_, i) => {
+          /* avança e faz modulo pelo loop original (não 2x) */
           offsets[i] = (offsets[i] + speed) % pathLen;
+          /* converte para % do path 2x — texto nunca chega no fim do path */
           tps[i]!.setAttribute(
             "startOffset",
-            `${((offsets[i] / pathLen) * 100).toFixed(3)}%`
+            `${((offsets[i] / pathLen2x) * 100).toFixed(3)}%`
           );
         });
         raf = requestAnimationFrame(tick);
@@ -306,22 +320,23 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
         strokeWidth="1"
       />
       <defs>
-        <path ref={pathRef} id="inf-anim-path" d={INF_PATH} />
+        {/* 2x path: garante que texto nunca seja cortado no fim */}
+        <path ref={pathRef} id="inf-anim-path" d={INF_PATH_2X} />
       </defs>
 
-      {/* 3 textos soltos, espaçados 1/3 do path, com RAF + modulo */}
+      {/* 3 textos soltos, espaçados 1/3 do loop, com RAF + modulo */}
       <text {...textProps}>
         <textPath ref={tp1Ref} href="#inf-anim-path" startOffset="0%">
           {INF_PHRASE}
         </textPath>
       </text>
       <text {...textProps}>
-        <textPath ref={tp2Ref} href="#inf-anim-path" startOffset="33.333%">
+        <textPath ref={tp2Ref} href="#inf-anim-path" startOffset="16.666%">
           {INF_PHRASE}
         </textPath>
       </text>
       <text {...textProps}>
-        <textPath ref={tp3Ref} href="#inf-anim-path" startOffset="66.666%">
+        <textPath ref={tp3Ref} href="#inf-anim-path" startOffset="33.333%">
           {INF_PHRASE}
         </textPath>
       </text>
