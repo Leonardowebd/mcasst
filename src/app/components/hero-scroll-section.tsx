@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const NUM_FRAMES = 60;
-const WRAPPER_VH = 400;   /* was 320 — extra 80 vh for text-swap zone */
-const MOBILE_VH  = 340;   /* was 280 */
+const WRAPPER_VH = 560;   /* 400 + ~160 for 3 extra swap phases */
+const MOBILE_VH  = 480;   /* 340 + ~140 */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
@@ -323,6 +323,9 @@ function DesktopHeroSection() {
   const wrapperRef      = useRef<HTMLDivElement>(null);
   const phase1CenterRef = useRef<HTMLDivElement>(null);
   const phase1bRef      = useRef<HTMLDivElement>(null);
+  const phase1cRef      = useRef<HTMLDivElement>(null);
+  const phase1dRef      = useRef<HTMLDivElement>(null);
+  const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const mouse           = useMouseParallax();
@@ -333,29 +336,44 @@ function DesktopHeroSection() {
     const wrapper  = wrapperRef.current;
     const p1center = phase1CenterRef.current;
     const p1b      = phase1bRef.current;
+    const p1c      = phase1cRef.current;
+    const p1d      = phase1dRef.current;
+    const p1e      = phase1eRef.current;
     const p1bottom = phase1BottomRef.current;
     const phase2   = phase2Ref.current;
-    if (!wrapper || !p1center || !p1b || !p1bottom || !phase2) return;
+    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1e || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
-    /* Bottom bar slides up and fades: 0.15 → 0.27 */
-    tl.to(p1bottom, { opacity: 0, y: "-80px", ease: "none", duration: 0.12 }, 0.15);
+    /* Bottom slides up: 0.08 → 0.17 */
+    tl.to(p1bottom, { opacity: 0, y: "-80px", ease: "none", duration: 0.09 }, 0.08);
 
-    /* Text swap A → B: 0.28 → 0.36 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.28);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.28);
+    /* A → B: 0.20 → 0.28 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.20);
 
-    /* Text B slides up and fades: 0.40 → 0.50 */
-    tl.to(p1b, { opacity: 0, y: "-60px", ease: "none", duration: 0.10 }, 0.40);
+    /* B → C: 0.33 → 0.41 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.08 }, 0.33);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.33);
 
-    /* Phase 2 fades in: 0.44 → 0.52 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.44);
+    /* C → D: 0.46 → 0.54 */
+    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.08 }, 0.46);
+    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.46);
+
+    /* D → E: 0.59 → 0.67 */
+    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.08 }, 0.59);
+    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.59);
+
+    /* E slides up: 0.71 → 0.78 */
+    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.71);
+
+    /* Phase 2 fades in: 0.75 → 0.82 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.75);
 
     /* Word reveals */
-    reveal(tl, phase2, ".d-met-title", 0.48, 0.58);
-    reveal(tl, phase2, ".d-met-q1",   0.61, 0.76);
-    reveal(tl, phase2, ".d-met-q2",   0.78, 0.93);
+    reveal(tl, phase2, ".d-met-title", 0.80, 0.86);
+    reveal(tl, phase2, ".d-met-q1",   0.87, 0.92);
+    reveal(tl, phase2, ".d-met-q2",   0.93, 0.99);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -432,6 +450,66 @@ function DesktopHeroSection() {
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
               ainda vou pensar também
+            </p>
+          </div>
+        </div>
+
+        {/* ── Phase 1c — text (C) */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translate(-50%,-54%)",
+          width: "clamp(300px,34vw,490px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1cRef} style={{
+            display: "flex", flexDirection: "column", gap: 20,
+            textAlign: "center", color: "white", opacity: 0,
+          }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
+              frase C ainda não definida
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
+              subtítulo C ainda por definir
+            </p>
+          </div>
+        </div>
+
+        {/* ── Phase 1d — text (D) */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translate(-50%,-54%)",
+          width: "clamp(300px,34vw,490px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1dRef} style={{
+            display: "flex", flexDirection: "column", gap: 20,
+            textAlign: "center", color: "white", opacity: 0,
+          }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
+              frase D ainda não definida
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
+              subtítulo D ainda por definir
+            </p>
+          </div>
+        </div>
+
+        {/* ── Phase 1e — text (E) — last swap before phase 2 */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translate(-50%,-54%)",
+          width: "clamp(300px,34vw,490px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1eRef} style={{
+            display: "flex", flexDirection: "column", gap: 20,
+            textAlign: "center", color: "white", opacity: 0,
+          }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
+              frase E ainda não definida
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
+              subtítulo E ainda por definir
             </p>
           </div>
         </div>
@@ -513,6 +591,9 @@ function MobileHeroSection() {
   const wrapperRef      = useRef<HTMLDivElement>(null);
   const phase1CenterRef = useRef<HTMLDivElement>(null);
   const phase1bRef      = useRef<HTMLDivElement>(null);
+  const phase1cRef      = useRef<HTMLDivElement>(null);
+  const phase1dRef      = useRef<HTMLDivElement>(null);
+  const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const { framesRef, ready } = useStaticFrames();
@@ -522,29 +603,44 @@ function MobileHeroSection() {
     const wrapper  = wrapperRef.current;
     const p1center = phase1CenterRef.current;
     const p1b      = phase1bRef.current;
+    const p1c      = phase1cRef.current;
+    const p1d      = phase1dRef.current;
+    const p1e      = phase1eRef.current;
     const p1bottom = phase1BottomRef.current;
     const phase2   = phase2Ref.current;
-    if (!wrapper || !p1center || !p1b || !p1bottom || !phase2) return;
+    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1e || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
-    /* Bottom bar slides up: 0.12 → 0.22 */
-    tl.to(p1bottom, { opacity: 0, y: "-60px", ease: "none", duration: 0.10 }, 0.12);
+    /* Bottom slides up: 0.08 → 0.17 */
+    tl.to(p1bottom, { opacity: 0, y: "-60px", ease: "none", duration: 0.09 }, 0.08);
 
-    /* Text swap A → B: 0.26 → 0.34 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.26);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.26);
+    /* A → B: 0.20 → 0.28 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.20);
 
-    /* Text B slides up: 0.38 → 0.47 */
-    tl.to(p1b, { opacity: 0, y: "-50px", ease: "none", duration: 0.09 }, 0.38);
+    /* B → C: 0.33 → 0.41 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.08 }, 0.33);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.33);
 
-    /* Phase 2 fades in: 0.43 → 0.51 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.43);
+    /* C → D: 0.46 → 0.54 */
+    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.08 }, 0.46);
+    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.46);
+
+    /* D → E: 0.59 → 0.67 */
+    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.08 }, 0.59);
+    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.59);
+
+    /* E slides up: 0.71 → 0.77 */
+    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.06 }, 0.71);
+
+    /* Phase 2: 0.74 → 0.80 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.74);
 
     /* Word reveals */
-    reveal(tl, phase2, ".m-met-title", 0.47, 0.57);
-    reveal(tl, phase2, ".m-met-q1",   0.59, 0.74);
-    reveal(tl, phase2, ".m-met-q2",   0.76, 0.92);
+    reveal(tl, phase2, ".m-met-title", 0.79, 0.85);
+    reveal(tl, phase2, ".m-met-q1",   0.86, 0.91);
+    reveal(tl, phase2, ".m-met-q2",   0.92, 0.98);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -604,6 +700,57 @@ function MobileHeroSection() {
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
               ainda vou pensar também
+            </p>
+          </div>
+        </div>
+
+        {/* Phase 1c — text (C) */}
+        <div style={{
+          position: "absolute", top: "38%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          width: "calc(100% - 40px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1cRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
+              frase C ainda não definida
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
+              subtítulo C ainda por definir
+            </p>
+          </div>
+        </div>
+
+        {/* Phase 1d — text (D) */}
+        <div style={{
+          position: "absolute", top: "38%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          width: "calc(100% - 40px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1dRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
+              frase D ainda não definida
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
+              subtítulo D ainda por definir
+            </p>
+          </div>
+        </div>
+
+        {/* Phase 1e — text (E) — last before phase 2 */}
+        <div style={{
+          position: "absolute", top: "38%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          width: "calc(100% - 40px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1eRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
+              frase E ainda não definida
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
+              subtítulo E ainda por definir
             </p>
           </div>
         </div>
