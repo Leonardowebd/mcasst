@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const NUM_FRAMES = 60;
-const WRAPPER_VH = 320;
-const MOBILE_VH  = 280;
+const WRAPPER_VH = 400;   /* was 320 — extra 80 vh for text-swap zone */
+const MOBILE_VH  = 340;   /* was 280 */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
@@ -47,11 +47,9 @@ function useStaticFrames() {
     }
 
     (async () => {
-      // First batch: parallel load for fast animation start
       await Promise.all(Array.from({ length: INITIAL_BATCH }, (_, i) => loadFrame(i)));
       if (!cancelled && framesRef.current.some(Boolean)) setReady(true);
 
-      // Remaining frames: sequential to avoid saturating the network
       for (let i = INITIAL_BATCH; i < NUM_FRAMES; i++) {
         if (cancelled) break;
         await loadFrame(i);
@@ -67,6 +65,7 @@ function useStaticFrames() {
 
   return { framesRef, ready };
 }
+
 /* ── Canvas helpers ──────────────────────────────────────────────────── */
 function drawCover(ctx: CanvasRenderingContext2D, bmp: ImageBitmap, cw: number, ch: number) {
   const s = Math.max(cw / bmp.width, ch / bmp.height);
@@ -100,11 +99,11 @@ function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
   }, [framesRef]);
 
   useEffect(() => {
-  if (ready) {
-    drawFrame(0);
-    ScrollTrigger.refresh();
-  }
-}, [ready, drawFrame]);
+    if (ready) {
+      drawFrame(0);
+      ScrollTrigger.refresh();
+    }
+  }, [ready, drawFrame]);
 
   return { canvasRef, drawFrame };
 }
@@ -149,18 +148,8 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
 
 /* ═══════════════════════════════════════════════════════════════════════
    InfinitySymbol — Figma PNG (visual) + SVG overlay (textPath animado)
-   Path traça as duas alças da lemniscata no viewBox 938×410 do PNG.
-   Dois círculos r=255, centros em (220,205) e (718,205).
-   Cruzamento em (469,150) e (469,260).
-   3 frases fluem continuamente por dentro das linhas.
 ═══════════════════════════════════════════════════════════════════════ */
-/*
- * INF_DUAL_PATH — Figma node 120:46 "Elemento Infinito" (viewBox 958×439)
- * Subpath 1: inner right oval | Subpath 2: inner left oval | Subpath 3: outer boundary
- * Stroke em cada subpath = efeito "duas linhas" (inner + outer)
- */
 const INF_DUAL_PATH =
-  /* inner right oval */
   "M929.5 219.5 C929.5 113.714 854.678 28.5 734.475 28.5 " +
   "C706.088 28.5001 676.735 39.8907 648.011 58.3154 " +
   "C619.375 76.683 592.342 101.416 568.879 126.553 " +
@@ -173,7 +162,6 @@ const INF_DUAL_PATH =
   "C592.342 337.584 619.375 362.317 648.011 380.685 " +
   "C676.735 399.109 706.088 410.5 734.475 410.5 " +
   "C854.678 410.5 929.5 325.286 929.5 219.5 Z " +
-  /* inner left oval */
   "M28.5 219.5 C28.5 325.286 103.322 410.5 223.525 410.5 " +
   "C251.912 410.5 281.265 399.109 309.989 380.685 " +
   "C338.625 362.317 365.658 337.584 389.121 312.447 " +
@@ -186,7 +174,6 @@ const INF_DUAL_PATH =
   "C365.658 101.416 338.625 76.683 309.989 58.3154 " +
   "C281.265 39.8907 251.912 28.5001 223.525 28.5 " +
   "C103.322 28.5 28.5 113.714 28.5 219.5 Z " +
-  /* outer boundary (text path segue este) */
   "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
   "C698.737 438.5 664.094 424.266 632.894 404.253 " +
   "C601.604 384.183 572.785 357.666 548.41 331.553 " +
@@ -208,10 +195,6 @@ const INF_DUAL_PATH =
   "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
   "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
 
-/*
- * INF_PATH — outer boundary apenas, para o textPath animado
- * Figma node 120:46, viewBox 958×439, sem escala
- */
 const INF_PATH =
   "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
   "C698.737 438.5 664.094 424.266 632.894 404.253 " +
@@ -237,18 +220,11 @@ const INF_PATH =
 const INF_PHRASE =
   "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
 
-/* duração total de um ciclo completo (segundos) */
 const INF_DUR = 45;
 
-/*
- * INF_PATH_2X — same path traced twice consecutively.
- * Trick: remove leading M + trailing Z from second copy, append raw C-commands.
- * Result: browser sees one continuous path of 2x length.
- * Text placed anywhere in first half always has room ahead → no end-of-path clip.
- */
 const _INF_CMDS = INF_PATH
-  .replace(/^M[\d.]+ [\d.]+ /, "") // remove leading "M x y "
-  .replace(/ Z$/, "");              // remove trailing " Z"
+  .replace(/^M[\d.]+ [\d.]+ /, "")
+  .replace(/ Z$/, "");
 const INF_PATH_2X = INF_PATH.replace(/ Z$/, "") + " " + _INF_CMDS + " Z";
 
 function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
@@ -265,21 +241,16 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
     let raf: number;
 
     const start = () => {
-      const pathLen2x = path.getTotalLength(); // 2x the visual loop
-      const pathLen   = pathLen2x / 2;         // one full loop in px
+      const pathLen2x = path.getTotalLength();
+      const pathLen   = pathLen2x / 2;
       if (!pathLen) return;
 
-      /* pixels por frame: velocidade baseada no loop original */
       const speed = pathLen / (INF_DUR * 60);
-
-      /* 3 textos espaçados em 1/3 do loop original (em px) */
       const offsets = [0, pathLen / 3, (2 * pathLen) / 3];
 
       const tick = () => {
         offsets.forEach((_, i) => {
-          /* avança e faz modulo pelo loop original (não 2x) */
           offsets[i] = (offsets[i] + speed) % pathLen;
-          /* converte para % do path 2x — texto nunca chega no fim do path */
           tps[i]!.setAttribute(
             "startOffset",
             `${((offsets[i] / pathLen2x) * 100).toFixed(3)}%`
@@ -306,13 +277,11 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
   } as const;
 
   return (
-    /* SVG inline — visual "duas linhas" + 3 textos soltos animados */
     <svg
       viewBox="0 0 958 439"
       xmlns="http://www.w3.org/2000/svg"
       style={{ width, height: "auto", display: "block", overflow: "visible" }}
     >
-      {/* Figma node 120:46 — visual das duas linhas */}
       <path
         d={INF_DUAL_PATH}
         fill="none"
@@ -320,11 +289,8 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
         strokeWidth="1"
       />
       <defs>
-        {/* 2x path: garante que texto nunca seja cortado no fim */}
         <path ref={pathRef} id="inf-anim-path" d={INF_PATH_2X} />
       </defs>
-
-      {/* 3 textos soltos, espaçados 1/3 do loop, com RAF + modulo */}
       <text {...textProps}>
         <textPath ref={tp1Ref} href="#inf-anim-path" startOffset="0%">
           {INF_PHRASE}
@@ -346,34 +312,52 @@ function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
 
 /* ═══════════════════════════════════════════════════════════════════════
    DesktopHeroSection
+   All panels live inside the sticky layer (same as mobile pattern).
+   Three text states:
+     phase1Center — "Estruture. Cresça. Torne previsível."  (A)
+     phase1b      — swapped text                            (B)
+     phase2       — infinity + metodologia                  (C)
+   Bottom stats/CTA animated out independently before the swap.
 ═══════════════════════════════════════════════════════════════════════ */
 function DesktopHeroSection() {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const phase1Ref  = useRef<HTMLDivElement>(null);
-  const phase2Ref  = useRef<HTMLDivElement>(null);
-  const mouse      = useMouseParallax();
+  const wrapperRef      = useRef<HTMLDivElement>(null);
+  const phase1CenterRef = useRef<HTMLDivElement>(null);
+  const phase1bRef      = useRef<HTMLDivElement>(null);
+  const phase1BottomRef = useRef<HTMLDivElement>(null);
+  const phase2Ref       = useRef<HTMLDivElement>(null);
+  const mouse           = useMouseParallax();
   const { framesRef, ready } = useStaticFrames();
   const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
 
   useEffect(() => {
-    const wrapper = wrapperRef.current;
-    const phase1  = phase1Ref.current;
-    const phase2  = phase2Ref.current;
-    if (!wrapper || !phase1 || !phase2) return;
+    const wrapper  = wrapperRef.current;
+    const p1center = phase1CenterRef.current;
+    const p1b      = phase1bRef.current;
+    const p1bottom = phase1BottomRef.current;
+    const phase2   = phase2Ref.current;
+    if (!wrapper || !p1center || !p1b || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
-    /* Phase 1 → out */
-    tl.to(phase1, { opacity: 0, y: "-5%", ease: "none", duration: 0.14 }, 0.30);
+    /* Bottom bar slides up and fades: 0.15 → 0.27 */
+    tl.to(p1bottom, { opacity: 0, y: "-80px", ease: "none", duration: 0.12 }, 0.15);
 
-    /* Phase 2 → in then word reveals */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.22);
+    /* Text swap A → B: 0.28 → 0.36 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.28);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.28);
 
-    reveal(tl, phase2, ".d-met-title", 0.32, 0.44);
-    reveal(tl, phase2, ".d-met-q1",   0.48, 0.67);
-    reveal(tl, phase2, ".d-met-q2",   0.70, 0.92);
+    /* Text B slides up and fades: 0.40 → 0.50 */
+    tl.to(p1b, { opacity: 0, y: "-60px", ease: "none", duration: 0.10 }, 0.40);
 
-    tl.to({}, { duration: 0 }, 1); // ensure timeline reaches 1.0
+    /* Phase 2 fades in: 0.44 → 0.52 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.44);
+
+    /* Word reveals */
+    reveal(tl, phase2, ".d-met-title", 0.48, 0.58);
+    reveal(tl, phase2, ".d-met-q1",   0.61, 0.76);
+    reveal(tl, phase2, ".d-met-q2",   0.78, 0.93);
+
+    tl.to({}, { duration: 0 }, 1);
 
     const st = ScrollTrigger.create({
       trigger: wrapper,
@@ -390,30 +374,39 @@ function DesktopHeroSection() {
   return (
     <div ref={wrapperRef} id="hero" style={{ position: "relative", height: `${WRAPPER_VH}vh`, width: "100%" }}>
 
-      {/* Sticky canvas */}
+      {/* ── Sticky layer — holds all visible content ── */}
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", background: "#0a0a0a", zIndex: 0 }}>
+
+        {/* Canvas + mouse parallax */}
         <div style={{
           position: "absolute", inset: "-6%",
           backgroundImage: "url(/frames/frame_001.webp)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundSize: "cover", backgroundPosition: "center",
           transform: `scale(1.08) translate(${mouse.x}px, ${mouse.y}px)`,
           transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
         }}>
           <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
         </div>
+
+        {/* Gradient overlay */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: "linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.23) 45%,rgba(0,0,0,.23) 55%,rgba(0,0,0,.61) 100%)",
         }} />
-      </div>
 
-      {/* Text overlay */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
-
-        {/* ── Phase 1 ── */}
-        <div ref={phase1Ref} style={{ height: "100vh", position: "relative", color: "white", pointerEvents: "auto" }}>
-          <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-54%)", width: "clamp(300px,34vw,490px)", display: "flex", flexDirection: "column", gap: 20, textAlign: "center" }}>
+        {/* ── Phase 1 center text (A) ──
+            Outer div handles centering (transform stays here, not GSAP target).
+            Inner div is the GSAP target — no transform conflict. */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translate(-50%,-54%)",
+          width: "clamp(300px,34vw,490px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1CenterRef} style={{
+            display: "flex", flexDirection: "column", gap: 20,
+            textAlign: "center", color: "white",
+          }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Estruture. Cresça. Torne previsível.
             </p>
@@ -421,7 +414,39 @@ function DesktopHeroSection() {
               Ecossistema de estruturação e crescimento de negócios.
             </p>
           </div>
-          <div style={{ position: "absolute", bottom: 0, left: "5.56%", right: "5.56%", paddingBottom: "clamp(32px,6vh,60px)", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32 }}>
+        </div>
+
+        {/* ── Phase 1b — swapped text (B) — same center position, opacity 0 */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translate(-50%,-54%)",
+          width: "clamp(300px,34vw,490px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1bRef} style={{
+            display: "flex", flexDirection: "column", gap: 20,
+            textAlign: "center", color: "white", opacity: 0,
+          }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
+              vou colocar ainda
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
+              ainda vou pensar também
+            </p>
+          </div>
+        </div>
+
+        {/* ── Phase 1 bottom — stats + CTA ── */}
+        <div style={{
+          position: "absolute", bottom: 0,
+          left: "5.56%", right: "5.56%",
+          paddingBottom: "clamp(32px,6vh,60px)",
+        }}>
+          <div ref={phase1BottomRef} style={{
+            display: "flex", alignItems: "flex-end",
+            justifyContent: "space-between", gap: 32,
+            color: "white",
+          }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {[
                 { bold: "+400 empresas",   light: "atendidas" },
@@ -447,65 +472,79 @@ function DesktopHeroSection() {
           </div>
         </div>
 
-        {/* ── Phase 2 ── */}
-        <div ref={phase2Ref} style={{ height: `${WRAPPER_VH - 100}vh`, position: "relative", opacity: 0 }}>
-          <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", color: "white", pointerEvents: "none" }}>
+        {/* ── Phase 2 — infinity + metodologia ── */}
+        <div ref={phase2Ref} style={{ position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none" }}>
 
-            {/* ── Infinity symbol ── */}
-            <div style={{
-              position: "absolute", left: "50%", top: "42%",
-              transform: "translate(-50%, -50%)",
-              pointerEvents: "none", zIndex: 0,
-            }}>
-              <InfinitySymbol width="min(58vw, 700px)" />
-            </div>
+          {/* Infinity symbol */}
+          <div style={{
+            position: "absolute", left: "50%", top: "42%",
+            transform: "translate(-50%, -50%)",
+            pointerEvents: "none", zIndex: 0,
+          }}>
+            <InfinitySymbol width="min(58vw, 700px)" />
+          </div>
 
-            {/* Metodologia Sitropia title */}
-            <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%", zIndex: 2 }}>
-              <Words className="d-met-title" text="Metodologia Sitropia"
-                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
-            </div>
+          {/* Metodologia Sitropia title */}
+          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%", zIndex: 2 }}>
+            <Words className="d-met-title" text="Metodologia Sitropia"
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
+          </div>
 
-            {/* Text block below ∞ */}
-            <div style={{ position: "absolute", bottom: "4%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)", zIndex: 2 }}>
-              <Words className="d-met-q1"
-                text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,2.22vw,32px)", lineHeight: 1.35, display: "block", textAlign: "justify" }} />
-              <Words className="d-met-q2"
-                text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
-                style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.46vw,21px)", lineHeight: 1.55, display: "block", textAlign: "justify", opacity: 0.80 }} />
-            </div>
+          {/* Text block below ∞ */}
+          <div style={{ position: "absolute", bottom: "4%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)", zIndex: 2 }}>
+            <Words className="d-met-q1"
+              text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,2.22vw,32px)", lineHeight: 1.35, display: "block", textAlign: "justify" }} />
+            <Words className="d-met-q2"
+              text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
+              style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.46vw,21px)", lineHeight: 1.55, display: "block", textAlign: "justify", opacity: 0.80 }} />
           </div>
         </div>
+
       </div>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   MobileHeroSection
+   MobileHeroSection — same text-swap pattern
 ═══════════════════════════════════════════════════════════════════════ */
 function MobileHeroSection() {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const phase1Ref  = useRef<HTMLDivElement>(null);
-  const phase2Ref  = useRef<HTMLDivElement>(null);
+  const wrapperRef      = useRef<HTMLDivElement>(null);
+  const phase1CenterRef = useRef<HTMLDivElement>(null);
+  const phase1bRef      = useRef<HTMLDivElement>(null);
+  const phase1BottomRef = useRef<HTMLDivElement>(null);
+  const phase2Ref       = useRef<HTMLDivElement>(null);
   const { framesRef, ready } = useStaticFrames();
   const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
 
   useEffect(() => {
-    const wrapper = wrapperRef.current;
-    const phase1  = phase1Ref.current;
-    const phase2  = phase2Ref.current;
-    if (!wrapper || !phase1 || !phase2) return;
+    const wrapper  = wrapperRef.current;
+    const p1center = phase1CenterRef.current;
+    const p1b      = phase1bRef.current;
+    const p1bottom = phase1BottomRef.current;
+    const phase2   = phase2Ref.current;
+    if (!wrapper || !p1center || !p1b || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
-    tl.to(phase1,  { opacity: 0, y: "-6%", ease: "none", duration: 0.10 }, 0.20);
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.22);
+    /* Bottom bar slides up: 0.12 → 0.22 */
+    tl.to(p1bottom, { opacity: 0, y: "-60px", ease: "none", duration: 0.10 }, 0.12);
 
-    reveal(tl, phase2, ".m-met-title", 0.26, 0.40);
-    reveal(tl, phase2, ".m-met-q1",   0.43, 0.65);
-    reveal(tl, phase2, ".m-met-q2",   0.67, 0.90);
+    /* Text swap A → B: 0.26 → 0.34 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.26);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.26);
+
+    /* Text B slides up: 0.38 → 0.47 */
+    tl.to(p1b, { opacity: 0, y: "-50px", ease: "none", duration: 0.09 }, 0.38);
+
+    /* Phase 2 fades in: 0.43 → 0.51 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.43);
+
+    /* Word reveals */
+    reveal(tl, phase2, ".m-met-title", 0.47, 0.57);
+    reveal(tl, phase2, ".m-met-q1",   0.59, 0.74);
+    reveal(tl, phase2, ".m-met-q2",   0.76, 0.92);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -523,17 +562,26 @@ function MobileHeroSection() {
 
   return (
     <div ref={wrapperRef} id="hero" style={{ position: "relative", height: `${MOBILE_VH}vh`, width: "100%" }}>
-      <div style={{ position: "sticky", top: 0, height: "100svh", overflow: "hidden", background: "#0a0a0a",
-        backgroundImage: "url(/frames/frame_001.webp)", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div style={{
+        position: "sticky", top: 0, height: "100svh", overflow: "hidden",
+        background: "#0a0a0a",
+        backgroundImage: "url(/frames/frame_001.webp)",
+        backgroundSize: "cover", backgroundPosition: "center",
+      }}>
         <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: "linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.25) 65%,rgba(0,0,0,.72) 100%)",
         }} />
 
-        {/* Phase 1 */}
-        <div ref={phase1Ref} style={{ position: "absolute", inset: 0, color: "white" }}>
-          <div style={{ position: "absolute", top: "38%", left: "50%", transform: "translate(-50%,-50%)", width: "calc(100% - 40px)", textAlign: "center", display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* Phase 1 center text (A) */}
+        <div style={{
+          position: "absolute", top: "38%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          width: "calc(100% - 40px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1CenterRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Estruture. Cresça.<br />Torne previsível.
             </p>
@@ -541,7 +589,28 @@ function MobileHeroSection() {
               Ecossistema de estruturação e crescimento de negócios.
             </p>
           </div>
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 20px 32px", display: "flex", flexDirection: "column", gap: 18 }}>
+        </div>
+
+        {/* Phase 1b — swapped text (B) */}
+        <div style={{
+          position: "absolute", top: "38%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          width: "calc(100% - 40px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1bRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
+              vou colocar ainda
+            </p>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
+              ainda vou pensar também
+            </p>
+          </div>
+        </div>
+
+        {/* Phase 1 bottom */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 20px 32px" }}>
+          <div ref={phase1BottomRef} style={{ display: "flex", flexDirection: "column", gap: 18, color: "white" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {[
                 { bold: "+400 empresas",   light: " atendidas" },
@@ -564,10 +633,10 @@ function MobileHeroSection() {
           </div>
         </div>
 
-        {/* Phase 2 */}
+        {/* Phase 2 — infinity + metodologia */}
         <div ref={phase2Ref} style={{ position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none" }}>
 
-          {/* ── Infinity symbol (mobile) ── */}
+          {/* Infinity symbol (mobile) */}
           <div style={{
             position: "absolute", left: "50%", top: "42%",
             transform: "translate(-50%, -50%)",
@@ -576,11 +645,12 @@ function MobileHeroSection() {
             <InfinitySymbol width="min(88vw, 360px)" />
           </div>
 
-          {/* Metodologia Sitropia title */}
+          {/* Metodologia title */}
           <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)", zIndex: 2 }}>
             <Words className="m-met-title" text="Metodologia Sitropia"
               style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: 1.2, display: "block" }} />
           </div>
+
           {/* Text block */}
           <div style={{ position: "absolute", bottom: "4%", left: 20, right: 20, display: "flex", flexDirection: "column", gap: 12, zIndex: 2 }}>
             <Words className="m-met-q1"
@@ -591,6 +661,7 @@ function MobileHeroSection() {
               style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.55, display: "block", opacity: 0.78 }} />
           </div>
         </div>
+
       </div>
     </div>
   );
