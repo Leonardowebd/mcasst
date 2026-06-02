@@ -7,18 +7,48 @@ import { useRef, useEffect, useState } from "react";
  */
 
 const ITEMS = [
-  { title: "VSE — VENDA SEM ESFORÇO",
-    bg: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
-  { title: "SEQUOIA",
-    bg: "https://images.unsplash.com/photo-1730658679727-ce12c0adc4ef?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
-  { title: "AGÊNCIA",
-    bg: "https://images.unsplash.com/photo-1758873271902-a63ecd5b5235?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
-  { title: "EDUCAÇÃO",
-    bg: "https://images.unsplash.com/photo-1758599879065-46fd59235166?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
-  { title: "PARCEIROS",
-    bg: "https://images.unsplash.com/photo-1758519288358-86c504767112?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
-  { title: "PRM",
-    bg: "https://images.unsplash.com/photo-1745970347652-8f22f5d7d3ba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80" },
+  {
+    title: "VSE — VENDA SEM ESFORÇO",
+    bg: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    mobDesc: "Semiótica, mecanismo e comercial documentados. Do primeiro contato ao fechamento.",
+    para: "Você sabe para onde quer ir. O que falta é o como. O VSE não é sobre o momento da venda — é sobre a experiência completa do público com o seu negócio.",
+    bullets: ["Semiótica: como ser percebido em cada ponto de contato", "Mecanismo: estrutura que gera previsibilidade de captação", "Comercial: processo fundamentado que converte"],
+  },
+  {
+    title: "ASSESSORIA",
+    bg: "https://images.unsplash.com/photo-1758873271902-a63ecd5b5235?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    mobDesc: "Parceiro estratégico de execução com método, alto padrão e profundidade.",
+    para: "O parceiro estratégico que antecipa problemas, executa com método e profundidade. Você traz a demanda. A Mascatis interpreta, executa e entrega resultado.",
+    bullets: ["Performance com tráfego pago", "Social Media com criativos de conversão direta", "Plano de Ações de Marketing", "Plano de Ações de Branding"],
+  },
+  {
+    title: "CONSELHEIRO",
+    bg: "https://images.unsplash.com/photo-1730658679727-ce12c0adc4ef?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    mobDesc: "Alguém de fora que fala com clareza, sem interesse emocional no resultado.",
+    para: "Tem decisão que não dá pra discutir com sócio. Alguém de fora que já viu esse filme antes, fala com clareza e não tem interesse emocional no resultado.",
+    bullets: ["Conselho as Service", "Reunião mensal", "Canal direto para aconselhamento"],
+  },
+  {
+    title: "MAM",
+    bg: "https://images.unsplash.com/photo-1758599879065-46fd59235166?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    mobDesc: "Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio.",
+    para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado ao seu negócio.",
+    bullets: ["Estratégia", "Marketing", "Vendas"],
+  },
+  {
+    title: "PARCERIAS",
+    bg: "https://images.unsplash.com/photo-1758519288358-86c504767112?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    mobDesc: "Parceiros validados pelo tempo e pela confiança que só a experiência real constrói.",
+    para: "Quando o negócio precisa de algo além do nosso escopo, a indicação não é aleatória. São parceiros construídos ao longo de anos, validados pelo tempo.",
+    bullets: ["Jurídico", "Contabilidade", "BPO Financeiro", "RH estratégico", "Tecnologias e AIs"],
+  },
+  {
+    title: "PRM",
+    bg: "https://images.unsplash.com/photo-1745970347652-8f22f5d7d3ba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
+    para: "Quando o negócio está travado ou endividado. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa.",
+    bullets: ["Diagnóstico em 8 áreas do negócio", "Plano de ação validado", "Suporte para executar com autonomia"],
+  },
 ];
 
 const N   = ITEMS.length;
@@ -49,14 +79,6 @@ function useIsMobile() {
    • Imagens crossfade conforme slide ativo
    • Quote aparece ao final
 ═══════════════════════════════════════════════════════════════════════ */
-const SLIDE_DESCS = [
-  "Vendas com clareza e previsibilidade, sem depender de esforço bruto.",
-  "Empresas fortes se conectam aos parceiros certos — jurídico, contábil, financeiro e especialistas estratégicos. Estrutura sólida sustenta crescimento no longo prazo.",
-  "Estrutura e posicionamento para agências escalarem com consistência.",
-  "Conhecimento aplicado e metodologia que gera resultados reais.",
-  "Conexões estratégicas que aceleram o crescimento do seu negócio.",
-  "Relacionamento e fidelização de clientes como vantagem competitiva.",
-];
 
 function MobileSessao() {
   const outerRef  = useRef<HTMLDivElement>(null);
@@ -183,7 +205,7 @@ function MobileSessao() {
                     lineHeight: 1.55,
                     margin: 0,
                   }}>
-                    {SLIDE_DESCS[i]}
+                    {item.mobDesc}
                   </p>
                 </div>
               ))}
@@ -244,7 +266,7 @@ function MobileSessao() {
 /* ═══════════════════════════════════════════════════════════════════════
    DESKTOP — original scroll-driven sticky accordion
 ═══════════════════════════════════════════════════════════════════════ */
-function AccordionDescription() {
+function AccordionDescription({ para, bullets }: { para: string; bullets: string[] }) {
   return (
     <div style={{
       fontFamily: MET, fontStyle: "italic", fontWeight: 200,
@@ -252,14 +274,12 @@ function AccordionDescription() {
       color: "rgba(255,255,255,0.88)", lineHeight: 1.55,
       marginTop: 12, letterSpacing: "0.025em",
     }}>
-      <p style={{ margin: "0 0 10px" }}>Empresas fortes se conectam aos parceiros certos.</p>
-      <ul style={{ paddingLeft: 20, margin: "0 0 10px", listStyleType: "disc" }}>
-        <li style={{ marginBottom: 4 }}>Jurídico</li>
-        <li style={{ marginBottom: 4 }}>Contábil</li>
-        <li style={{ marginBottom: 4 }}>Financeiro</li>
-        <li>Especialistas estratégicos</li>
+      <p style={{ margin: "0 0 10px" }}>{para}</p>
+      <ul style={{ paddingLeft: 20, margin: 0, listStyleType: "disc" }}>
+        {bullets.map((b, i) => (
+          <li key={i} style={{ marginBottom: i < bullets.length - 1 ? 4 : 0 }}>{b}</li>
+        ))}
       </ul>
-      <p style={{ margin: 0 }}>Estrutura sólida sustenta crescimento no longo prazo.</p>
     </div>
   );
 }
@@ -343,7 +363,7 @@ function DesktopSessao() {
                   transition: "grid-template-rows 0.55s cubic-bezier(0.22,1,0.36,1)",
                 }}>
                   <div style={{ overflow: "hidden", minHeight: 0 }}>
-                    <AccordionDescription />
+                    <AccordionDescription para={item.para} bullets={item.bullets} />
                   </div>
                 </div>
               </div>

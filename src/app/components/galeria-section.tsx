@@ -90,7 +90,7 @@ export function GaleriaSection() {
           maxWidth: isMobile ? "100%" : "clamp(600px,70vw,1016px)",
           marginLeft: "auto", marginRight: "auto",
         }}>
-          O nosso propósito sempre foi, é e será prosperidade para pessoas e negócios
+          O nosso propósito sempre foi, é e sempre será prosperidade para pessoas e negócios.
         </p>
       </div>
 
@@ -148,8 +148,8 @@ export function GaleriaSection() {
           maxWidth: isMobile ? "100%" : "clamp(500px,65vw,1284px)",
           marginLeft: "auto", marginRight: "auto",
         }}>
-          Buscamos sempre agregar nas comunidades com o nosso know how e expertize
-          para transformar a vida de pessoas e negócios.
+          Buscamos sempre agregar nas comunidades com o nosso conhecimento e experiência
+          para transformar a vida das pessoas que transformam negócios em sustento, alegria e prosperidade.
         </p>
       </div>
     </div>

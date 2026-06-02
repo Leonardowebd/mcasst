@@ -446,10 +446,10 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              vou colocar ainda
+              Todo negócio merece prosperar.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              ainda vou pensar também
+              Você está no lugar certo.
             </p>
           </div>
         </div>
@@ -466,10 +466,10 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              frase C ainda não definida
+              Um ecossistema de pessoas, método e soluções.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              subtítulo C ainda por definir
+              Construído para que o seu negócio prospere.
             </p>
           </div>
         </div>
@@ -486,10 +486,10 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              frase D ainda não definida
+              As sequoias crescem entrelaçadas umas nas outras.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              subtítulo D ainda por definir
+              Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor.
             </p>
           </div>
         </div>
@@ -506,10 +506,10 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              frase E ainda não definida
+              O mercado está cheio de quem promete resolver.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              subtítulo E ainda por definir
+              Poucos são os que estão fundamentados o suficiente para isso.
             </p>
           </div>
         </div>
@@ -527,9 +527,9 @@ function DesktopHeroSection() {
           }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {[
-                { bold: "+400 empresas",   light: "atendidas" },
-                { bold: "+R$ 407 milhões", light: "gerados em resultados" },
-                { bold: "+10 anos",        light: "estruturando negócios" },
+                { bold: "400+",    light: "empresas atendidas" },
+                { bold: "R$407M+", light: "em resultados gerados" },
+                { bold: "10+",     light: "anos de mercado" },
               ].map(({ bold, light }) => (
                 <p key={bold} style={{ margin: 0, fontSize: "clamp(13px,1.39vw,20px)", lineHeight: 1.6 }}>
                   <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700 }}>{bold}</span>
@@ -562,9 +562,9 @@ function DesktopHeroSection() {
             <InfinitySymbol width="min(58vw, 700px)" />
           </div>
 
-          {/* Metodologia Sitropia title */}
+          {/* Metodologia Sintropia title */}
           <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%", zIndex: 2 }}>
-            <Words className="d-met-title" text="Metodologia Sitropia"
+            <Words className="d-met-title" text="Metodologia Sintropia"
               style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
           </div>
 
@@ -696,10 +696,10 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1bRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              vou colocar ainda
+              Todo negócio merece prosperar.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              ainda vou pensar também
+              Você está no lugar certo.
             </p>
           </div>
         </div>
@@ -713,10 +713,10 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1cRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              frase C ainda não definida
+              Um ecossistema de pessoas, método e soluções.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              subtítulo C ainda por definir
+              Construído para que o seu negócio prospere.
             </p>
           </div>
         </div>
@@ -730,10 +730,10 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1dRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              frase D ainda não definida
+              As sequoias crescem entrelaçadas umas nas outras.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              subtítulo D ainda por definir
+              Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor.
             </p>
           </div>
         </div>
@@ -747,10 +747,10 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1eRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              frase E ainda não definida
+              O mercado está cheio de quem promete resolver.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              subtítulo E ainda por definir
+              Poucos são os que estão fundamentados o suficiente para isso.
             </p>
           </div>
         </div>
@@ -760,9 +760,9 @@ function MobileHeroSection() {
           <div ref={phase1BottomRef} style={{ display: "flex", flexDirection: "column", gap: 18, color: "white" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {[
-                { bold: "+400 empresas",   light: " atendidas" },
-                { bold: "+R$ 407 milhões", light: " gerados em resultados" },
-                { bold: "+10 anos",        light: " estruturando negócios" },
+                { bold: "400+",    light: " empresas atendidas" },
+                { bold: "R$407M+", light: " em resultados gerados" },
+                { bold: "10+",     light: " anos de mercado" },
               ].map(({ bold, light }) => (
                 <p key={bold} style={{ margin: 0, fontSize: "clamp(13px,3.8vw,17px)", lineHeight: 1.55 }}>
                   <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700 }}>{bold}</span>
@@ -794,7 +794,7 @@ function MobileHeroSection() {
 
           {/* Metodologia title */}
           <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)", zIndex: 2 }}>
-            <Words className="m-met-title" text="Metodologia Sitropia"
+            <Words className="m-met-title" text="Metodologia Sintropia"
               style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: 1.2, display: "block" }} />
           </div>
 
