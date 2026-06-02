@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const NUM_FRAMES = 60;
-const WRAPPER_VH = 560;   /* 400 + ~160 for 3 extra swap phases */
-const MOBILE_VH  = 480;   /* 340 + ~140 */
+const WRAPPER_VH = 490;   /* A+B+C+D swaps + metodologia */
+const MOBILE_VH  = 420;   /* mobile equivalent */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
@@ -325,7 +325,6 @@ function DesktopHeroSection() {
   const phase1bRef      = useRef<HTMLDivElement>(null);
   const phase1cRef      = useRef<HTMLDivElement>(null);
   const phase1dRef      = useRef<HTMLDivElement>(null);
-  const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const mouse           = useMouseParallax();
@@ -338,10 +337,9 @@ function DesktopHeroSection() {
     const p1b      = phase1bRef.current;
     const p1c      = phase1cRef.current;
     const p1d      = phase1dRef.current;
-    const p1e      = phase1eRef.current;
     const p1bottom = phase1BottomRef.current;
     const phase2   = phase2Ref.current;
-    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1e || !p1bottom || !phase2) return;
+    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
@@ -360,20 +358,16 @@ function DesktopHeroSection() {
     tl.to(p1c, { opacity: 0, ease: "none", duration: 0.08 }, 0.46);
     tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.46);
 
-    /* D → E: 0.59 → 0.67 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.08 }, 0.59);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.59);
+    /* D slides up: 0.58 → 0.65 */
+    tl.to(p1d, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.58);
 
-    /* E slides up: 0.71 → 0.78 */
-    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.71);
+    /* Phase 2 fades in: 0.62 → 0.69 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.62);
 
-    /* Phase 2 fades in: 0.75 → 0.82 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.75);
-
-    /* Word reveals */
-    reveal(tl, phase2, ".d-met-title", 0.80, 0.86);
-    reveal(tl, phase2, ".d-met-q1",   0.87, 0.92);
-    reveal(tl, phase2, ".d-met-q2",   0.93, 0.99);
+    /* Word reveals — more room now (no E phase) */
+    reveal(tl, phase2, ".d-met-title", 0.67, 0.74);
+    reveal(tl, phase2, ".d-met-q1",   0.76, 0.86);
+    reveal(tl, phase2, ".d-met-q2",   0.87, 0.98);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -446,10 +440,10 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              Todo negócio merece prosperar.
+              Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Você está no lugar certo.
+              Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
         </div>
@@ -466,10 +460,10 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              Um ecossistema de pessoas, método e soluções.
+              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Construído para que o seu negócio prospere.
+              Não porque tiveram sorte. Porque estavam no ambiente certo.
             </p>
           </div>
         </div>
@@ -486,33 +480,11 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              As sequoias crescem entrelaçadas umas nas outras.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor.
+              Negócios que prosperam de verdade também.
             </p>
           </div>
         </div>
 
-        {/* ── Phase 1e — text (E) — last swap before phase 2 */}
-        <div style={{
-          position: "absolute", left: "50%", top: "50%",
-          transform: "translate(-50%,-54%)",
-          width: "clamp(300px,34vw,490px)",
-          pointerEvents: "none",
-        }}>
-          <div ref={phase1eRef} style={{
-            display: "flex", flexDirection: "column", gap: 20,
-            textAlign: "center", color: "white", opacity: 0,
-          }}>
-            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              O mercado está cheio de quem promete resolver.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Poucos são os que estão fundamentados o suficiente para isso.
-            </p>
-          </div>
-        </div>
 
         {/* ── Phase 1 bottom — stats + CTA ── */}
         <div style={{
@@ -593,7 +565,6 @@ function MobileHeroSection() {
   const phase1bRef      = useRef<HTMLDivElement>(null);
   const phase1cRef      = useRef<HTMLDivElement>(null);
   const phase1dRef      = useRef<HTMLDivElement>(null);
-  const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const { framesRef, ready } = useStaticFrames();
@@ -605,10 +576,9 @@ function MobileHeroSection() {
     const p1b      = phase1bRef.current;
     const p1c      = phase1cRef.current;
     const p1d      = phase1dRef.current;
-    const p1e      = phase1eRef.current;
     const p1bottom = phase1BottomRef.current;
     const phase2   = phase2Ref.current;
-    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1e || !p1bottom || !phase2) return;
+    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
@@ -627,20 +597,16 @@ function MobileHeroSection() {
     tl.to(p1c, { opacity: 0, ease: "none", duration: 0.08 }, 0.46);
     tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.46);
 
-    /* D → E: 0.59 → 0.67 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.08 }, 0.59);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.59);
+    /* D slides up: 0.58 → 0.65 */
+    tl.to(p1d, { opacity: 0, y: "-50px", ease: "none", duration: 0.07 }, 0.58);
 
-    /* E slides up: 0.71 → 0.77 */
-    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.06 }, 0.71);
+    /* Phase 2: 0.62 → 0.68 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.62);
 
-    /* Phase 2: 0.74 → 0.80 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.74);
-
-    /* Word reveals */
-    reveal(tl, phase2, ".m-met-title", 0.79, 0.85);
-    reveal(tl, phase2, ".m-met-q1",   0.86, 0.91);
-    reveal(tl, phase2, ".m-met-q2",   0.92, 0.98);
+    /* Word reveals — more room */
+    reveal(tl, phase2, ".m-met-title", 0.67, 0.74);
+    reveal(tl, phase2, ".m-met-q1",   0.76, 0.86);
+    reveal(tl, phase2, ".m-met-q2",   0.87, 0.97);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -696,10 +662,10 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1bRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              Todo negócio merece prosperar.
+              Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Você está no lugar certo.
+              Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
         </div>
@@ -713,10 +679,10 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1cRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              Um ecossistema de pessoas, método e soluções.
+              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
             </p>
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Construído para que o seu negócio prospere.
+              Não porque tiveram sorte. Porque estavam no ambiente certo.
             </p>
           </div>
         </div>
@@ -730,30 +696,11 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1dRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              As sequoias crescem entrelaçadas umas nas outras.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor.
+              Negócios que prosperam de verdade também.
             </p>
           </div>
         </div>
 
-        {/* Phase 1e — text (E) — last before phase 2 */}
-        <div style={{
-          position: "absolute", top: "38%", left: "50%",
-          transform: "translate(-50%,-50%)",
-          width: "calc(100% - 40px)",
-          pointerEvents: "none",
-        }}>
-          <div ref={phase1eRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
-            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              O mercado está cheio de quem promete resolver.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Poucos são os que estão fundamentados o suficiente para isso.
-            </p>
-          </div>
-        </div>
 
         {/* Phase 1 bottom */}
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 20px 32px" }}>
