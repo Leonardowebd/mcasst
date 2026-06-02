@@ -406,11 +406,25 @@ function DesktopHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.23) 45%,rgba(0,0,0,.23) 55%,rgba(0,0,0,.61) 100%)",
         }} />
 
-        {/* ── keyframes for CTA button loop ── */}
+        {/* ── keyframes for CTA button shimmer ── */}
         <style>{`
-          @keyframes hero-cta-breathe {
-            0%,100% { box-shadow:0 0 0 0 rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.55); opacity:0.88; }
-            50%      { box-shadow:0 0 22px 2px rgba(255,255,255,0.18); border-color:rgba(255,255,255,1); opacity:1; }
+          @keyframes hero-cta-shimmer {
+            0%   { transform: translateX(-120%) skewX(-18deg); }
+            100% { transform: translateX(320%)  skewX(-18deg); }
+          }
+          .hero-cta-btn {
+            position: relative !important;
+            overflow: hidden !important;
+          }
+          .hero-cta-btn::after {
+            content: '';
+            position: absolute;
+            top: -20%; left: 0;
+            width: 42%; height: 140%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
+            animation: hero-cta-shimmer 3.6s ease-in-out infinite;
+            animation-delay: 0.9s;
+            pointer-events: none;
           }
         `}</style>
 
@@ -457,15 +471,15 @@ function DesktopHeroSection() {
                 </div>
               ))}
             </div>
-            {/* CTA with breathing loop */}
+            {/* CTA with shimmer */}
             <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
               target="_blank" rel="noopener noreferrer"
+              className="hero-cta-btn"
               style={{
-                border: "1px solid rgba(255,255,255,.65)",
+                border: "1px solid rgba(255,255,255,.55)",
                 padding: "16px 40px", cursor: "pointer",
                 textDecoration: "none", display: "block",
                 pointerEvents: "auto",
-                animation: "hero-cta-breathe 2.2s ease-in-out infinite",
               }}>
               <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.04vw,15px)", margin: 0, whiteSpace: "nowrap", letterSpacing: ".10em", color: "white" }}>
                 Entrar em contato
@@ -647,6 +661,28 @@ function MobileHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.25) 65%,rgba(0,0,0,.72) 100%)",
         }} />
 
+        {/* ── keyframes for CTA button shimmer (mobile) ── */}
+        <style>{`
+          @keyframes hero-cta-shimmer {
+            0%   { transform: translateX(-120%) skewX(-18deg); }
+            100% { transform: translateX(320%)  skewX(-18deg); }
+          }
+          .hero-cta-btn {
+            position: relative !important;
+            overflow: hidden !important;
+          }
+          .hero-cta-btn::after {
+            content: '';
+            position: absolute;
+            top: -20%; left: 0;
+            width: 42%; height: 140%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
+            animation: hero-cta-shimmer 3.6s ease-in-out infinite;
+            animation-delay: 0.9s;
+            pointer-events: none;
+          }
+        `}</style>
+
         {/* Phase 1 center text (A) — also anchors stats+CTA below */}
         <div style={{
           position: "absolute", top: "38%", left: "50%",
@@ -687,14 +723,14 @@ function MobileHeroSection() {
                 </div>
               ))}
             </div>
-            {/* CTA with breathing loop */}
+            {/* CTA with shimmer */}
             <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
               target="_blank" rel="noopener noreferrer"
+              className="hero-cta-btn"
               style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
-                padding: "13px 28px", border: "1px solid rgba(255,255,255,.65)",
+                padding: "13px 28px", border: "1px solid rgba(255,255,255,.55)",
                 cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
-                animation: "hero-cta-breathe 2.2s ease-in-out infinite",
               }}>
               <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
                 Entrar em contato
