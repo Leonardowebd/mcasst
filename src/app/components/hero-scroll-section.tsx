@@ -343,8 +343,8 @@ function DesktopHeroSection() {
 
     const tl = gsap.timeline();
 
-    /* Bottom slides up: 0.08 → 0.17 */
-    tl.to(p1bottom, { opacity: 0, y: "-80px", ease: "none", duration: 0.09 }, 0.08);
+    /* Bottom fades down (below headline now): 0.08 → 0.17 */
+    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.09 }, 0.08);
 
     /* A → B: 0.20 → 0.28 */
     tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
@@ -406,15 +406,22 @@ function DesktopHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.23) 45%,rgba(0,0,0,.23) 55%,rgba(0,0,0,.61) 100%)",
         }} />
 
-        {/* ── Phase 1 center text (A) ──
-            Outer div handles centering (transform stays here, not GSAP target).
-            Inner div is the GSAP target — no transform conflict. */}
+        {/* ── keyframes for CTA button loop ── */}
+        <style>{`
+          @keyframes hero-cta-breathe {
+            0%,100% { box-shadow:0 0 0 0 rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.55); opacity:0.88; }
+            50%      { box-shadow:0 0 22px 2px rgba(255,255,255,0.18); border-color:rgba(255,255,255,1); opacity:1; }
+          }
+        `}</style>
+
+        {/* ── Phase 1 center text (A) — also anchors stats+CTA below ── */}
         <div style={{
           position: "absolute", left: "50%", top: "50%",
           transform: "translate(-50%,-54%)",
           width: "clamp(300px,34vw,490px)",
           pointerEvents: "none",
         }}>
+          {/* headline + sub — GSAP target */}
           <div ref={phase1CenterRef} style={{
             display: "flex", flexDirection: "column", gap: 20,
             textAlign: "center", color: "white",
@@ -425,6 +432,45 @@ function DesktopHeroSection() {
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
               Ecossistema de estruturação e crescimento de negócios.
             </p>
+          </div>
+
+          {/* stats + CTA — anchored below headline, GSAP-animated independently */}
+          <div ref={phase1BottomRef} style={{
+            position: "absolute",
+            top: "calc(100% + clamp(24px,4vh,44px))",
+            left: "50%", transform: "translateX(-50%)",
+            width: "min(90vw, 640px)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", gap: "clamp(18px,2.8vh,30px)",
+            color: "white",
+          }}>
+            {/* Stats: side by side */}
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "clamp(28px,5vw,64px)", flexWrap: "wrap" }}>
+              {[
+                { bold: "400+",    light: "empresas atendidas" },
+                { bold: "R$407M+", light: "em resultados gerados" },
+                { bold: "10+",     light: "anos de mercado" },
+              ].map(({ bold, light }) => (
+                <div key={bold} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(20px,2.5vw,36px)", lineHeight: 1 }}>{bold}</span>
+                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1vw,14px)", opacity: 0.70, lineHeight: 1.3, textAlign: "center" }}>{light}</span>
+                </div>
+              ))}
+            </div>
+            {/* CTA with breathing loop */}
+            <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
+              target="_blank" rel="noopener noreferrer"
+              style={{
+                border: "1px solid rgba(255,255,255,.65)",
+                padding: "16px 40px", cursor: "pointer",
+                textDecoration: "none", display: "block",
+                pointerEvents: "auto",
+                animation: "hero-cta-breathe 2.2s ease-in-out infinite",
+              }}>
+              <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.04vw,15px)", margin: 0, whiteSpace: "nowrap", letterSpacing: ".10em", color: "white" }}>
+                Entrar em contato
+              </p>
+            </a>
           </div>
         </div>
 
@@ -486,41 +532,6 @@ function DesktopHeroSection() {
         </div>
 
 
-        {/* ── Phase 1 bottom — stats + CTA ── */}
-        <div style={{
-          position: "absolute", bottom: 0,
-          left: "5.56%", right: "5.56%",
-          paddingBottom: "clamp(32px,6vh,60px)",
-        }}>
-          <div ref={phase1BottomRef} style={{
-            display: "flex", alignItems: "flex-end",
-            justifyContent: "space-between", gap: 32,
-            color: "white",
-          }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {[
-                { bold: "400+",    light: "empresas atendidas" },
-                { bold: "R$407M+", light: "em resultados gerados" },
-                { bold: "10+",     light: "anos de mercado" },
-              ].map(({ bold, light }) => (
-                <p key={bold} style={{ margin: 0, fontSize: "clamp(13px,1.39vw,20px)", lineHeight: 1.6 }}>
-                  <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700 }}>{bold}</span>
-                  <span style={{ fontFamily: ROEL, fontWeight: 400, opacity: 0.80 }}> {light}</span>
-                </p>
-              ))}
-              <p style={{ margin: "10px 0 0", fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.11vw,16px)", opacity: 0.60, lineHeight: 1.55 }}>
-                Clareza sobre direção, aquisição e vendas consistentes.
-              </p>
-            </div>
-            <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
-              target="_blank" rel="noopener noreferrer"
-              style={{ border: "1px solid rgba(255,255,255,.65)", padding: "18px 40px", cursor: "pointer", flexShrink: 0, textDecoration: "none", display: "block" }}>
-              <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.04vw,15px)", margin: 0, whiteSpace: "nowrap", letterSpacing: ".10em", color: "white" }}>
-                Entrar em contato
-              </p>
-            </a>
-          </div>
-        </div>
 
         {/* ── Phase 2 — infinity + metodologia ── */}
         <div ref={phase2Ref} style={{ position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none" }}>
@@ -582,8 +593,8 @@ function MobileHeroSection() {
 
     const tl = gsap.timeline();
 
-    /* Bottom slides up: 0.08 → 0.17 */
-    tl.to(p1bottom, { opacity: 0, y: "-60px", ease: "none", duration: 0.09 }, 0.08);
+    /* Bottom fades down (below headline now): 0.08 → 0.17 */
+    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.09 }, 0.08);
 
     /* A → B: 0.20 → 0.28 */
     tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
@@ -636,13 +647,14 @@ function MobileHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.25) 65%,rgba(0,0,0,.72) 100%)",
         }} />
 
-        {/* Phase 1 center text (A) */}
+        {/* Phase 1 center text (A) — also anchors stats+CTA below */}
         <div style={{
           position: "absolute", top: "38%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
         }}>
+          {/* headline + sub */}
           <div ref={phase1CenterRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Estruture. Cresça.<br />Torne previsível.
@@ -650,6 +662,44 @@ function MobileHeroSection() {
             <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
               Ecossistema de estruturação e crescimento de negócios.
             </p>
+          </div>
+
+          {/* stats + CTA — below headline, GSAP-animated independently */}
+          <div ref={phase1BottomRef} style={{
+            position: "absolute",
+            top: "calc(100% + clamp(20px,3.5vh,32px))",
+            left: "50%", transform: "translateX(-50%)",
+            width: "min(95vw, 420px)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", gap: "clamp(16px,2.8vh,24px)",
+            color: "white",
+          }}>
+            {/* Stats: horizontal */}
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "clamp(18px,6vw,36px)", flexWrap: "wrap" }}>
+              {[
+                { bold: "400+",    light: "empresas atendidas" },
+                { bold: "R$407M+", light: "em resultados gerados" },
+                { bold: "10+",     light: "anos de mercado" },
+              ].map(({ bold, light }) => (
+                <div key={bold} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                  <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1 }}>{bold}</span>
+                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,3vw,13px)", opacity: 0.70, lineHeight: 1.3, textAlign: "center" }}>{light}</span>
+                </div>
+              ))}
+            </div>
+            {/* CTA with breathing loop */}
+            <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
+              target="_blank" rel="noopener noreferrer"
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                padding: "13px 28px", border: "1px solid rgba(255,255,255,.65)",
+                cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
+                animation: "hero-cta-breathe 2.2s ease-in-out infinite",
+              }}>
+              <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
+                Entrar em contato
+              </span>
+            </a>
           </div>
         </div>
 
@@ -702,30 +752,6 @@ function MobileHeroSection() {
         </div>
 
 
-        {/* Phase 1 bottom */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 20px 32px" }}>
-          <div ref={phase1BottomRef} style={{ display: "flex", flexDirection: "column", gap: 18, color: "white" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-              {[
-                { bold: "400+",    light: " empresas atendidas" },
-                { bold: "R$407M+", light: " em resultados gerados" },
-                { bold: "10+",     light: " anos de mercado" },
-              ].map(({ bold, light }) => (
-                <p key={bold} style={{ margin: 0, fontSize: "clamp(13px,3.8vw,17px)", lineHeight: 1.55 }}>
-                  <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700 }}>{bold}</span>
-                  <span style={{ fontFamily: ROEL, fontWeight: 400, opacity: 0.82 }}>{light}</span>
-                </p>
-              ))}
-            </div>
-            <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
-              target="_blank" rel="noopener noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "14px 28px", border: "1px solid rgba(255,255,255,.75)", alignSelf: "flex-start", textDecoration: "none" }}>
-              <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
-                Entrar em contato
-              </span>
-            </a>
-          </div>
-        </div>
 
         {/* Phase 2 — infinity + metodologia */}
         <div ref={phase2Ref} style={{ position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none" }}>
