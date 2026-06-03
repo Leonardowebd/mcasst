@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "motion/react";
 import BlurText from "./BlurText";
-import imgPortrait from "../../imports/taclio-portrait.jpg";
+const imgPortrait   = "/tacio-portrait.webp";
+const imgPortraitMob = "/tacio-portrait-m.webp";
 
 const MET        = "'Metropolis', sans-serif";
 const MONTSERRAT = "'Montserrat', sans-serif";
@@ -49,7 +50,7 @@ function DesktopSobre() {
         maxWidth: "1440px",
         marginLeft: "auto",
         marginRight: "auto",
-        minHeight: "811px",
+        minHeight: "clamp(811px, 65vw, 1080px)",
         display: "flex",
         alignItems: "center",
         paddingLeft: "5.56%",   /* 80 / 1440 */
@@ -130,6 +131,7 @@ function DesktopSobre() {
         <img
           alt="Tácio Ladeia"
           src={imgPortrait}
+          loading="lazy"
           style={{
             width: "100%",
             height: "100%",
@@ -169,19 +171,20 @@ function MobileSobre() {
         transition={{ duration: 0.9 }}
         style={{
           width: "100%",
-          height: "70vw",
+          height: "115vw",
           overflow: "hidden",
           position: "relative",
         }}
       >
         <img
           alt="Tácio Ladeia"
-          src={imgPortrait}
+          src={imgPortraitMob}
+          loading="eager"
           style={{
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            objectPosition: "center 15%",
+            objectPosition: "center 10%",
           }}
         />
       </motion.div>
