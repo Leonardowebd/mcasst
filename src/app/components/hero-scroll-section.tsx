@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const NUM_FRAMES = 60;
-const WRAPPER_VH = 560;   /* A→B→C→D→E swaps + metodologia */
-const MOBILE_VH  = 480;   /* mobile equivalent */
+const WRAPPER_VH = 750;   /* A→B→C→D→E swaps + metodologia */
+const MOBILE_VH  = 640;   /* mobile equivalent */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
@@ -345,35 +345,35 @@ function DesktopHeroSection() {
 
     const tl = gsap.timeline();
 
-    /* Bottom fades down: 0.05 → 0.12 */
-    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.07 }, 0.05);
+    /* Bottom fades down: 0.04 → 0.10 */
+    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.06 }, 0.04);
 
-    /* A → B: 0.14 → 0.21 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.07 }, 0.14);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.14);
+    /* A → B: 0.13 → 0.19 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.06 }, 0.13);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.13);
 
-    /* B → C: 0.24 → 0.31 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.07 }, 0.24);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.24);
+    /* B → C: 0.26 → 0.32 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.06 }, 0.26);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.26);
 
-    /* C → D: 0.34 → 0.41 */
-    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.07 }, 0.34);
-    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.34);
+    /* C → D: 0.39 → 0.45 */
+    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.06 }, 0.39);
+    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.39);
 
-    /* D → E: 0.44 → 0.51 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.07 }, 0.44);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.44);
+    /* D → E: 0.52 → 0.58 */
+    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.06 }, 0.52);
+    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.52);
 
-    /* E slides up: 0.54 → 0.61 */
-    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.54);
+    /* E slides up: 0.63 → 0.69 */
+    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.06 }, 0.63);
 
-    /* Phase 2 fades in: 0.58 → 0.65 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.58);
+    /* Phase 2 fades in: 0.67 → 0.73 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.67);
 
     /* Word reveals */
-    reveal(tl, phase2, ".d-met-title", 0.67, 0.74);
-    reveal(tl, phase2, ".d-met-q1",   0.76, 0.86);
-    reveal(tl, phase2, ".d-met-q2",   0.87, 0.98);
+    reveal(tl, phase2, ".d-met-title", 0.75, 0.82);
+    reveal(tl, phase2, ".d-met-q1",   0.83, 0.91);
+    reveal(tl, phase2, ".d-met-q2",   0.92, 0.99);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -496,7 +496,7 @@ function DesktopHeroSection() {
           pointerEvents: "none",
         }}>
           <div ref={phase1bRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(18px,2.2vw,32px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
@@ -524,7 +524,7 @@ function DesktopHeroSection() {
           pointerEvents: "none",
         }}>
           <div ref={phase1dRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(18px,2.2vw,32px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Não porque tiveram sorte. Porque estavam no ambiente certo.
             </p>
           </div>
@@ -608,35 +608,35 @@ function MobileHeroSection() {
 
     const tl = gsap.timeline();
 
-    /* Bottom fades down: 0.05 → 0.12 */
-    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.07 }, 0.05);
+    /* Bottom fades down: 0.04 → 0.10 */
+    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.06 }, 0.04);
 
-    /* A → B: 0.14 → 0.21 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.07 }, 0.14);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.14);
+    /* A → B: 0.13 → 0.19 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.06 }, 0.13);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.13);
 
-    /* B → C: 0.24 → 0.31 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.07 }, 0.24);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.24);
+    /* B → C: 0.26 → 0.32 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.06 }, 0.26);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.26);
 
-    /* C → D: 0.34 → 0.41 */
-    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.07 }, 0.34);
-    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.34);
+    /* C → D: 0.39 → 0.45 */
+    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.06 }, 0.39);
+    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.39);
 
-    /* D → E: 0.44 → 0.51 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.07 }, 0.44);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.44);
+    /* D → E: 0.52 → 0.58 */
+    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.06 }, 0.52);
+    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.52);
 
-    /* E slides up: 0.54 → 0.61 */
-    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.07 }, 0.54);
+    /* E slides up: 0.63 → 0.69 */
+    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.06 }, 0.63);
 
-    /* Phase 2: 0.58 → 0.64 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.58);
+    /* Phase 2: 0.67 → 0.73 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.67);
 
     /* Word reveals */
-    reveal(tl, phase2, ".m-met-title", 0.67, 0.74);
-    reveal(tl, phase2, ".m-met-q1",   0.76, 0.86);
-    reveal(tl, phase2, ".m-met-q2",   0.87, 0.97);
+    reveal(tl, phase2, ".m-met-title", 0.75, 0.82);
+    reveal(tl, phase2, ".m-met-q1",   0.83, 0.91);
+    reveal(tl, phase2, ".m-met-q2",   0.92, 0.99);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -749,7 +749,7 @@ function MobileHeroSection() {
           pointerEvents: "none",
         }}>
           <div ref={phase1bRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(16px,5vw,26px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
@@ -777,7 +777,7 @@ function MobileHeroSection() {
           pointerEvents: "none",
         }}>
           <div ref={phase1dRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(16px,5vw,26px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Não porque tiveram sorte. Porque estavam no ambiente certo.
             </p>
           </div>
