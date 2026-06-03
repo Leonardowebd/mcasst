@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const NUM_FRAMES = 60;
-const WRAPPER_VH = 490;   /* A+B+C+D swaps + metodologia */
-const MOBILE_VH  = 420;   /* mobile equivalent */
+const WRAPPER_VH = 560;   /* A→B→C→D→E swaps + metodologia */
+const MOBILE_VH  = 480;   /* mobile equivalent */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
@@ -325,6 +325,7 @@ function DesktopHeroSection() {
   const phase1bRef      = useRef<HTMLDivElement>(null);
   const phase1cRef      = useRef<HTMLDivElement>(null);
   const phase1dRef      = useRef<HTMLDivElement>(null);
+  const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const mouse           = useMouseParallax();
@@ -337,25 +338,34 @@ function DesktopHeroSection() {
     const p1b      = phase1bRef.current;
     const p1c      = phase1cRef.current;
     const p1d      = phase1dRef.current;
+    const p1e      = phase1eRef.current;
     const p1bottom = phase1BottomRef.current;
     const phase2   = phase2Ref.current;
-    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1bottom || !phase2) return;
+    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1e || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
-    /* Bottom fades down: 0.07 → 0.16 */
-    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.09 }, 0.07);
+    /* Bottom fades down: 0.05 → 0.12 */
+    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.07 }, 0.05);
 
-    /* A → B: 0.20 → 0.28 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.20);
+    /* A → B: 0.14 → 0.21 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.07 }, 0.14);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.14);
 
-    /* B → C: 0.36 → 0.44 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.08 }, 0.36);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.36);
+    /* B → C: 0.24 → 0.31 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.07 }, 0.24);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.24);
 
-    /* C slides up: 0.54 → 0.61 */
-    tl.to(p1c, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.54);
+    /* C → D: 0.34 → 0.41 */
+    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.07 }, 0.34);
+    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.34);
+
+    /* D → E: 0.44 → 0.51 */
+    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.07 }, 0.44);
+    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.44);
+
+    /* E slides up: 0.54 → 0.61 */
+    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.54);
 
     /* Phase 2 fades in: 0.58 → 0.65 */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.58);
@@ -431,16 +441,10 @@ function DesktopHeroSection() {
           width: "clamp(300px,34vw,490px)",
           pointerEvents: "none",
         }}>
-          {/* headline + sub — GSAP target */}
-          <div ref={phase1CenterRef} style={{
-            display: "flex", flexDirection: "column", gap: 20,
-            textAlign: "center", color: "white",
-          }}>
+          {/* headline — GSAP target (A) */}
+          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Ecossistema de Estruturação e Crescimento de Negócios.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
 
@@ -491,15 +495,9 @@ function DesktopHeroSection() {
           width: "clamp(300px,34vw,490px)",
           pointerEvents: "none",
         }}>
-          <div ref={phase1bRef} style={{
-            display: "flex", flexDirection: "column", gap: 20,
-            textAlign: "center", color: "white", opacity: 0,
-          }}>
-            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Não porque tiveram sorte. Porque estavam no ambiente certo.
+          <div ref={phase1bRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(18px,2.2vw,32px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+              Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
         </div>
@@ -511,12 +509,9 @@ function DesktopHeroSection() {
           width: "clamp(300px,34vw,490px)",
           pointerEvents: "none",
         }}>
-          <div ref={phase1cRef} style={{
-            display: "flex", flexDirection: "column", gap: 20,
-            textAlign: "center", color: "white", opacity: 0,
-          }}>
+          <div ref={phase1cRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              Negócios que prosperam de verdade também.
+              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
             </p>
           </div>
         </div>
@@ -528,10 +523,21 @@ function DesktopHeroSection() {
           width: "clamp(300px,34vw,490px)",
           pointerEvents: "none",
         }}>
-          <div ref={phase1dRef} style={{
-            display: "flex", flexDirection: "column", gap: 20,
-            textAlign: "center", color: "white", opacity: 0,
-          }}>
+          <div ref={phase1dRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(18px,2.2vw,32px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+              Não porque tiveram sorte. Porque estavam no ambiente certo.
+            </p>
+          </div>
+        </div>
+
+        {/* ── Phase 1e — text (E) */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translate(-50%,-54%)",
+          width: "clamp(300px,38vw,560px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1eRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Negócios que prosperam de verdade também.
             </p>
@@ -583,6 +589,7 @@ function MobileHeroSection() {
   const phase1bRef      = useRef<HTMLDivElement>(null);
   const phase1cRef      = useRef<HTMLDivElement>(null);
   const phase1dRef      = useRef<HTMLDivElement>(null);
+  const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const { framesRef, ready } = useStaticFrames();
@@ -594,25 +601,34 @@ function MobileHeroSection() {
     const p1b      = phase1bRef.current;
     const p1c      = phase1cRef.current;
     const p1d      = phase1dRef.current;
+    const p1e      = phase1eRef.current;
     const p1bottom = phase1BottomRef.current;
     const phase2   = phase2Ref.current;
-    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1bottom || !phase2) return;
+    if (!wrapper || !p1center || !p1b || !p1c || !p1d || !p1e || !p1bottom || !phase2) return;
 
     const tl = gsap.timeline();
 
-    /* Bottom fades down: 0.07 → 0.16 */
-    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.09 }, 0.07);
+    /* Bottom fades down: 0.05 → 0.12 */
+    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.07 }, 0.05);
 
-    /* A → B: 0.20 → 0.28 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.20);
+    /* A → B: 0.14 → 0.21 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.07 }, 0.14);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.14);
 
-    /* B → C: 0.36 → 0.44 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.08 }, 0.36);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.36);
+    /* B → C: 0.24 → 0.31 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.07 }, 0.24);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.24);
 
-    /* C slides up: 0.54 → 0.61 */
-    tl.to(p1c, { opacity: 0, y: "-50px", ease: "none", duration: 0.07 }, 0.54);
+    /* C → D: 0.34 → 0.41 */
+    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.07 }, 0.34);
+    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.34);
+
+    /* D → E: 0.44 → 0.51 */
+    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.07 }, 0.44);
+    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.44);
+
+    /* E slides up: 0.54 → 0.61 */
+    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.07 }, 0.54);
 
     /* Phase 2: 0.58 → 0.64 */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.58);
@@ -680,12 +696,9 @@ function MobileHeroSection() {
           pointerEvents: "none",
         }}>
           {/* headline + sub */}
-          <div ref={phase1CenterRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white" }}>
+          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Ecossistema de Estruturação e Crescimento de Negócios.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
 
@@ -735,12 +748,9 @@ function MobileHeroSection() {
           width: "calc(100% - 40px)",
           pointerEvents: "none",
         }}>
-          <div ref={phase1bRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
-            <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Não porque tiveram sorte. Porque estavam no ambiente certo.
+          <div ref={phase1bRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(16px,5vw,26px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+              Todo negócio merece prosperar. Você está no lugar certo.
             </p>
           </div>
         </div>
@@ -752,9 +762,9 @@ function MobileHeroSection() {
           width: "calc(100% - 40px)",
           pointerEvents: "none",
         }}>
-          <div ref={phase1cRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
+          <div ref={phase1cRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              Negócios que prosperam de verdade também.
+              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
             </p>
           </div>
         </div>
@@ -766,14 +776,26 @@ function MobileHeroSection() {
           width: "calc(100% - 40px)",
           pointerEvents: "none",
         }}>
-          <div ref={phase1dRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
+          <div ref={phase1dRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
+            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(16px,5vw,26px)", lineHeight: 1.4, margin: 0, opacity: 0.92 }}>
+              Não porque tiveram sorte. Porque estavam no ambiente certo.
+            </p>
+          </div>
+        </div>
+
+        {/* Phase 1e — text (E) */}
+        <div style={{
+          position: "absolute", top: "38%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          width: "calc(100% - 40px)",
+          pointerEvents: "none",
+        }}>
+          <div ref={phase1eRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Negócios que prosperam de verdade também.
             </p>
           </div>
         </div>
-
-
 
         {/* Phase 2 — infinity + metodologia */}
         <div ref={phase2Ref} style={{ position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none" }}>
