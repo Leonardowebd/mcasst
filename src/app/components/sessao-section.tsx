@@ -147,7 +147,7 @@ function MobileSessao() {
             willChange: "opacity",
           }}>
             <img src={item.bg} alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left center", display: "block", filter: "grayscale(100%)" }} />
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "35% center", display: "block", filter: "grayscale(100%)" }} />
           </div>
         ))}
 
@@ -332,7 +332,7 @@ function DesktopSessao() {
               transition: "opacity 0.7s cubic-bezier(0.4,0,0.2,1)",
               willChange: "opacity",
             }}>
-              <img src={item.bg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left center", display: "block", filter: "grayscale(100%)", pointerEvents: "none" }} />
+              <img src={item.bg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "35% center", display: "block", filter: "grayscale(100%)", pointerEvents: "none" }} />
             </div>
           ))}
         </div>
