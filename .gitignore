@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.claude/
+*.local
+.env
+.env.*
+
+# Original PNGs replaced by WebP
+public/services/*.png
+public/gallery/img*.png
