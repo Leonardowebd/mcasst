@@ -346,20 +346,24 @@ function DesktopHeroSection() {
     /* Bottom fades down: 0.07 → 0.16 */
     tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.09 }, 0.07);
 
-    /* A → B: 0.22 → 0.31 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.09 }, 0.22);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.09 }, 0.22);
+    /* A → B: 0.20 → 0.28 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.20);
 
-    /* B slides up → phase 2 (C/D not used) */
-    tl.to(p1b, { opacity: 0, y: "-60px", ease: "none", duration: 0.08 }, 0.50);
+    /* B → C: 0.36 → 0.44 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.08 }, 0.36);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.36);
 
-    /* Phase 2 fades in: 0.54 → 0.61 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.54);
+    /* C slides up: 0.54 → 0.61 */
+    tl.to(p1c, { opacity: 0, y: "-60px", ease: "none", duration: 0.07 }, 0.54);
+
+    /* Phase 2 fades in: 0.58 → 0.65 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.07 }, 0.58);
 
     /* Word reveals */
-    reveal(tl, phase2, ".d-met-title", 0.63, 0.71);
-    reveal(tl, phase2, ".d-met-q1",   0.73, 0.84);
-    reveal(tl, phase2, ".d-met-q2",   0.86, 0.98);
+    reveal(tl, phase2, ".d-met-title", 0.67, 0.74);
+    reveal(tl, phase2, ".d-met-q1",   0.76, 0.86);
+    reveal(tl, phase2, ".d-met-q2",   0.87, 0.98);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -512,10 +516,7 @@ function DesktopHeroSection() {
             textAlign: "center", color: "white", opacity: 0,
           }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
-              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(14px,1.6vw,23px)", lineHeight: 1.45, margin: 0, opacity: 0.88 }}>
-              Não porque tiveram sorte. Porque estavam no ambiente certo.
+              Negócios que prosperam de verdade também.
             </p>
           </div>
         </div>
@@ -602,20 +603,24 @@ function MobileHeroSection() {
     /* Bottom fades down: 0.07 → 0.16 */
     tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.09 }, 0.07);
 
-    /* A → B: 0.22 → 0.31 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.09 }, 0.22);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.09 }, 0.22);
+    /* A → B: 0.20 → 0.28 */
+    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.08 }, 0.20);
+    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.20);
 
-    /* B slides up → phase 2 (C/D not used) */
-    tl.to(p1b, { opacity: 0, y: "-50px", ease: "none", duration: 0.08 }, 0.50);
+    /* B → C: 0.36 → 0.44 */
+    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.08 }, 0.36);
+    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.36);
 
-    /* Phase 2: 0.54 → 0.60 */
-    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.54);
+    /* C slides up: 0.54 → 0.61 */
+    tl.to(p1c, { opacity: 0, y: "-50px", ease: "none", duration: 0.07 }, 0.54);
+
+    /* Phase 2: 0.58 → 0.64 */
+    tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.58);
 
     /* Word reveals */
-    reveal(tl, phase2, ".m-met-title", 0.63, 0.71);
-    reveal(tl, phase2, ".m-met-q1",   0.73, 0.84);
-    reveal(tl, phase2, ".m-met-q2",   0.86, 0.97);
+    reveal(tl, phase2, ".m-met-title", 0.67, 0.74);
+    reveal(tl, phase2, ".m-met-q1",   0.76, 0.86);
+    reveal(tl, phase2, ".m-met-q2",   0.87, 0.97);
 
     tl.to({}, { duration: 0 }, 1);
 
@@ -749,10 +754,7 @@ function MobileHeroSection() {
         }}>
           <div ref={phase1cRef} style={{ display: "flex", flexDirection: "column", gap: 10, textAlign: "center", color: "white", opacity: 0 }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
-              Sequoias vivem mais de 1.000 anos e chegam a 100 metros de altura.
-            </p>
-            <p style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.5, margin: 0, opacity: 0.9 }}>
-              Não porque tiveram sorte. Porque estavam no ambiente certo.
+              Negócios que prosperam de verdade também.
             </p>
           </div>
         </div>
