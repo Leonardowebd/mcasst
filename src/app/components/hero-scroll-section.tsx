@@ -438,7 +438,7 @@ function DesktopHeroSection() {
         <div style={{
           position: "absolute", left: "50%", top: "50%",
           transform: "translate(-50%,-54%)",
-          width: "clamp(300px,34vw,490px)",
+          width: "min(88vw, 860px)",
           pointerEvents: "none",
         }}>
           {/* headline — GSAP target (A) */}
@@ -492,7 +492,7 @@ function DesktopHeroSection() {
         <div style={{
           position: "absolute", left: "50%", top: "50%",
           transform: "translate(-50%,-54%)",
-          width: "clamp(300px,34vw,490px)",
+          width: "min(88vw, 860px)",
           pointerEvents: "none",
         }}>
           <div ref={phase1bRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
@@ -506,7 +506,7 @@ function DesktopHeroSection() {
         <div style={{
           position: "absolute", left: "50%", top: "50%",
           transform: "translate(-50%,-54%)",
-          width: "clamp(300px,34vw,490px)",
+          width: "min(88vw, 860px)",
           pointerEvents: "none",
         }}>
           <div ref={phase1cRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
@@ -520,7 +520,7 @@ function DesktopHeroSection() {
         <div style={{
           position: "absolute", left: "50%", top: "50%",
           transform: "translate(-50%,-54%)",
-          width: "clamp(300px,34vw,490px)",
+          width: "min(88vw, 860px)",
           pointerEvents: "none",
         }}>
           <div ref={phase1dRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
@@ -534,7 +534,7 @@ function DesktopHeroSection() {
         <div style={{
           position: "absolute", left: "50%", top: "50%",
           transform: "translate(-50%,-54%)",
-          width: "clamp(300px,38vw,560px)",
+          width: "min(88vw, 860px)",
           pointerEvents: "none",
         }}>
           <div ref={phase1eRef} style={{ textAlign: "center", color: "white", opacity: 0 }}>
