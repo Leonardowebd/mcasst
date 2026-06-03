@@ -8,46 +8,60 @@ import { useRef, useEffect, useState } from "react";
 
 const ITEMS = [
   {
+    title: "ASSESSORIA DE CRESCIMENTO",
+    bg: "/services/assessoria.png",
+    mobDesc: "Parceiro estratégico que antecipa problemas, executa com método e profundidade.",
+    para: "O parceiro estratégico de execução que antecipa problemas, executa com método, alto padrão e profundidade. Você traz a demanda. A Mascatis interpreta, executa e entrega resultado. Ter bom gosto e fazer bem feito é da nossa cultura. Porque crescer exige ter ao lado quem já sabe o caminho e está comprometido com o resultado tanto quanto você.",
+    bullets: ["Performance com tráfego pago", "Social Media com conteúdo e criativos de conversão direta", "Plano de Ações de Marketing", "Plano de Ações de Branding"],
+  },
+  {
     title: "VSE — VENDA SEM ESFORÇO",
-    bg: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    bg: "/services/vse.png",
     mobDesc: "Semiótica, mecanismo e comercial documentados. Do primeiro contato ao fechamento.",
-    para: "Você sabe para onde quer ir. O que falta é o como. O VSE não é sobre o momento da venda — é sobre a experiência completa do público com o seu negócio.",
-    bullets: ["Semiótica: como ser percebido em cada ponto de contato", "Mecanismo: estrutura que gera previsibilidade de captação", "Comercial: processo fundamentado que converte"],
+    para: "Você sabe para onde quer ir. O que falta é o como. O VSE não é sobre o momento da venda. É sobre a experiência completa do público com o seu negócio, do primeiro contato ao fechamento. Semiótica, mecanismo e comercial documentados e prontos para operar. Sozinho, com equipe própria ou com quem contratar depois.",
+    bullets: ["Semiótica: como você deve ser percebido em cada ponto de contato", "Mecanismo: estrutura que gera previsibilidade de captação", "Comercial: processo fundamentado que converte"],
   },
   {
-    title: "ASSESSORIA",
-    bg: "https://images.unsplash.com/photo-1758873271902-a63ecd5b5235?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
-    mobDesc: "Parceiro estratégico de execução com método, alto padrão e profundidade.",
-    para: "O parceiro estratégico que antecipa problemas, executa com método e profundidade. Você traz a demanda. A Mascatis interpreta, executa e entrega resultado.",
-    bullets: ["Performance com tráfego pago", "Social Media com criativos de conversão direta", "Plano de Ações de Marketing", "Plano de Ações de Branding"],
-  },
-  {
-    title: "CONSELHEIRO",
-    bg: "https://images.unsplash.com/photo-1730658679727-ce12c0adc4ef?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
-    mobDesc: "Alguém de fora que fala com clareza, sem interesse emocional no resultado.",
-    para: "Tem decisão que não dá pra discutir com sócio. Alguém de fora que já viu esse filme antes, fala com clareza e não tem interesse emocional no resultado.",
+    title: "CONSELHEIRO DE NEGÓCIOS",
+    bg: "/services/conselheiro.png",
+    mobDesc: "Alguém de fora que já viu esse filme antes, fala com clareza, sem interesse emocional.",
+    para: "Tem decisão que não dá pra discutir com sócio. Não dá pra levar pra família. Às vezes só precisa de alguém de fora que já viu esse filme antes, fala com clareza o que enxerga e não tem interesse emocional no resultado. Uma conversa no momento certo vale mais do que meses de execução no caminho errado.",
     bullets: ["Conselho as Service", "Reunião mensal", "Canal direto para aconselhamento"],
   },
   {
     title: "MAM",
-    bg: "https://images.unsplash.com/photo-1758599879065-46fd59235166?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
+    bg: "/services/mentoria.png",
     mobDesc: "Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio.",
-    para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado ao seu negócio.",
+    para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige mais do que esforço. Exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio. Não é passo a passo, é condução de quem une conhecimento técnico e experiência real aplicada ao seu negócio.",
     bullets: ["Estratégia", "Marketing", "Vendas"],
   },
   {
-    title: "PARCERIAS",
-    bg: "https://images.unsplash.com/photo-1758519288358-86c504767112?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
-    mobDesc: "Parceiros validados pelo tempo e pela confiança que só a experiência real constrói.",
-    para: "Quando o negócio precisa de algo além do nosso escopo, a indicação não é aleatória. São parceiros construídos ao longo de anos, validados pelo tempo.",
-    bullets: ["Jurídico", "Contabilidade", "BPO Financeiro", "RH estratégico", "Tecnologias e AIs"],
+    title: "PRM",
+    bg: "/services/prm.png",
+    mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
+    para: "Quando o negócio está travado e ou endividado e você não sabe por onde começar, o primeiro passo é entender o que está acontecendo de verdade. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa. O empresário executa sabendo o que fazer, em qual ordem e por quê.",
+    bullets: ["Diagnóstico em 8 áreas do negócio", "Plano de ação validado", "Suporte para você executar com autonomia"],
   },
   {
-    title: "PRM",
-    bg: "https://images.unsplash.com/photo-1745970347652-8f22f5d7d3ba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&w=1440&q=80",
-    mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
-    para: "Quando o negócio está travado ou endividado. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa.",
-    bullets: ["Diagnóstico em 8 áreas do negócio", "Plano de ação validado", "Suporte para executar com autonomia"],
+    title: "PARCERIAS ESTRATÉGICAS",
+    bg: "/services/parcerias.png",
+    mobDesc: "Parceiros validados pelo tempo e pela confiança que só a experiência real constrói.",
+    para: "Quando o negócio precisa de algo além do nosso escopo, a indicação não é aleatória. São parceiros construídos ao longo de anos, validados pelo tempo e pela confiança que só a experiência real constrói. A rede já existe. E cada parceiro dentro dela foi escolhido com o mesmo critério que aplicamos em tudo que fazemos.",
+    bullets: ["Jurídico", "Contabilidade", "BPO Financeiro", "RH estratégico", "Tecnologias e AIs", "Softwares para PMEs"],
+  },
+  {
+    title: "EDUCAÇÃO",
+    bg: "/services/educacao.png",
+    mobDesc: "Informação prática e fundamentada. A porta de entrada mais acessível ao ecossistema.",
+    para: "Nosso braço educacional para democratizar o acesso a informação prática, real e fundamentada. Cursos, e-books, templates e playbooks que ensinam empreendedores a organizar, diagnosticar e melhorar seus negócios com autonomia. Conteúdos diretos, objetivos e práticos. A porta de entrada mais acessível ao nosso ecossistema.",
+    bullets: ["Cursos", "E-books", "Templates", "Playbooks"],
+  },
+  {
+    title: "CO-PRODUÇÃO",
+    bg: "/services/coproducao.png",
+    mobDesc: "Você traz o conhecimento. A Mascatis transforma em produto, audiência e receita.",
+    para: "Todo especialista tem algo valioso para ensinar. Nem todos sabem como transformar isso em produto, audiência e receita. Você traz o conhecimento. A Mascatis traz a estrutura e a expertise no processo das vendas online. Juntos, transformamos conhecimento em vendas.",
+    bullets: ["E-books", "Cursos", "Mentorias", "Workshops"],
   },
 ];
 
@@ -133,7 +147,7 @@ function MobileSessao() {
             willChange: "opacity",
           }}>
             <img src={item.bg} alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left center", display: "block" }} />
           </div>
         ))}
 
@@ -306,7 +320,7 @@ function DesktopSessao() {
   }, []);
 
   return (
-    <div ref={outerRef} id="metodologia" style={{ height: "800vh", position: "relative" }}>
+    <div ref={outerRef} id="metodologia" style={{ height: `${(N + 1) * 100}vh`, position: "relative" }}>
       <div style={{ position: "sticky", top: 0, height: "100vh", width: "100%", overflow: "hidden" }}>
         {/* Background images */}
         <div style={{ position: "absolute", inset: 0 }}>
@@ -318,7 +332,7 @@ function DesktopSessao() {
               transition: "opacity 0.7s cubic-bezier(0.4,0,0.2,1)",
               willChange: "opacity",
             }}>
-              <img src={item.bg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", pointerEvents: "none" }} />
+              <img src={item.bg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left center", display: "block", pointerEvents: "none" }} />
             </div>
           ))}
         </div>
