@@ -148,7 +148,7 @@ function MobileSessao() {
           }}>
             <img src={item.bgMob} alt=""
               loading={i === 0 ? "eager" : "lazy"}
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "35% center", display: "block", filter: "grayscale(100%)" }} />
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block", filter: "grayscale(100%)" }} />
           </div>
         ))}
 
@@ -334,7 +334,7 @@ function DesktopSessao() {
               willChange: "opacity",
             }}>
               <img src={item.bg} alt="" loading={i === 0 ? "eager" : "lazy"}
-                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "35% center", display: "block", filter: "grayscale(100%)", pointerEvents: "none" }} />
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block", filter: "grayscale(100%)", pointerEvents: "none" }} />
             </div>
           ))}
         </div>
