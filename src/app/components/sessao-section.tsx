@@ -138,10 +138,11 @@ function MobileSessao() {
       {/* Sticky viewport */}
       <div style={{ position: "sticky", top: 0, height: "100svh", overflow: "hidden", backgroundColor: "#111" }}>
 
-        {/* ── Imagens de fundo em crossfade ── */}
+        {/* ── Top half: imagens visíveis (não-blur) ── */}
         {ITEMS.map((item, i) => (
           <div key={i} style={{
-            position: "absolute", inset: 0,
+            position: "absolute", top: 0, left: 0, right: 0,
+            height: "50svh",
             opacity: i === activeIdx ? 1 : 0,
             transition: "opacity 0.6s cubic-bezier(0.4,0,0.2,1)",
             willChange: "opacity",
@@ -152,10 +153,25 @@ function MobileSessao() {
           </div>
         ))}
 
-        {/* Overlay */}
+        {/* ── Bottom half: cópia da imagem atrás do blur ── */}
+        {ITEMS.map((item, i) => (
+          <div key={i} style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            height: "50svh",
+            opacity: i === activeIdx ? 1 : 0,
+            transition: "opacity 0.6s cubic-bezier(0.4,0,0.2,1)",
+            willChange: "opacity",
+          }}>
+            <img src={item.bgMob} alt=""
+              loading="lazy"
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block", filter: "grayscale(100%)" }} />
+          </div>
+        ))}
+
+        {/* Gradient leve só no topo */}
         <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background: "linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.60) 100%)",
+          position: "absolute", top: 0, left: 0, right: 0, height: "50svh", pointerEvents: "none",
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.04) 100%)",
         }} />
 
         {/* ── Painel glass inferior ── */}
