@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { useIsMobile } from "../hooks/use-is-mobile";
 
 /*
  * GaleriaSection — Continuous LTR marquee
@@ -23,19 +24,6 @@ const STRIP = [
   { src: "/gallery/g01.webp", alt: "Reunião ao ar livre" },
 ];
 
-function useIsMobile() {
-  const [mob, setMob] = useState(
-    () => typeof window !== "undefined" && window.innerWidth <= 640
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    setMob(mq.matches);
-    const h = (e: MediaQueryListEvent) => setMob(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-  return mob;
-}
 
 export function GaleriaSection() {
   const sectionRef = useRef<HTMLDivElement>(null);

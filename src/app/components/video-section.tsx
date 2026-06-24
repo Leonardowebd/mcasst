@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import imgBg from "../../imports/Web/7043883636bed05655a6c4c2dfccf2a51368bd79.png";
+import imgBg from "../../imports/Web/video-bg.webp";
+import { useIsMobile } from "../hooks/use-is-mobile";
 import svgPaths from "../../imports/Web/svg-uklupbph5w";
 
 /*
@@ -30,21 +31,6 @@ const H = 841;
 
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
-
-/* ── useIsMobile ─────────────────────────────────────────────────────── */
-function useIsMobile() {
-  const [mob, setMob] = useState(
-    () => typeof window !== "undefined" && window.innerWidth <= 640
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    setMob(mq.matches);
-    const h = (e: MediaQueryListEvent) => setMob(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-  return mob;
-}
 
 /* ── Arrow icon ──────────────────────────────────────────────────────── */
 function ArrowIcon({ flip = false, size = 52 }: { flip?: boolean; size?: number }) {

@@ -1,4 +1,6 @@
 import { useRef, useEffect, useState } from "react";
+import { useIsMobile } from "../hooks/use-is-mobile";
+import { WHATSAPP_URL } from "../lib/constants";
 /*
  * SessaoSection — VSE / SEQUOIA / AGÊNCIA / EDUCAÇÃO / PARCEIROS / PRM
  *
@@ -72,19 +74,6 @@ const ROEL = "'Rounded Elegance', sans-serif";
 /* Mobile Figma reference: 402px wide */
 const FW = 402;
 const fw = (px: number) => `${(px / FW * 100).toFixed(3)}vw`;
-
-/* ── useIsMobile ─────────────────────────────────────────────────────── */
-function useIsMobile() {
-  const [mob, setMob] = useState(() => typeof window !== "undefined" && window.innerWidth <= 640);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    setMob(mq.matches);
-    const h = (e: MediaQueryListEvent) => setMob(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-  return mob;
-}
 
 /* ═══════════════════════════════════════════════════════════════════════
    MOBILE — Carrossel horizontal driven por scroll vertical
@@ -270,7 +259,7 @@ function MobileSessao() {
               <strong style={{ fontWeight: 700, color: "white" }}>Crescem até ela</strong>
             </p>
             <a
-              href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
+              href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
               style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
@@ -413,7 +402,7 @@ function DesktopSessao() {
           </p>
           <div style={{ display: "flex", justifyContent: "center", marginTop: "clamp(3px,0.6vh,8px)" }}>
             <a
-              href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
+              href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
               style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
