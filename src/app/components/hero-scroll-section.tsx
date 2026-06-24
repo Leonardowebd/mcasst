@@ -73,21 +73,20 @@ function drawCover(ctx: CanvasRenderingContext2D, bmp: ImageBitmap, cw: number, 
 }
 
 function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const ctxRef       = useRef<CanvasRenderingContext2D | null>(null);
+  const lastTarget   = useRef(-1);   /* last frame index actually painted */
+  const lastProgress = useRef(0);    /* keeps current scroll progress for redraws */
 
-  useEffect(() => {
-    const c = canvasRef.current; if (!c) return;
-    const ro = new ResizeObserver(() => { c.width = c.offsetWidth; c.height = c.offsetHeight; });
-    ro.observe(c);
-    return () => ro.disconnect();
-  }, []);
-
-  const drawFrame = useCallback((p: number) => {
-    const c = canvasRef.current; if (!c) return;
+  /* Paint a specific frame index (skips nothing — caller decides). */
+  const paint = useCallback((target: number) => {
+    const c = canvasRef.current; if (!c || !c.width || !c.height) return;
+    if (!ctxRef.current) ctxRef.current = c.getContext("2d");
+    const ctx = ctxRef.current; if (!ctx) return;
     const frames = framesRef.current;
-    const ctx = c.getContext("2d"); if (!ctx) return;
-    const target = Math.min(Math.round(p * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
+
     let bmp = frames[target];
+    const exact = !!bmp;
     if (!bmp) {
       for (let d = 1; d < NUM_FRAMES; d++) {
         if (target - d >= 0 && frames[target - d]) { bmp = frames[target - d]; break; }
@@ -95,31 +94,71 @@ function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
       }
     }
     if (!bmp) return;
+    /* Only "lock" the target when we drew the exact frame; otherwise allow a
+       redraw once the real frame finishes loading. */
+    lastTarget.current = exact ? target : -1;
     drawCover(ctx, bmp, c.width, c.height);
   }, [framesRef]);
 
+  /* Called every ScrollTrigger tick — bails out when the frame hasn't changed,
+     which is the common case (60 frames spread over hundreds of vh). */
+  const drawFrame = useCallback((p: number) => {
+    lastProgress.current = p;
+    const target = Math.min(Math.round(p * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
+    if (target === lastTarget.current) return;
+    paint(target);
+  }, [paint]);
+
+  useEffect(() => {
+    const c = canvasRef.current; if (!c) return;
+    const ro = new ResizeObserver(() => {
+      c.width = c.offsetWidth; c.height = c.offsetHeight;
+      ctxRef.current = c.getContext("2d");
+      lastTarget.current = -1;
+      paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
+    });
+    ro.observe(c);
+    return () => ro.disconnect();
+  }, [paint]);
+
   useEffect(() => {
     if (ready) {
-      drawFrame(0);
+      lastTarget.current = -1;
+      paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
       ScrollTrigger.refresh();
     }
-  }, [ready, drawFrame]);
+  }, [ready, paint]);
 
   return { canvasRef, drawFrame };
 }
 
-/* ── Mouse parallax ──────────────────────────────────────────────────── */
-function useMouseParallax() {
-  const [off, setOff] = useState({ x: 0, y: 0 });
+/* ── Mouse parallax ──────────────────────────────────────────────────────
+   Writes the transform straight to the DOM node via rAF instead of React
+   state, so moving the mouse no longer re-renders the whole hero on every
+   `mousemove` (the main cause of scroll jank). */
+function useMouseParallax(
+  ref: React.RefObject<HTMLDivElement>,
+  scale = 1.08, ax = 24, ay = 16,
+) {
   useEffect(() => {
-    const h = (e: MouseEvent) => setOff({
-      x: (e.clientX / window.innerWidth  - 0.5) * 24,
-      y: (e.clientY / window.innerHeight - 0.5) * 16,
-    });
-    window.addEventListener("mousemove", h);
-    return () => window.removeEventListener("mousemove", h);
-  }, []);
-  return off;
+    const el = ref.current;
+    if (!el || (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches)) return;
+    let raf = 0, x = 0, y = 0;
+    const apply = () => {
+      raf = 0;
+      el.style.transform = `scale(${scale}) translate(${x}px, ${y}px)`;
+    };
+    const onMove = (e: MouseEvent) => {
+      x = (e.clientX / window.innerWidth  - 0.5) * ax;
+      y = (e.clientY / window.innerHeight - 0.5) * ay;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [ref, scale, ax, ay]);
 }
 
 /* ── Words: renders text as individually-animatable word spans ───────── */
@@ -328,7 +367,8 @@ function DesktopHeroSection() {
   const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
-  const mouse           = useMouseParallax();
+  const parallaxRef     = useRef<HTMLDivElement>(null);
+  useMouseParallax(parallaxRef);
   const { framesRef, ready } = useStaticFrames();
   const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
 
@@ -396,14 +436,15 @@ function DesktopHeroSection() {
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", background: "#0a0a0a", zIndex: 0 }}>
 
         {/* Canvas + mouse parallax */}
-        <div style={{
+        <div ref={parallaxRef} style={{
           position: "absolute", inset: "-6%",
           backgroundImage: "url(/frames/frame_001.webp)",
           backgroundSize: "cover", backgroundPosition: "center",
-          transform: `scale(1.08) translate(${mouse.x}px, ${mouse.y}px)`,
-          transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
+          transform: "scale(1.08)",
+          transition: "transform 0.45s cubic-bezier(0.22,1,0.36,1)",
+          willChange: "transform",
         }}>
-          <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+          <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block", willChange: "transform" }} />
         </div>
 
         {/* Gradient overlay */}
