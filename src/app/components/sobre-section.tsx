@@ -1,26 +1,12 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import BlurText from "./BlurText";
+import { useIsMobile } from "../hooks/use-is-mobile";
 const imgPortrait   = "/tacio-portrait.webp";
 const imgPortraitMob = "/tacio-portrait-m.webp";
 
 const MET        = "'Metropolis', sans-serif";
 const MONTSERRAT = "'Montserrat', sans-serif";
-
-/* ── useIsMobile ─────────────────────────────────────────────────────── */
-function useIsMobile() {
-  const [mob, setMob] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth <= 640
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    setMob(mq.matches);
-    const h = (e: MediaQueryListEvent) => setMob(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-  return mob;
-}
 
 /* ── Copy — 5 parágrafos do Figma node 73:160 ───────────────────────── */
 const PARAGRAPHS = [

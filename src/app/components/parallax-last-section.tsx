@@ -1,7 +1,8 @@
-import { useRef, useEffect, useState } from "react";
-import imgFundo2  from "../../imports/parallax-fundo2-new.png";
+import { useRef, useEffect } from "react";
+import imgFundo2  from "../../imports/parallax-fundo2-new.webp";
 import imgLogo    from "../../imports/parallax-logo-cropped.png";
-import imgArvore1 from "../../imports/parallax-arvore1-new.png";
+import imgArvore1 from "../../imports/parallax-arvore1-new.webp";
+import { useIsMobile } from "../hooks/use-is-mobile";
 
 /*
  * ParallaxLastSection — updated with new Figma images
@@ -22,21 +23,6 @@ const H   = 1077;
 const MAX = 222;
 
 const FW  = 402; /* mobile reference */
-
-/* ── useIsMobile ─────────────────────────────────────────────────────── */
-function useIsMobile() {
-  const [mob, setMob] = useState(
-    () => typeof window !== "undefined" && window.innerWidth <= 640
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    setMob(mq.matches);
-    const h = (e: MediaQueryListEvent) => setMob(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-  return mob;
-}
 
 export function ParallaxLastSection() {
   const sectionRef = useRef<HTMLDivElement>(null);

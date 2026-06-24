@@ -7,11 +7,12 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "../../imports/Web/svg-uklupbph5w";
+import { WHATSAPP_URL } from "../lib/constants";
 
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
-const WA_LINK = "https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis";
+const WA_LINK = WHATSAPP_URL;
 
 const NAV_ITEMS: { label: string; href: string; external?: boolean }[] = [
   { label: "Início",        href: "#hero" },

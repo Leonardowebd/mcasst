@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useIsMobile } from "../hooks/use-is-mobile";
+import { WHATSAPP_URL } from "../lib/constants";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,21 +11,6 @@ const WRAPPER_VH = 750;   /* A→B→C→D→E swaps + metodologia */
 const MOBILE_VH  = 640;   /* mobile equivalent */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
-
-/* ── useIsMobile ─────────────────────────────────────────────────────── */
-function useIsMobile() {
-  const [mob, setMob] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth <= 640
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    setMob(mq.matches);
-    const h = (e: MediaQueryListEvent) => setMob(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-  return mob;
-}
 
 const INITIAL_BATCH = 15;
 
@@ -415,6 +402,18 @@ function DesktopHeroSection() {
     reveal(tl, phase2, ".d-met-q1",   0.83, 0.91);
     reveal(tl, phase2, ".d-met-q2",   0.92, 0.99);
 
+    /* Frame sequence is driven by the timeline itself (not raw scroll), so it
+       shares the exact scrubbed easing as the text/parallax. Before, frames
+       tracked `self.progress` (raw scroll) while everything else was scrubbed,
+       which made the sequence feel out of sync and janky. */
+    const frameProxy = { p: 0 };
+    tl.to(frameProxy, {
+      p: 1,
+      ease: "none",
+      duration: 1,
+      onUpdate: () => drawFrame(frameProxy.p),
+    }, 0);
+
     tl.to({}, { duration: 0 }, 1);
 
     const st = ScrollTrigger.create({
@@ -423,7 +422,6 @@ function DesktopHeroSection() {
       end: "bottom bottom",
       scrub: 0.5,
       animation: tl,
-      onUpdate: (self) => drawFrame(self.progress),
     });
 
     return () => { st.kill(); tl.kill(); };
@@ -513,7 +511,7 @@ function DesktopHeroSection() {
               ))}
             </div>
             {/* CTA with shimmer */}
-            <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
+            <a href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
               className="hero-cta-btn"
               style={{
@@ -679,6 +677,18 @@ function MobileHeroSection() {
     reveal(tl, phase2, ".m-met-q1",   0.83, 0.91);
     reveal(tl, phase2, ".m-met-q2",   0.92, 0.99);
 
+    /* Frame sequence is driven by the timeline itself (not raw scroll), so it
+       shares the exact scrubbed easing as the text/parallax. Before, frames
+       tracked `self.progress` (raw scroll) while everything else was scrubbed,
+       which made the sequence feel out of sync and janky. */
+    const frameProxy = { p: 0 };
+    tl.to(frameProxy, {
+      p: 1,
+      ease: "none",
+      duration: 1,
+      onUpdate: () => drawFrame(frameProxy.p),
+    }, 0);
+
     tl.to({}, { duration: 0 }, 1);
 
     const st = ScrollTrigger.create({
@@ -687,7 +697,6 @@ function MobileHeroSection() {
       end: "bottom bottom",
       scrub: 0.5,
       animation: tl,
-      onUpdate: (self) => drawFrame(self.progress),
     });
 
     return () => { st.kill(); tl.kill(); };
@@ -767,7 +776,7 @@ function MobileHeroSection() {
               ))}
             </div>
             {/* CTA with shimmer */}
-            <a href="https://wa.me/5577999160302?text=Vim%20pelo%20Site%20e%20quero%20saber%20mais%20sobre%20a%20Mascatis"
+            <a href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
               className="hero-cta-btn"
               style={{
