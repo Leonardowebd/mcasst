@@ -72,68 +72,63 @@ function nearestLoaded(frames: (ImageBitmap | null)[], idx: number): ImageBitmap
 function useCanvas(framesRef: React.RefObject<(ImageBitmap | null)[]>, ready: boolean) {
   const canvasRef    = useRef<HTMLCanvasElement>(null);
   const ctxRef       = useRef<CanvasRenderingContext2D | null>(null);
-  const lastPos      = useRef(-1);   /* last continuous frame position painted */
+  const lastTarget   = useRef(-1);   /* last frame index actually painted */
   const lastProgress = useRef(0);    /* keeps current scroll progress for redraws */
 
   const getCtx = (c: HTMLCanvasElement) => {
-    if (!ctxRef.current) ctxRef.current = c.getContext("2d", { alpha: false });
+    if (!ctxRef.current) {
+      const ctx = c.getContext("2d", { alpha: false });
+      if (ctx) ctx.imageSmoothingQuality = "high";
+      ctxRef.current = ctx;
+    }
     return ctxRef.current;
   };
 
-  /* Paint a *continuous* frame position (e.g. 12.37) by cross-dissolving the two
-     neighbouring frames. With only 60 frames spread over hundreds of vh, hard
-     `Math.round` snapping looked like a 60-slide slideshow; blending frame N into
-     N+1 by the fractional part turns it into smooth, video-like motion. */
-  const paintAt = useCallback((pos: number) => {
+  /* Paint a single frame index — clean snapping, no cross-fade. Blending two
+     distinct frames ghosts during motion, so we draw exactly one crisp frame. */
+  const paint = useCallback((target: number) => {
     const c = canvasRef.current; if (!c || !c.width || !c.height) return;
     const ctx = getCtx(c); if (!ctx) return;
-    const frames = framesRef.current;
-    const maxIdx = NUM_FRAMES - 1;
-
-    pos = Math.max(0, Math.min(pos, maxIdx));
-    const base = Math.floor(pos);
-    const frac = pos - base;
-
-    const a = nearestLoaded(frames, base);
-    if (!a) return;
-    const b = frac > 0.004 ? nearestLoaded(frames, Math.min(base + 1, maxIdx)) : null;
-
-    drawCover(ctx, a, c.width, c.height);
-    if (b && b !== a) {
-      ctx.globalAlpha = frac;
-      drawCover(ctx, b, c.width, c.height);
-      ctx.globalAlpha = 1;
-    }
-    lastPos.current = pos;
+    const bmp = nearestLoaded(framesRef.current, target);
+    if (!bmp) return;
+    /* Only lock the index when the exact frame was drawn; otherwise allow a
+       redraw once the real frame finishes streaming in. */
+    lastTarget.current = framesRef.current[target] ? target : -1;
+    drawCover(ctx, bmp, c.width, c.height);
   }, [framesRef]);
 
-  /* Called every ScrollTrigger tick. Redraws on any sub-frame change so the
-     cross-dissolve advances continuously instead of in 60 discrete steps. */
+  /* Called every ScrollTrigger tick. Driven by the scrubbed timeline, so the
+     index advances at an eased, even cadence instead of tracking raw scroll. */
   const drawFrame = useCallback((p: number) => {
     lastProgress.current = p;
-    const pos = p * (NUM_FRAMES - 1);
-    if (lastPos.current >= 0 && Math.abs(pos - lastPos.current) < 0.004) return;
-    paintAt(pos);
-  }, [paintAt]);
+    const target = Math.min(Math.round(p * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
+    if (target === lastTarget.current) return;
+    paint(target);
+  }, [paint]);
 
   useEffect(() => {
     const c = canvasRef.current; if (!c) return;
+    /* Backing store follows the device pixel ratio (capped at the 1080p source)
+       so the sequence stays crisp on retina displays. */
     const ro = new ResizeObserver(() => {
-      c.width = c.offsetWidth; c.height = c.offsetHeight;
-      lastPos.current = -1;
-      paintAt(lastProgress.current * (NUM_FRAMES - 1));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      c.width  = Math.round(c.offsetWidth  * dpr);
+      c.height = Math.round(c.offsetHeight * dpr);
+      ctxRef.current = null;
+      lastTarget.current = -1;
+      paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
     });
     ro.observe(c);
     return () => ro.disconnect();
-  }, [paintAt]);
+  }, [paint]);
 
   useEffect(() => {
     if (ready) {
-      lastPos.current = -1;
-      paintAt(lastProgress.current * (NUM_FRAMES - 1));
+      lastTarget.current = -1;
+      paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
       ScrollTrigger.refresh();
     }
-  }, [ready, paintAt]);
+  }, [ready, paint]);
 
   return { canvasRef, drawFrame };
 }
