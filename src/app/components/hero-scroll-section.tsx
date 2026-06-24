@@ -59,62 +59,81 @@ function drawCover(ctx: CanvasRenderingContext2D, bmp: ImageBitmap, cw: number, 
   ctx.drawImage(bmp, (cw - bmp.width * s) / 2, (ch - bmp.height * s) / 2, bmp.width * s, bmp.height * s);
 }
 
-function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
+/* Nearest loaded frame to `idx` (used while later frames are still streaming). */
+function nearestLoaded(frames: (ImageBitmap | null)[], idx: number): ImageBitmap | null {
+  if (frames[idx]) return frames[idx];
+  for (let d = 1; d < NUM_FRAMES; d++) {
+    if (idx - d >= 0 && frames[idx - d]) return frames[idx - d];
+    if (idx + d < NUM_FRAMES && frames[idx + d]) return frames[idx + d];
+  }
+  return null;
+}
+
+function useCanvas(framesRef: React.RefObject<(ImageBitmap | null)[]>, ready: boolean) {
   const canvasRef    = useRef<HTMLCanvasElement>(null);
   const ctxRef       = useRef<CanvasRenderingContext2D | null>(null);
-  const lastTarget   = useRef(-1);   /* last frame index actually painted */
+  const lastPos      = useRef(-1);   /* last continuous frame position painted */
   const lastProgress = useRef(0);    /* keeps current scroll progress for redraws */
 
-  /* Paint a specific frame index (skips nothing — caller decides). */
-  const paint = useCallback((target: number) => {
-    const c = canvasRef.current; if (!c || !c.width || !c.height) return;
-    if (!ctxRef.current) ctxRef.current = c.getContext("2d");
-    const ctx = ctxRef.current; if (!ctx) return;
-    const frames = framesRef.current;
+  const getCtx = (c: HTMLCanvasElement) => {
+    if (!ctxRef.current) ctxRef.current = c.getContext("2d", { alpha: false });
+    return ctxRef.current;
+  };
 
-    let bmp = frames[target];
-    const exact = !!bmp;
-    if (!bmp) {
-      for (let d = 1; d < NUM_FRAMES; d++) {
-        if (target - d >= 0 && frames[target - d]) { bmp = frames[target - d]; break; }
-        if (target + d < NUM_FRAMES && frames[target + d]) { bmp = frames[target + d]; break; }
-      }
+  /* Paint a *continuous* frame position (e.g. 12.37) by cross-dissolving the two
+     neighbouring frames. With only 60 frames spread over hundreds of vh, hard
+     `Math.round` snapping looked like a 60-slide slideshow; blending frame N into
+     N+1 by the fractional part turns it into smooth, video-like motion. */
+  const paintAt = useCallback((pos: number) => {
+    const c = canvasRef.current; if (!c || !c.width || !c.height) return;
+    const ctx = getCtx(c); if (!ctx) return;
+    const frames = framesRef.current;
+    const maxIdx = NUM_FRAMES - 1;
+
+    pos = Math.max(0, Math.min(pos, maxIdx));
+    const base = Math.floor(pos);
+    const frac = pos - base;
+
+    const a = nearestLoaded(frames, base);
+    if (!a) return;
+    const b = frac > 0.004 ? nearestLoaded(frames, Math.min(base + 1, maxIdx)) : null;
+
+    drawCover(ctx, a, c.width, c.height);
+    if (b && b !== a) {
+      ctx.globalAlpha = frac;
+      drawCover(ctx, b, c.width, c.height);
+      ctx.globalAlpha = 1;
     }
-    if (!bmp) return;
-    /* Only "lock" the target when we drew the exact frame; otherwise allow a
-       redraw once the real frame finishes loading. */
-    lastTarget.current = exact ? target : -1;
-    drawCover(ctx, bmp, c.width, c.height);
+    lastPos.current = pos;
   }, [framesRef]);
 
-  /* Called every ScrollTrigger tick — bails out when the frame hasn't changed,
-     which is the common case (60 frames spread over hundreds of vh). */
+  /* Called every ScrollTrigger tick. Redraws on any sub-frame change so the
+     cross-dissolve advances continuously instead of in 60 discrete steps. */
   const drawFrame = useCallback((p: number) => {
     lastProgress.current = p;
-    const target = Math.min(Math.round(p * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
-    if (target === lastTarget.current) return;
-    paint(target);
-  }, [paint]);
+    const pos = p * (NUM_FRAMES - 1);
+    if (lastPos.current >= 0 && Math.abs(pos - lastPos.current) < 0.004) return;
+    paintAt(pos);
+  }, [paintAt]);
 
   useEffect(() => {
     const c = canvasRef.current; if (!c) return;
     const ro = new ResizeObserver(() => {
       c.width = c.offsetWidth; c.height = c.offsetHeight;
-      ctxRef.current = c.getContext("2d");
-      lastTarget.current = -1;
-      paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
+      lastPos.current = -1;
+      paintAt(lastProgress.current * (NUM_FRAMES - 1));
     });
     ro.observe(c);
     return () => ro.disconnect();
-  }, [paint]);
+  }, [paintAt]);
 
   useEffect(() => {
     if (ready) {
-      lastTarget.current = -1;
-      paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
+      lastPos.current = -1;
+      paintAt(lastProgress.current * (NUM_FRAMES - 1));
       ScrollTrigger.refresh();
     }
-  }, [ready, paint]);
+  }, [ready, paintAt]);
 
   return { canvasRef, drawFrame };
 }
