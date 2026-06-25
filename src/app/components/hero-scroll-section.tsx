@@ -798,7 +798,7 @@ function MobileHeroSection() {
 
         {/* Phase 1b — swapped text (B) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -812,7 +812,7 @@ function MobileHeroSection() {
 
         {/* Phase 1c — text (C) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -826,7 +826,7 @@ function MobileHeroSection() {
 
         {/* Phase 1d — text (D) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -840,7 +840,7 @@ function MobileHeroSection() {
 
         {/* Phase 1e — text (E) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",

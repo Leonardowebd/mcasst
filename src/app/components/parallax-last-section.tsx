@@ -146,6 +146,16 @@ export function ParallaxLastSection() {
               />
             </div>
 
+            {/* Bottom gradient — black→transparent at the base only. Above the
+                images but below the logo (z5) to make the logo stand out. */}
+            <div style={{
+              position: "absolute", left: 0, right: 0, bottom: 0,
+              height: "55%",
+              background: "linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 38%, rgba(0,0,0,0) 100%)",
+              pointerEvents: "none",
+              zIndex: 3,
+            }} />
+
             {/* Logo */}
             <div style={{
               position: "absolute",
@@ -221,6 +231,16 @@ export function ParallaxLastSection() {
             }}
           />
         </div>
+
+        {/* Bottom gradient — black→transparent at the base only. Sits above the
+            images (z1/z2) but below the logo (z10) to make the logo pop. */}
+        <div style={{
+          position: "absolute", left: 0, right: 0, bottom: 0,
+          height: "48%",
+          background: "linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 38%, rgba(0,0,0,0) 100%)",
+          pointerEvents: "none",
+          zIndex: 3,
+        }} />
 
         {/* LOGO */}
         <div style={{
