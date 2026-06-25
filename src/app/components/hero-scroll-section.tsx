@@ -439,7 +439,7 @@ function DesktopHeroSection() {
       trigger: wrapper,
       start: "top top",
       end: "bottom bottom",
-      scrub: 0.85,
+      scrub: 0.5,
       animation: tl,
     });
 
@@ -683,7 +683,7 @@ function MobileHeroSection() {
       trigger: wrapper,
       start: "top top",
       end: "bottom bottom",
-      scrub: 0.85,
+      scrub: 0.5,
       animation: tl,
     });
 
