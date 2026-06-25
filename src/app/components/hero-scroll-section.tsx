@@ -186,6 +186,21 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
   );
 }
 
+/* ── Blur-reveal swap between two stacked text layers (scrubbed) ─────────
+   Incoming layer un-blurs while rising + settling its scale; the outgoing one
+   blurs out and lifts away. Short, snappy easing keeps each swap quick, the
+   cinematic blur giving the background a more dynamic, fluid feel on scroll. */
+const SWAP_DUR = 0.05;
+function blurSwap(tl: gsap.core.Timeline, outEl: Element, inEl: Element, at: number) {
+  tl.to(outEl,
+    { autoAlpha: 0, filter: "blur(10px)", y: -16, ease: "power1.in", duration: SWAP_DUR },
+    at);
+  tl.fromTo(inEl,
+    { autoAlpha: 0, filter: "blur(13px)", y: 24, scale: 0.965 },
+    { autoAlpha: 1, filter: "blur(0px)", y: 0, scale: 1, ease: "power2.out", duration: SWAP_DUR + 0.012 },
+    at + 0.004);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    InfinitySymbol — Figma PNG (visual) + SVG overlay (textPath animado)
 ═══════════════════════════════════════════════════════════════════════ */
@@ -387,26 +402,16 @@ function DesktopHeroSection() {
     const tl = gsap.timeline();
 
     /* Bottom fades down: 0.04 → 0.10 */
-    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.06 }, 0.04);
+    tl.to(p1bottom, { opacity: 0, y: "20px", filter: "blur(6px)", ease: "power1.in", duration: 0.06 }, 0.04);
 
-    /* A → B: 0.13 → 0.19 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.06 }, 0.13);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.13);
+    /* Blur-reveal swaps A → B → C → D → E (quick, cinematic) */
+    blurSwap(tl, p1center, p1b, 0.13);
+    blurSwap(tl, p1b, p1c, 0.26);
+    blurSwap(tl, p1c, p1d, 0.39);
+    blurSwap(tl, p1d, p1e, 0.52);
 
-    /* B → C: 0.26 → 0.32 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.06 }, 0.26);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.26);
-
-    /* C → D: 0.39 → 0.45 */
-    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.06 }, 0.39);
-    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.39);
-
-    /* D → E: 0.52 → 0.58 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.06 }, 0.52);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.52);
-
-    /* E slides up: 0.63 → 0.69 */
-    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.06 }, 0.63);
+    /* E blurs + slides up: 0.63 */
+    tl.to(p1e, { autoAlpha: 0, filter: "blur(11px)", y: "-60px", ease: "power1.in", duration: 0.06 }, 0.63);
 
     /* Phase 2 fades in: 0.67 → 0.73 */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.67);
@@ -434,7 +439,7 @@ function DesktopHeroSection() {
       trigger: wrapper,
       start: "top top",
       end: "bottom bottom",
-      scrub: 0.5,
+      scrub: 0.85,
       animation: tl,
     });
 
@@ -473,7 +478,7 @@ function DesktopHeroSection() {
           pointerEvents: "none",
         }}>
           {/* headline — GSAP target (A) */}
-          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white" }}>
+          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white", filter: "blur(0px)" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
@@ -482,6 +487,7 @@ function DesktopHeroSection() {
           {/* stats + CTA — anchored below headline, GSAP-animated independently */}
           <div ref={phase1BottomRef} style={{
             position: "absolute",
+            filter: "blur(0px)",
             top: "calc(100% + clamp(24px,4vh,44px))",
             left: "50%", transform: "translateX(-50%)",
             width: "min(90vw, 640px)",
@@ -640,26 +646,16 @@ function MobileHeroSection() {
     const tl = gsap.timeline();
 
     /* Bottom fades down: 0.04 → 0.10 */
-    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.06 }, 0.04);
+    tl.to(p1bottom, { opacity: 0, y: "16px", filter: "blur(6px)", ease: "power1.in", duration: 0.06 }, 0.04);
 
-    /* A → B: 0.13 → 0.19 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.06 }, 0.13);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.13);
+    /* Blur-reveal swaps A → B → C → D → E (quick, cinematic) */
+    blurSwap(tl, p1center, p1b, 0.13);
+    blurSwap(tl, p1b, p1c, 0.26);
+    blurSwap(tl, p1c, p1d, 0.39);
+    blurSwap(tl, p1d, p1e, 0.52);
 
-    /* B → C: 0.26 → 0.32 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.06 }, 0.26);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.26);
-
-    /* C → D: 0.39 → 0.45 */
-    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.06 }, 0.39);
-    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.39);
-
-    /* D → E: 0.52 → 0.58 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.06 }, 0.52);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.52);
-
-    /* E slides up: 0.63 → 0.69 */
-    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.06 }, 0.63);
+    /* E blurs + slides up: 0.63 */
+    tl.to(p1e, { autoAlpha: 0, filter: "blur(11px)", y: "-50px", ease: "power1.in", duration: 0.06 }, 0.63);
 
     /* Phase 2: 0.67 → 0.73 */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.67);
@@ -687,7 +683,7 @@ function MobileHeroSection() {
       trigger: wrapper,
       start: "top top",
       end: "bottom bottom",
-      scrub: 0.5,
+      scrub: 0.85,
       animation: tl,
     });
 
@@ -716,7 +712,7 @@ function MobileHeroSection() {
           pointerEvents: "none",
         }}>
           {/* headline + sub */}
-          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white" }}>
+          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white", filter: "blur(0px)" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
@@ -725,6 +721,7 @@ function MobileHeroSection() {
           {/* stats + CTA — below headline, GSAP-animated independently */}
           <div ref={phase1BottomRef} style={{
             position: "absolute",
+            filter: "blur(0px)",
             top: "calc(100% + clamp(20px,3.5vh,32px))",
             left: "50%", transform: "translateX(-50%)",
             width: "min(95vw, 420px)",
