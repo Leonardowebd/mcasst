@@ -150,14 +150,14 @@ function MobileSobre() {
         flexShrink: 0,
       }}
     >
-      {/* Portrait — topo, 70vw de altura */}
+      {/* Portrait — topo, retrato mais alto para mostrar mais da foto */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ duration: 0.9 }}
         style={{
           width: "100%",
-          height: "115vw",
+          height: "138vw",
           overflow: "hidden",
           position: "relative",
         }}

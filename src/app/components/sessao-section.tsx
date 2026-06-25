@@ -1,6 +1,18 @@
 import { useRef, useEffect, useState } from "react";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import { WHATSAPP_URL, GOLD_RGB } from "../lib/constants";
+import { smoothScrollTo } from "../lib/smooth-scroll";
+
+/* Small chevron used by the mobile manual-navigation arrows. */
+function Chevron({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+      style={{ display: "block", transform: dir === "right" ? "rotate(180deg)" : "none" }}>
+      <path d="M15 5l-7 7 7 7" stroke="white" strokeWidth="2.2"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 /*
  * SessaoSection — VSE / SEQUOIA / AGÊNCIA / EDUCAÇÃO / PARCEIROS / PRM
  *
@@ -121,6 +133,17 @@ function MobileSessao() {
     return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafRef.current); };
   }, []);
 
+  /* Manual navigation (mobile) — smooth-scrolls the page to the slide's
+     position so the user can step through services with the arrows instead of
+     relying on scroll alone. Stays in sync with the scroll-driven slider. */
+  const goTo = (i: number) => {
+    const outer = outerRef.current; if (!outer) return;
+    const target = Math.max(0, Math.min(N - 1, i));
+    const travel = outer.offsetHeight - window.innerHeight;
+    const y = outer.offsetTop + (target / N) * travel + 6;
+    smoothScrollTo(y, { duration: 0.7 });
+  };
+
   return (
     /* Seção longa: (N+1)*100vh = 700vh */
     <div ref={outerRef} id="metodologia" style={{ height: `${(N + 1) * 100}vh`, position: "relative" }}>
@@ -185,6 +208,34 @@ function MobileSessao() {
               }} />
             ))}
           </div>
+
+          {/* Prev / Next — manual navigation arrows (mobile only) */}
+          <button onClick={() => goTo(activeIdx - 1)} aria-label="Serviço anterior"
+            style={{
+              position: "absolute", left: 10, top: "calc(50% + 10px)",
+              transform: "translateY(-50%)", zIndex: 8,
+              width: 38, height: 38, borderRadius: "50%",
+              background: "rgba(0,0,0,0.30)", border: "1px solid rgba(255,255,255,0.18)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", padding: 0,
+              opacity: activeIdx === 0 ? 0.35 : 0.95,
+              transition: "opacity 0.25s ease",
+            }}>
+            <Chevron dir="left" />
+          </button>
+          <button onClick={() => goTo(activeIdx + 1)} aria-label="Próximo serviço"
+            style={{
+              position: "absolute", right: 10, top: "calc(50% + 10px)",
+              transform: "translateY(-50%)", zIndex: 8,
+              width: 38, height: 38, borderRadius: "50%",
+              background: "rgba(0,0,0,0.30)", border: "1px solid rgba(255,255,255,0.18)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", padding: 0,
+              opacity: activeIdx >= N - 1 ? 0.35 : 0.95,
+              transition: "opacity 0.25s ease",
+            }}>
+            <Chevron dir="right" />
+          </button>
 
           {/* Trilho dos slides — driven por translateX */}
           <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>

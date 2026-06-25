@@ -71,13 +71,15 @@ function DesktopCarousel() {
   /* scale ≤ 1 because contentRef.width = min(viewport, W) */
   const scale  = secW / W;
   const videoW = Math.round(250 * scale);
-  const videoH = Math.round(426 * scale);
+  const videoH = Math.round(videoW * 16 / 9);   /* strict 9:16 portrait */
   const gap    = Math.round(130 * scale);
   const step   = videoW + gap;
 
   const translateX = -(idx * step);
-  const prev = () => setIdx(i => Math.max(0, i - 1));
-  const next = () => setIdx(i => Math.min(maxIdx, i + 1));
+  const positions = maxIdx + 1;
+  /* Infinite both ways — wrap around the window positions. */
+  const prev = () => setIdx(i => (i - 1 + positions) % positions);
+  const next = () => setIdx(i => (i + 1) % positions);
 
   const arrowTop     = (382 / H * 100).toFixed(2) + "%";
   const leftArrowX   = Math.round(79   * scale);
@@ -193,10 +195,9 @@ function DesktopCarousel() {
           </p>
         </div>
 
-        {/* Left arrow */}
+        {/* Left arrow — infinite, never disabled */}
         <button
           onClick={prev}
-          disabled={idx === 0}
           aria-label="Anterior"
           style={{
             position: "absolute",
@@ -204,21 +205,20 @@ function DesktopCarousel() {
             top: arrowTop,
             transform: "translateY(-50%)",
             background: "none", border: "none",
-            cursor: idx === 0 ? "default" : "pointer",
+            cursor: "pointer",
             padding: 0, zIndex: 5,
-            opacity: idx === 0 ? 0.25 : 0.85,
+            opacity: 0.85,
             transition: "opacity 0.2s",
           }}
-          onMouseEnter={e => { if (idx > 0) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx === 0 ? "0.25" : "0.85"; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"; }}
         >
           <ArrowIcon flip={false} size={Math.round(76 * scale)} />
         </button>
 
-        {/* Right arrow */}
+        {/* Right arrow — infinite, never disabled */}
         <button
           onClick={next}
-          disabled={idx >= maxIdx}
           aria-label="Próximo"
           style={{
             position: "absolute",
@@ -226,13 +226,13 @@ function DesktopCarousel() {
             top: arrowTop,
             transform: "translateY(-50%)",
             background: "none", border: "none",
-            cursor: idx >= maxIdx ? "default" : "pointer",
+            cursor: "pointer",
             padding: 0, zIndex: 5,
-            opacity: idx >= maxIdx ? 0.25 : 0.85,
+            opacity: 0.85,
             transition: "opacity 0.2s",
           }}
-          onMouseEnter={e => { if (idx < maxIdx) (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = idx >= maxIdx ? "0.25" : "0.85"; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"; }}
         >
           <ArrowIcon flip={true} size={Math.round(76 * scale)} />
         </button>
@@ -270,10 +270,10 @@ function MobileCarousel() {
 
   const videoW    = "min(75vw, 270px)";
   const videoH    = "min(133.3vw, 480px)"; /* 9:16 */
-  const maxIdx    = VIDEOS.length - 1;
 
-  const prev = () => setIdx(i => Math.max(0, i - 1));
-  const next = () => setIdx(i => Math.min(maxIdx, i + 1));
+  /* Infinite both ways — wrap around all videos. */
+  const prev = () => setIdx(i => (i - 1 + VIDEOS.length) % VIDEOS.length);
+  const next = () => setIdx(i => (i + 1) % VIDEOS.length);
 
   return (
     <div
@@ -320,12 +320,12 @@ function MobileCarousel() {
         gap: "clamp(10px,3vw,20px)",
         position: "relative", zIndex: 2,
       }}>
-        {/* Left arrow */}
-        <button onClick={prev} disabled={idx === 0} aria-label="Anterior"
+        {/* Left arrow — infinite */}
+        <button onClick={prev} aria-label="Anterior"
           style={{
             background: "none", border: "none",
-            cursor: idx === 0 ? "default" : "pointer",
-            opacity: idx === 0 ? 0.2 : 0.85, padding: 0, flexShrink: 0,
+            cursor: "pointer",
+            opacity: 0.85, padding: 0, flexShrink: 0,
           }}>
           <ArrowIcon flip={false} size={40} />
         </button>
@@ -348,12 +348,12 @@ function MobileCarousel() {
           />
         </div>
 
-        {/* Right arrow */}
-        <button onClick={next} disabled={idx >= maxIdx} aria-label="Próximo"
+        {/* Right arrow — infinite */}
+        <button onClick={next} aria-label="Próximo"
           style={{
             background: "none", border: "none",
-            cursor: idx >= maxIdx ? "default" : "pointer",
-            opacity: idx >= maxIdx ? 0.2 : 0.85, padding: 0, flexShrink: 0,
+            cursor: "pointer",
+            opacity: 0.85, padding: 0, flexShrink: 0,
           }}>
           <ArrowIcon flip={true} size={40} />
         </button>

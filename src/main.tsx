@@ -5,6 +5,7 @@ import App from './app/App';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { setLenis } from './app/lib/smooth-scroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,7 @@ const lenis = new Lenis({
   lerp: 0.09,          /* 0=instant 1=never — 0.09 = cinematic glide        */
   smoothWheel: true,
 });
+setLenis(lenis);   /* share instance so components can scrollTo smoothly */
 
 lenis.on('scroll', ScrollTrigger.update);
 
