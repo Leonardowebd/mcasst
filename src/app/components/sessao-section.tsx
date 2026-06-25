@@ -212,7 +212,7 @@ function MobileSessao() {
           {/* Prev / Next — manual navigation arrows (mobile only) */}
           <button onClick={() => goTo(activeIdx - 1)} aria-label="Serviço anterior"
             style={{
-              position: "absolute", left: "20%", top: "calc(50% + 10px)",
+              position: "absolute", left: 10, top: "30%",
               transform: "translateY(-50%)", zIndex: 8,
               width: 38, height: 38, borderRadius: "50%",
               background: "rgba(0,0,0,0.30)", border: "1px solid rgba(255,255,255,0.18)",
@@ -225,7 +225,7 @@ function MobileSessao() {
           </button>
           <button onClick={() => goTo(activeIdx + 1)} aria-label="Próximo serviço"
             style={{
-              position: "absolute", right: "20%", top: "calc(50% + 10px)",
+              position: "absolute", right: 10, top: "30%",
               transform: "translateY(-50%)", zIndex: 8,
               width: 38, height: 38, borderRadius: "50%",
               background: "rgba(0,0,0,0.30)", border: "1px solid rgba(255,255,255,0.18)",
