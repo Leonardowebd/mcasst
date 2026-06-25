@@ -15,7 +15,7 @@ const ROEL = "'Rounded Elegance', sans-serif";
 const INITIAL_BATCH = 24;
 
 /* ── useStaticFrames ─────────────────────────────────────────────────── */
-function useStaticFrames() {
+function useStaticFrames(onFrameLoaded?: React.RefObject<(i: number) => void>) {
   const framesRef = useRef<(ImageBitmap | null)[]>(new Array(NUM_FRAMES).fill(null));
   const [ready, setReady] = useState(false);
 
@@ -23,24 +23,46 @@ function useStaticFrames() {
     let cancelled = false;
 
     async function loadFrame(i: number) {
+      if (framesRef.current[i]) return;
       const name = `frame_${String(i + 1).padStart(3, "0")}.webp`;
       try {
         const r = await fetch(`/frames/${name}`);
         if (!r.ok || cancelled) return;
         const blob = await r.blob();
         if (!blob.size || !blob.type.startsWith("image/") || cancelled) return;
-        framesRef.current[i] = await createImageBitmap(blob);
+        const bmp = await createImageBitmap(blob);
+        if (cancelled) { bmp.close(); return; }
+        framesRef.current[i] = bmp;
+        /* Repaint immediately if this is the frame currently on screen — so the
+           final frames snap to full fidelity even if the scroll already stopped
+           at the end before they finished streaming. */
+        onFrameLoaded?.current?.(i);
       } catch {}
     }
 
+    /* Concurrency pool — streams many frames at once (HTTP/2 multiplexes) so the
+       whole sequence, including the tail, is ready fast. Sequential awaiting made
+       the last frames arrive last, so scrolling to the end showed a stale, lower
+       fidelity nearby frame instead of the true final frame. */
+    async function runPool(indices: number[], concurrency: number) {
+      let cursor = 0;
+      const workers = Array.from({ length: Math.min(concurrency, indices.length) }, async () => {
+        while (!cancelled && cursor < indices.length) {
+          await loadFrame(indices[cursor++]);
+        }
+      });
+      await Promise.all(workers);
+    }
+
     (async () => {
-      await Promise.all(Array.from({ length: INITIAL_BATCH }, (_, i) => loadFrame(i)));
+      /* Eager first batch so the hero can paint right away. */
+      await runPool(Array.from({ length: INITIAL_BATCH }, (_, i) => i), INITIAL_BATCH);
       if (!cancelled && framesRef.current.some(Boolean)) setReady(true);
 
-      for (let i = INITIAL_BATCH; i < NUM_FRAMES; i++) {
-        if (cancelled) break;
-        await loadFrame(i);
-      }
+      /* Stream the remainder with healthy parallelism. */
+      const rest: number[] = [];
+      for (let i = INITIAL_BATCH; i < NUM_FRAMES; i++) rest.push(i);
+      await runPool(rest, 12);
     })();
 
     return () => {
@@ -48,7 +70,7 @@ function useStaticFrames() {
       framesRef.current.forEach(b => b?.close());
       framesRef.current = new Array(NUM_FRAMES).fill(null);
     };
-  }, []);
+  }, [onFrameLoaded]);
 
   return { framesRef, ready };
 }
@@ -130,7 +152,19 @@ function useCanvas(framesRef: React.RefObject<(ImageBitmap | null)[]>, ready: bo
     }
   }, [ready, paint]);
 
-  return { canvasRef, drawFrame };
+  /* Called when a frame finishes streaming in. If it's the exact frame the
+     scroll is currently sitting on (and we're showing a stale neighbour), snap
+     it to full fidelity. This is what makes the very last frame land even when
+     the user has already stopped at the bottom. */
+  const repaintCurrent = useCallback((i: number) => {
+    const target = Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
+    if (i !== target) return;
+    if (lastTarget.current === target) return;
+    if (!framesRef.current[target]) return;
+    paint(target);
+  }, [paint, framesRef]);
+
+  return { canvasRef, drawFrame, repaintCurrent };
 }
 
 /* ── Mouse parallax ──────────────────────────────────────────────────────
@@ -385,8 +419,10 @@ function DesktopHeroSection() {
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const parallaxRef     = useRef<HTMLDivElement>(null);
   useMouseParallax(parallaxRef);
-  const { framesRef, ready } = useStaticFrames();
-  const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
+  const onLoadedRef = useRef<(i: number) => void>(() => {});
+  const { framesRef, ready } = useStaticFrames(onLoadedRef);
+  const { canvasRef, drawFrame, repaintCurrent } = useCanvas(framesRef, ready);
+  useEffect(() => { onLoadedRef.current = repaintCurrent; }, [repaintCurrent]);
 
   useEffect(() => {
     const wrapper  = wrapperRef.current;
@@ -629,8 +665,10 @@ function MobileHeroSection() {
   const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
-  const { framesRef, ready } = useStaticFrames();
-  const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
+  const onLoadedRef = useRef<(i: number) => void>(() => {});
+  const { framesRef, ready } = useStaticFrames(onLoadedRef);
+  const { canvasRef, drawFrame, repaintCurrent } = useCanvas(framesRef, ready);
+  useEffect(() => { onLoadedRef.current = repaintCurrent; }, [repaintCurrent]);
 
   useEffect(() => {
     const wrapper  = wrapperRef.current;
