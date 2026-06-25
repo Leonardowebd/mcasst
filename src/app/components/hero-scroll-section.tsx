@@ -6,13 +6,13 @@ import { WHATSAPP_URL } from "../lib/constants";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const NUM_FRAMES = 60;
+const NUM_FRAMES = 161;
 const WRAPPER_VH = 750;   /* A→B→C→D→E swaps + metodologia */
 const MOBILE_VH  = 640;   /* mobile equivalent */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
-const INITIAL_BATCH = 15;
+const INITIAL_BATCH = 24;
 
 /* ── useStaticFrames ─────────────────────────────────────────────────── */
 function useStaticFrames() {
