@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import imgBg from "../../imports/Web/video-bg.webp";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import svgPaths from "../../imports/Web/svg-uklupbph5w";
+import { GOLD_RGB } from "../lib/constants";
 
 /*
  * VideoSection — 3 vertical tynk.ai iframes simultaneously (desktop).
@@ -251,7 +252,7 @@ function DesktopCarousel() {
               style={{
                 width: i === idx ? 20 : 8, height: 8,
                 borderRadius: 4,
-                backgroundColor: i === idx ? "white" : "rgba(255,255,255,0.35)",
+                backgroundColor: i === idx ? `rgba(${GOLD_RGB}, 0.95)` : "rgba(255,255,255,0.35)",
                 border: "none", cursor: "pointer", padding: 0,
                 transition: "all 0.35s ease",
               }}
@@ -369,7 +370,7 @@ function MobileCarousel() {
             style={{
               width: i === idx ? 18 : 7, height: 7,
               borderRadius: 3.5,
-              backgroundColor: i === idx ? "white" : "rgba(255,255,255,0.3)",
+              backgroundColor: i === idx ? `rgba(${GOLD_RGB}, 0.95)` : "rgba(255,255,255,0.3)",
               border: "none", cursor: "pointer", padding: 0,
               transition: "all 0.3s ease",
             }}

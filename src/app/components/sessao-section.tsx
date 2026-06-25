@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useIsMobile } from "../hooks/use-is-mobile";
-import { WHATSAPP_URL } from "../lib/constants";
+import { WHATSAPP_URL, GOLD_RGB } from "../lib/constants";
 /*
  * SessaoSection — VSE / SEQUOIA / AGÊNCIA / EDUCAÇÃO / PARCEIROS / PRM
  *
@@ -180,7 +180,7 @@ function MobileSessao() {
                 width: i === activeIdx ? "18px" : "6px",
                 height: "6px",
                 borderRadius: "3px",
-                background: i === activeIdx ? "white" : "rgba(255,255,255,0.32)",
+                background: i === activeIdx ? `rgba(${GOLD_RGB}, 0.95)` : "rgba(255,255,255,0.32)",
                 transition: "width 0.3s ease, background 0.3s ease",
               }} />
             ))}
@@ -261,10 +261,11 @@ function MobileSessao() {
             <a
               href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
+              className="gold-cta"
               style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
                 padding: "11px 28px",
-                border: "1px solid rgba(255,255,255,0.65)",
+                border: `1px solid rgba(${GOLD_RGB}, 0.55)`,
                 cursor: "pointer", textDecoration: "none",
               }}
             >
@@ -404,14 +405,15 @@ function DesktopSessao() {
             <a
               href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
+              className="gold-cta"
               style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
                 padding: "clamp(10px,1.1vh,14px) clamp(24px,2.5vw,40px)",
-                border: "1px solid rgba(255,255,255,0.65)",
+                border: `1px solid rgba(${GOLD_RGB}, 0.55)`,
                 cursor: "pointer", textDecoration: "none",
                 transition: "background 0.2s ease, border-color 0.2s ease",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.1)"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = `rgba(${GOLD_RGB}, 0.1)`; }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; }}
             >
               <span style={{

@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "../../imports/Web/svg-uklupbph5w";
-import { WHATSAPP_URL } from "../lib/constants";
+import { WHATSAPP_URL, GOLD_RGB } from "../lib/constants";
 
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
@@ -175,7 +175,8 @@ export function Navbar() {
                   <span>{label}</span>
                   <span style={{
                     fontFamily: ROEL, fontStyle: "normal", fontWeight: 400,
-                    fontSize: "clamp(10px, 1vw, 13px)", opacity: 0.35,
+                    fontSize: "clamp(10px, 1vw, 13px)",
+                    color: `rgba(${GOLD_RGB}, 0.55)`,
                     letterSpacing: "0.14em",
                   }}>
                     {String(i + 1).padStart(2, "0")}

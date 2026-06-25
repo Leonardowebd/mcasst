@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "../hooks/use-is-mobile";
-import { WHATSAPP_URL } from "../lib/constants";
+import { WHATSAPP_URL, GOLD_RGB } from "../lib/constants";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -465,28 +465,6 @@ function DesktopHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.23) 45%,rgba(0,0,0,.23) 55%,rgba(0,0,0,.61) 100%)",
         }} />
 
-        {/* ── keyframes for CTA button shimmer ── */}
-        <style>{`
-          @keyframes hero-cta-shimmer {
-            0%   { transform: translateX(-120%) skewX(-18deg); }
-            100% { transform: translateX(320%)  skewX(-18deg); }
-          }
-          .hero-cta-btn {
-            position: relative !important;
-            overflow: hidden !important;
-          }
-          .hero-cta-btn::after {
-            content: '';
-            position: absolute;
-            top: -20%; left: 0;
-            width: 42%; height: 140%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
-            animation: hero-cta-shimmer 3.6s ease-in-out infinite;
-            animation-delay: 0.9s;
-            pointer-events: none;
-          }
-        `}</style>
-
         {/* ── Phase 1 center text (A) — also anchors stats+CTA below ── */}
         <div style={{
           position: "absolute", left: "50%", top: "50%",
@@ -527,9 +505,9 @@ function DesktopHeroSection() {
             {/* CTA with shimmer */}
             <a href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
-              className="hero-cta-btn"
+              className="gold-cta"
               style={{
-                border: "1px solid rgba(255,255,255,.55)",
+                border: `1px solid rgba(${GOLD_RGB}, 0.5)`,
                 padding: "16px 40px", cursor: "pointer",
                 textDecoration: "none", display: "block",
                 pointerEvents: "auto",
@@ -730,28 +708,6 @@ function MobileHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.25) 65%,rgba(0,0,0,.72) 100%)",
         }} />
 
-        {/* ── keyframes for CTA button shimmer (mobile) ── */}
-        <style>{`
-          @keyframes hero-cta-shimmer {
-            0%   { transform: translateX(-120%) skewX(-18deg); }
-            100% { transform: translateX(320%)  skewX(-18deg); }
-          }
-          .hero-cta-btn {
-            position: relative !important;
-            overflow: hidden !important;
-          }
-          .hero-cta-btn::after {
-            content: '';
-            position: absolute;
-            top: -20%; left: 0;
-            width: 42%; height: 140%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
-            animation: hero-cta-shimmer 3.6s ease-in-out infinite;
-            animation-delay: 0.9s;
-            pointer-events: none;
-          }
-        `}</style>
-
         {/* Phase 1 center text (A) — also anchors stats+CTA below */}
         <div style={{
           position: "absolute", top: "38%", left: "50%",
@@ -792,10 +748,10 @@ function MobileHeroSection() {
             {/* CTA with shimmer */}
             <a href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
-              className="hero-cta-btn"
+              className="gold-cta"
               style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
-                padding: "13px 28px", border: "1px solid rgba(255,255,255,.55)",
+                padding: "13px 28px", border: `1px solid rgba(${GOLD_RGB}, 0.5)`,
                 cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
               }}>
               <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
