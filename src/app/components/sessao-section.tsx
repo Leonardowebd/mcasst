@@ -380,7 +380,7 @@ function DesktopSessao() {
   return (
     <div ref={outerRef} id="metodologia" style={{ height: `${(N + 1) * 100}vh`, position: "relative" }}>
       <div style={{ position: "sticky", top: 0, height: "100vh", width: "100%", overflow: "hidden" }}>
-        {/* Background images — full-bleed */}
+        {/* Background images */}
         <div style={{ position: "absolute", inset: 0 }}>
           <div style={{ position: "absolute", inset: 0, backgroundColor: "#fff" }} />
           {ITEMS.map((item, i) => (
@@ -395,9 +395,6 @@ function DesktopSessao() {
             </div>
           ))}
         </div>
-
-        {/* Layout container — caps at 1440px and centers content over full-bleed bg */}
-        <div style={{ position: "absolute", inset: 0, maxWidth: 1440, marginLeft: "auto", marginRight: "auto" }}>
 
         {/* Blur panel right 55.35% — capped at 797px to avoid over-stretching on large screens */}
         <div style={{
@@ -480,7 +477,6 @@ function DesktopSessao() {
             </a>
           </div>
         </div>
-        </div>{/* end layout container */}
       </div>
     </div>
   );
