@@ -460,40 +460,47 @@ function DesktopHeroSection() {
         <div ref={phase2Ref} style={{
           position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none",
           display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-          gap: "clamp(24px,4vh,56px)",
-          padding: "0 clamp(48px,5.56%,80px)",
         }}>
-          {/* Top header — centered */}
-          <div style={{ textAlign: "center" }}>
-            <Words
-              className="d-met-title"
-              text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: "normal", display: "block" }}
-            />
-          </div>
+          {/* Inner wrapper — caps at 1440px so content never stretches on 2K+ screens */}
+          <div style={{
+            width: "100%", maxWidth: 1440,
+            padding: "0 clamp(48px,5.56%,80px)",
+            boxSizing: "border-box",
+            display: "flex", flexDirection: "column", alignItems: "center",
+            gap: "clamp(24px,4vh,56px)",
+          }}>
+            {/* Top header — centered */}
+            <div style={{ textAlign: "center" }}>
+              <Words
+                className="d-met-title"
+                text="Metodologia Sintropia"
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: "normal", display: "block" }}
+              />
+            </div>
 
-          {/* 3 blocks side by side */}
-          <div className="d-met-q1" style={{ display: "flex", gap: "clamp(20px,3.33vw,48px)", width: "100%", alignItems: "flex-start" }}>
-            {[
-              { n: "1", title: "Posicionamento. Raiz que ancora.", desc: "Clareza sobre quem você atende e por que te escolhem." },
-              { n: "2", title: "Oferta. Raiz que alimenta.", desc: "O que você vende precisa ser irresistível antes de ser anunciado." },
-              { n: "3", title: "Processos. Raiz que sustenta.", desc: "Sem processo, o crescimento depende de você. Com processo, ele independe." },
-            ].map(({ n, title, desc }) => (
-              <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "clamp(6px,0.85vh,10px)" }}>
-                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(40px,5.56vw,80px)", lineHeight: 1.1 }}>{n}</span>
-                <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(14px,1.67vw,24px)", lineHeight: 1.3, display: "block" }} />
-                <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.39vw,20px)", lineHeight: 1.5, display: "block", opacity: 0.8 }} />
-              </div>
-            ))}
-          </div>
+            {/* 3 blocks side by side */}
+            <div className="d-met-q1" style={{ display: "flex", gap: "clamp(20px,3.33vw,48px)", width: "100%", alignItems: "flex-start" }}>
+              {[
+                { n: "1", title: "Posicionamento. Raiz que ancora.", desc: "Clareza sobre quem você atende e por que te escolhem." },
+                { n: "2", title: "Oferta. Raiz que alimenta.", desc: "O que você vende precisa ser irresistível antes de ser anunciado." },
+                { n: "3", title: "Processos. Raiz que sustenta.", desc: "Sem processo, o crescimento depende de você. Com processo, ele independe." },
+              ].map(({ n, title, desc }) => (
+                <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "clamp(6px,0.85vh,10px)" }}>
+                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(40px,5.56vw,80px)", lineHeight: 1.1 }}>{n}</span>
+                  <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(14px,1.67vw,24px)", lineHeight: 1.3, display: "block" }} />
+                  <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.39vw,20px)", lineHeight: 1.5, display: "block", opacity: 0.8 }} />
+                </div>
+              ))}
+            </div>
 
-          {/* Bottom footer — centered */}
-          <div style={{ textAlign: "center" }}>
-            <Words
-              className="d-met-q2"
-              text="Solo bem preparado. Crescimento inevitável."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(18px,2.78vw,40px)", lineHeight: "normal", display: "block" }}
-            />
+            {/* Bottom footer — centered */}
+            <div style={{ textAlign: "center" }}>
+              <Words
+                className="d-met-q2"
+                text="Solo bem preparado. Crescimento inevitável."
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(18px,2.78vw,40px)", lineHeight: "normal", display: "block" }}
+              />
+            </div>
           </div>
         </div>
 

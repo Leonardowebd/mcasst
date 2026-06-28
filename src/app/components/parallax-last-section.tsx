@@ -188,7 +188,8 @@ export function ParallaxLastSection() {
       <div
         ref={sectionRef}
         style={{
-          position: "relative", width: "100%",
+          position: "relative", width: "100%", maxWidth: W,
+          marginLeft: "auto", marginRight: "auto",
           height: `clamp(400px, ${(H / W * 100).toFixed(2)}vw, ${H}px)`,
           overflow: "hidden", backgroundColor: "#ffffff",
         }}
