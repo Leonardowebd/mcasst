@@ -235,169 +235,6 @@ function blurSwap(tl: gsap.core.Timeline, outEl: Element, inEl: Element, at: num
     at + 0.004);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   InfinitySymbol — Figma PNG (visual) + SVG overlay (textPath animado)
-═══════════════════════════════════════════════════════════════════════ */
-const INF_DUAL_PATH =
-  "M929.5 219.5 C929.5 113.714 854.678 28.5 734.475 28.5 " +
-  "C706.088 28.5001 676.735 39.8907 648.011 58.3154 " +
-  "C619.375 76.683 592.342 101.416 568.879 126.553 " +
-  "C545.464 151.638 525.92 176.783 512.218 195.686 " +
-  "C505.376 205.124 500.012 212.977 496.373 218.446 " +
-  "C496.132 218.808 495.9 219.16 495.675 219.5 " +
-  "C495.9 219.84 496.132 220.192 496.373 220.554 " +
-  "C500.012 226.023 505.376 233.876 512.218 243.314 " +
-  "C525.92 262.217 545.464 287.362 568.879 312.447 " +
-  "C592.342 337.584 619.375 362.317 648.011 380.685 " +
-  "C676.735 399.109 706.088 410.5 734.475 410.5 " +
-  "C854.678 410.5 929.5 325.286 929.5 219.5 Z " +
-  "M28.5 219.5 C28.5 325.286 103.322 410.5 223.525 410.5 " +
-  "C251.912 410.5 281.265 399.109 309.989 380.685 " +
-  "C338.625 362.317 365.658 337.584 389.121 312.447 " +
-  "C412.536 287.362 432.08 262.217 445.782 243.314 " +
-  "C452.624 233.876 457.988 226.023 461.627 220.554 " +
-  "C461.867 220.192 462.099 219.84 462.324 219.5 " +
-  "C462.099 219.16 461.867 218.808 461.627 218.446 " +
-  "C457.988 212.977 452.624 205.124 445.782 195.686 " +
-  "C432.08 176.783 412.536 151.638 389.121 126.553 " +
-  "C365.658 101.416 338.625 76.683 309.989 58.3154 " +
-  "C281.265 39.8907 251.912 28.5001 223.525 28.5 " +
-  "C103.322 28.5 28.5 113.714 28.5 219.5 Z " +
-  "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
-  "C698.737 438.5 664.094 424.266 632.894 404.253 " +
-  "C601.604 384.183 572.785 357.666 548.41 331.553 " +
-  "C523.987 305.388 503.708 279.283 489.548 259.748 " +
-  "C485.531 254.207 482.001 249.183 479 244.826 " +
-  "C475.999 249.183 472.469 254.207 468.452 259.748 " +
-  "C454.292 279.283 434.013 305.388 409.59 331.553 " +
-  "C385.215 357.666 356.396 384.183 325.106 404.253 " +
-  "C293.906 424.266 259.263 438.5 223.525 438.5 " +
-  "C87.232 438.5 0.5 340.116 0.5 219.5 " +
-  "C0.5 98.8838 87.232 0.5 223.525 0.5 " +
-  "C259.263 0.5001 293.906 14.7345 325.106 34.7471 " +
-  "C356.396 54.8169 385.215 81.3341 409.59 107.447 " +
-  "C434.013 133.612 454.292 159.717 468.452 179.252 " +
-  "C472.469 184.793 475.999 189.816 479 194.173 " +
-  "C482.001 189.816 485.531 184.793 489.548 179.252 " +
-  "C503.708 159.717 523.987 133.612 548.41 107.447 " +
-  "C572.785 81.3341 601.604 54.8169 632.894 34.7471 " +
-  "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
-  "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
-
-const INF_PATH =
-  "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
-  "C698.737 438.5 664.094 424.266 632.894 404.253 " +
-  "C601.604 384.183 572.785 357.666 548.41 331.553 " +
-  "C523.987 305.388 503.708 279.283 489.548 259.748 " +
-  "C485.531 254.207 482.001 249.183 479 244.826 " +
-  "C475.999 249.183 472.469 254.207 468.452 259.748 " +
-  "C454.292 279.283 434.013 305.388 409.59 331.553 " +
-  "C385.215 357.666 356.396 384.183 325.106 404.253 " +
-  "C293.906 424.266 259.263 438.5 223.525 438.5 " +
-  "C87.232 438.5 0.5 340.116 0.5 219.5 " +
-  "C0.5 98.8838 87.232 0.5 223.525 0.5 " +
-  "C259.263 0.5001 293.906 14.7345 325.106 34.7471 " +
-  "C356.396 54.8169 385.215 81.3341 409.59 107.447 " +
-  "C434.013 133.612 454.292 159.717 468.452 179.252 " +
-  "C472.469 184.793 475.999 189.816 479 194.173 " +
-  "C482.001 189.816 485.531 184.793 489.548 179.252 " +
-  "C503.708 159.717 523.987 133.612 548.41 107.447 " +
-  "C572.785 81.3341 601.604 54.8169 632.894 34.7471 " +
-  "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
-  "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
-
-const INF_PHRASE =
-  "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
-
-const INF_DUR = 45;
-
-const _INF_CMDS = INF_PATH
-  .replace(/^M[\d.]+ [\d.]+ /, "")
-  .replace(/ Z$/, "");
-const INF_PATH_2X = INF_PATH.replace(/ Z$/, "") + " " + _INF_CMDS + " Z";
-
-function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
-  const pathRef = useRef<SVGPathElement>(null);
-  const tp1Ref  = useRef<SVGTextPathElement>(null);
-  const tp2Ref  = useRef<SVGTextPathElement>(null);
-  const tp3Ref  = useRef<SVGTextPathElement>(null);
-
-  useEffect(() => {
-    const path = pathRef.current;
-    const tps  = [tp1Ref.current, tp2Ref.current, tp3Ref.current];
-    if (!path || tps.some(r => !r)) return;
-
-    let raf: number;
-
-    const start = () => {
-      const pathLen2x = path.getTotalLength();
-      const pathLen   = pathLen2x / 2;
-      if (!pathLen) return;
-
-      const speed = pathLen / (INF_DUR * 60);
-      const offsets = [0, pathLen / 3, (2 * pathLen) / 3];
-
-      const tick = () => {
-        offsets.forEach((_, i) => {
-          offsets[i] = (offsets[i] + speed) % pathLen;
-          tps[i]!.setAttribute(
-            "startOffset",
-            `${((offsets[i] / pathLen2x) * 100).toFixed(3)}%`
-          );
-        });
-        raf = requestAnimationFrame(tick);
-      };
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    (document.fonts?.ready ?? Promise.resolve()).then(start);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const textProps = {
-    fill: "white",
-    fontSize: "21",
-    fontFamily: MET,
-    fontStyle: "italic",
-    letterSpacing: "1.2",
-    opacity: "0.9",
-    dominantBaseline: "central",
-  } as const;
-
-  return (
-    <svg
-      viewBox="0 0 958 439"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ width, height: "auto", display: "block", overflow: "visible" }}
-    >
-      <path
-        d={INF_DUAL_PATH}
-        fill="none"
-        stroke="rgba(255,255,255,0.75)"
-        strokeWidth="1"
-      />
-      <defs>
-        <path ref={pathRef} id="inf-anim-path" d={INF_PATH_2X} />
-      </defs>
-      <text {...textProps}>
-        <textPath ref={tp1Ref} href="#inf-anim-path" startOffset="0%">
-          {INF_PHRASE}
-        </textPath>
-      </text>
-      <text {...textProps}>
-        <textPath ref={tp2Ref} href="#inf-anim-path" startOffset="16.666%">
-          {INF_PHRASE}
-        </textPath>
-      </text>
-      <text {...textProps}>
-        <textPath ref={tp3Ref} href="#inf-anim-path" startOffset="33.333%">
-          {INF_PHRASE}
-        </textPath>
-      </text>
-    </svg>
-  );
-}
 
 /* ═══════════════════════════════════════════════════════════════════════
    DesktopHeroSection
@@ -619,32 +456,45 @@ function DesktopHeroSection() {
 
 
 
-        {/* ── Phase 2 — infinity + metodologia ── */}
-        <div ref={phase2Ref} style={{ position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none" }}>
-
-          {/* Infinity symbol */}
-          <div style={{
-            position: "absolute", left: "50%", top: "42%",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none", zIndex: 0,
-          }}>
-            <InfinitySymbol width="min(58vw, 700px)" />
+        {/* ── Phase 2 — Sequoias / numbered blocks ── */}
+        <div ref={phase2Ref} style={{
+          position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          gap: "clamp(20px,3.5vh,48px)",
+          padding: "0 clamp(48px,6%,120px)",
+        }}>
+          {/* Main title */}
+          <div style={{ textAlign: "center", width: "min(760px,90%)" }}>
+            <Words
+              className="d-met-title"
+              text="Sequoias não crescem em qualquer solo."
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(26px,3.6vw,52px)", lineHeight: 1.2, display: "block", textAlign: "center" }}
+            />
           </div>
 
-          {/* Metodologia Sintropia title */}
-          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%", zIndex: 2 }}>
-            <Words className="d-met-title" text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
+          {/* 4 numbered blocks */}
+          <div className="d-met-q1" style={{ display: "flex", gap: "clamp(12px,2.5vw,44px)", width: "min(1100px,100%)" }}>
+            {[
+              { n: "01", title: "Posicionamento", sub: "Raiz que ancora" },
+              { n: "02", title: "Oferta", sub: "Raiz que alimenta" },
+              { n: "03", title: "Processos", sub: "Raiz que sustenta" },
+              { n: "04", title: "Direção", sub: "Raiz que orienta" },
+            ].map(({ n, title, sub }) => (
+              <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6, borderTop: "1px solid rgba(255,255,255,0.22)", paddingTop: "clamp(8px,1.2vh,14px)" }}>
+                <span style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10px,0.85vw,12px)", letterSpacing: "0.14em", opacity: 0.4 }}>{n}</span>
+                <Words text={title} style={{ fontFamily: MET, fontWeight: 700, fontSize: "clamp(14px,1.5vw,22px)", lineHeight: 1.15, display: "block" }} />
+                <Words text={sub} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.0vw,15px)", lineHeight: 1.4, display: "block", opacity: 0.6 }} />
+              </div>
+            ))}
           </div>
 
-          {/* Text block below ∞ */}
-          <div style={{ position: "absolute", bottom: "4%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)", zIndex: 2 }}>
-            <Words className="d-met-q1"
-              text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,2.22vw,32px)", lineHeight: 1.35, display: "block", textAlign: "justify" }} />
-            <Words className="d-met-q2"
-              text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
-              style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.46vw,21px)", lineHeight: 1.55, display: "block", textAlign: "justify", opacity: 0.80 }} />
+          {/* Footer */}
+          <div style={{ textAlign: "center" }}>
+            <Words
+              className="d-met-q2"
+              text="Solo bem preparado. Crescimento inevitável."
+              style={{ fontFamily: ROEL, fontStyle: "italic", fontWeight: 400, fontSize: "clamp(13px,1.3vw,19px)", lineHeight: 1.5, display: "block", opacity: 0.72 }}
+            />
           </div>
         </div>
 
@@ -852,32 +702,45 @@ function MobileHeroSection() {
           </div>
         </div>
 
-        {/* Phase 2 — infinity + metodologia */}
-        <div ref={phase2Ref} style={{ position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none" }}>
-
-          {/* Infinity symbol (mobile) */}
-          <div style={{
-            position: "absolute", left: "50%", top: "42%",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none", zIndex: 0,
-          }}>
-            <InfinitySymbol width="min(88vw, 360px)" />
+        {/* Phase 2 — Sequoias / numbered blocks */}
+        <div ref={phase2Ref} style={{
+          position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          gap: "clamp(16px,4vh,28px)",
+          padding: "0 20px",
+        }}>
+          {/* Main title */}
+          <div style={{ textAlign: "center", width: "100%" }}>
+            <Words
+              className="m-met-title"
+              text="Sequoias não crescem em qualquer solo."
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(22px,6.5vw,32px)", lineHeight: 1.2, display: "block", textAlign: "center" }}
+            />
           </div>
 
-          {/* Metodologia title */}
-          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)", zIndex: 2 }}>
-            <Words className="m-met-title" text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: 1.2, display: "block" }} />
+          {/* 2×2 numbered blocks grid */}
+          <div className="m-met-q1" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(10px,3vw,18px)", width: "100%" }}>
+            {[
+              { n: "01", title: "Posicionamento", sub: "Raiz que ancora" },
+              { n: "02", title: "Oferta", sub: "Raiz que alimenta" },
+              { n: "03", title: "Processos", sub: "Raiz que sustenta" },
+              { n: "04", title: "Direção", sub: "Raiz que orienta" },
+            ].map(({ n, title, sub }) => (
+              <div key={n} style={{ display: "flex", flexDirection: "column", gap: 4, borderTop: "1px solid rgba(255,255,255,0.22)", paddingTop: 8 }}>
+                <span style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10px,2.8vw,12px)", letterSpacing: "0.12em", opacity: 0.4 }}>{n}</span>
+                <Words text={title} style={{ fontFamily: MET, fontWeight: 700, fontSize: "clamp(13px,3.8vw,18px)", lineHeight: 1.15, display: "block" }} />
+                <Words text={sub} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,2.8vw,13px)", lineHeight: 1.35, display: "block", opacity: 0.6 }} />
+              </div>
+            ))}
           </div>
 
-          {/* Text block */}
-          <div style={{ position: "absolute", bottom: "4%", left: 20, right: 20, display: "flex", flexDirection: "column", gap: 12, zIndex: 2 }}>
-            <Words className="m-met-q1"
-              text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,4.5vw,22px)", lineHeight: 1.35, display: "block" }} />
-            <Words className="m-met-q2"
-              text="Mais de 10 anos simplificando o complexo no mundo corporativo: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado."
-              style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.55, display: "block", opacity: 0.78 }} />
+          {/* Footer */}
+          <div style={{ textAlign: "center" }}>
+            <Words
+              className="m-met-q2"
+              text="Solo bem preparado. Crescimento inevitável."
+              style={{ fontFamily: ROEL, fontStyle: "italic", fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.5, display: "block", opacity: 0.72 }}
+            />
           </div>
         </div>
 
