@@ -456,45 +456,47 @@ function DesktopHeroSection() {
 
 
 
-        {/* ── Phase 2 — Sequoias / numbered blocks ── */}
+        {/* ── Phase 2 — Metodologia Sintropia (Figma layout) ── */}
         <div ref={phase2Ref} style={{
           position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-          gap: "clamp(20px,3.5vh,48px)",
-          padding: "0 clamp(48px,6%,120px)",
+          display: "flex", flexDirection: "column", justifyContent: "center",
+          paddingLeft: "clamp(48px,5.56%,80px)",
+          paddingRight: "clamp(48px,5.56%,80px)",
         }}>
-          {/* Main title */}
-          <div style={{ textAlign: "center", width: "min(760px,90%)" }}>
-            <Words
-              className="d-met-title"
-              text="Sequoias não crescem em qualquer solo."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(26px,3.6vw,52px)", lineHeight: 1.2, display: "block", textAlign: "center" }}
-            />
-          </div>
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "flex-end",
+            gap: "clamp(20px,4.3vh,61px)",
+            width: "100%", maxWidth: 1279,
+          }}>
+            {/* Title — right-aligned, italic */}
+            <div style={{ width: "min(701px,100%)" }}>
+              <Words
+                className="d-met-title"
+                text="Metodologia Sintropia"
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: "normal", display: "block", textAlign: "right" }}
+              />
+            </div>
 
-          {/* 4 numbered blocks */}
-          <div className="d-met-q1" style={{ display: "flex", gap: "clamp(12px,2.5vw,44px)", width: "min(1100px,100%)" }}>
-            {[
-              { n: "01", title: "Posicionamento", sub: "Raiz que ancora" },
-              { n: "02", title: "Oferta", sub: "Raiz que alimenta" },
-              { n: "03", title: "Processos", sub: "Raiz que sustenta" },
-              { n: "04", title: "Direção", sub: "Raiz que orienta" },
-            ].map(({ n, title, sub }) => (
-              <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6, borderTop: "1px solid rgba(255,255,255,0.22)", paddingTop: "clamp(8px,1.2vh,14px)" }}>
-                <span style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10px,0.85vw,12px)", letterSpacing: "0.14em", opacity: 0.4 }}>{n}</span>
-                <Words text={title} style={{ fontFamily: MET, fontWeight: 700, fontSize: "clamp(14px,1.5vw,22px)", lineHeight: 1.15, display: "block" }} />
-                <Words text={sub} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.0vw,15px)", lineHeight: 1.4, display: "block", opacity: 0.6 }} />
+            {/* Numbered items — left-aligned, full width */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "clamp(8px,0.85vh,12px)", width: "100%", alignSelf: "flex-start" }}>
+              {/* Item 1 */}
+              <div className="d-met-q1" style={{ display: "flex", gap: "clamp(20px,2.57vw,37px)", alignItems: "center" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(48px,6.67vw,96px)", lineHeight: 1.1, flexShrink: 0, opacity: 0.9 }}>1</span>
+                <Words
+                  text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
+                  style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(14px,1.67vw,24px)", lineHeight: 1.35, display: "block", maxWidth: "min(427px,60%)" }}
+                />
               </div>
-            ))}
-          </div>
 
-          {/* Footer */}
-          <div style={{ textAlign: "center" }}>
-            <Words
-              className="d-met-q2"
-              text="Solo bem preparado. Crescimento inevitável."
-              style={{ fontFamily: ROEL, fontStyle: "italic", fontWeight: 400, fontSize: "clamp(13px,1.3vw,19px)", lineHeight: 1.5, display: "block", opacity: 0.72 }}
-            />
+              {/* Item 2 */}
+              <div className="d-met-q2" style={{ display: "flex", gap: "clamp(20px,2.57vw,37px)", alignItems: "center" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(48px,6.67vw,96px)", lineHeight: 1.1, flexShrink: 0, opacity: 0.9 }}>2</span>
+                <Words
+                  text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
+                  style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.39vw,20px)", lineHeight: 1.55, display: "block", maxWidth: "min(427px,60%)", opacity: 0.82 }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -702,45 +704,42 @@ function MobileHeroSection() {
           </div>
         </div>
 
-        {/* Phase 2 — Sequoias / numbered blocks */}
+        {/* Phase 2 — Metodologia Sintropia (Figma layout, mobile) */}
         <div ref={phase2Ref} style={{
           position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-          gap: "clamp(16px,4vh,28px)",
+          display: "flex", flexDirection: "column", justifyContent: "center",
           padding: "0 20px",
         }}>
-          {/* Main title */}
-          <div style={{ textAlign: "center", width: "100%" }}>
-            <Words
-              className="m-met-title"
-              text="Sequoias não crescem em qualquer solo."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(22px,6.5vw,32px)", lineHeight: 1.2, display: "block", textAlign: "center" }}
-            />
-          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "clamp(16px,4vh,28px)" }}>
+            {/* Title — right-aligned */}
+            <div style={{ width: "100%" }}>
+              <Words
+                className="m-met-title"
+                text="Metodologia Sintropia"
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: "normal", display: "block", textAlign: "right" }}
+              />
+            </div>
 
-          {/* 2×2 numbered blocks grid */}
-          <div className="m-met-q1" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(10px,3vw,18px)", width: "100%" }}>
-            {[
-              { n: "01", title: "Posicionamento", sub: "Raiz que ancora" },
-              { n: "02", title: "Oferta", sub: "Raiz que alimenta" },
-              { n: "03", title: "Processos", sub: "Raiz que sustenta" },
-              { n: "04", title: "Direção", sub: "Raiz que orienta" },
-            ].map(({ n, title, sub }) => (
-              <div key={n} style={{ display: "flex", flexDirection: "column", gap: 4, borderTop: "1px solid rgba(255,255,255,0.22)", paddingTop: 8 }}>
-                <span style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10px,2.8vw,12px)", letterSpacing: "0.12em", opacity: 0.4 }}>{n}</span>
-                <Words text={title} style={{ fontFamily: MET, fontWeight: 700, fontSize: "clamp(13px,3.8vw,18px)", lineHeight: 1.15, display: "block" }} />
-                <Words text={sub} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,2.8vw,13px)", lineHeight: 1.35, display: "block", opacity: 0.6 }} />
+            {/* Numbered items */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", alignSelf: "flex-start" }}>
+              {/* Item 1 */}
+              <div className="m-met-q1" style={{ display: "flex", gap: "clamp(14px,4vw,22px)", alignItems: "center" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(42px,12vw,64px)", lineHeight: 1.1, flexShrink: 0, opacity: 0.9 }}>1</span>
+                <Words
+                  text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
+                  style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,4vw,20px)", lineHeight: 1.35, display: "block" }}
+                />
               </div>
-            ))}
-          </div>
 
-          {/* Footer */}
-          <div style={{ textAlign: "center" }}>
-            <Words
-              className="m-met-q2"
-              text="Solo bem preparado. Crescimento inevitável."
-              style={{ fontFamily: ROEL, fontStyle: "italic", fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.5, display: "block", opacity: 0.72 }}
-            />
+              {/* Item 2 */}
+              <div className="m-met-q2" style={{ display: "flex", gap: "clamp(14px,4vw,22px)", alignItems: "center" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(42px,12vw,64px)", lineHeight: 1.1, flexShrink: 0, opacity: 0.9 }}>2</span>
+                <Words
+                  text="Mais de 10 anos simplificando o complexo no mundo corporativo: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado."
+                  style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.55, display: "block", opacity: 0.82 }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
