@@ -717,17 +717,19 @@ function MobileHeroSection() {
             />
           </div>
 
-          {/* 3 blocks side by side */}
-          <div className="m-met-q1" style={{ display: "flex", gap: "clamp(10px,3vw,16px)", width: "100%", alignItems: "flex-start" }}>
+          {/* 3 blocks stacked vertically on mobile */}
+          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "clamp(10px,2.5vh,16px)", width: "100%" }}>
             {[
               { n: "1", title: "Posicionamento. Raiz que ancora.", desc: "Clareza sobre quem você atende e por que te escolhem." },
               { n: "2", title: "Oferta. Raiz que alimenta.", desc: "O que você vende precisa ser irresistível antes de ser anunciado." },
               { n: "3", title: "Processos. Raiz que sustenta.", desc: "Sem processo, o crescimento depende de você. Com processo, ele independe." },
             ].map(({ n, title, desc }) => (
-              <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(28px,8vw,48px)", lineHeight: 1.1 }}>{n}</span>
-                <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(10px,2.8vw,14px)", lineHeight: 1.3, display: "block" }} />
-                <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(9px,2.5vw,12px)", lineHeight: 1.45, display: "block", opacity: 0.78 }} />
+              <div key={n} style={{ display: "flex", gap: "clamp(14px,4vw,22px)", alignItems: "flex-start" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(36px,10vw,56px)", lineHeight: 1.0, flexShrink: 0 }}>{n}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.3, display: "block" }} />
+                  <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,3.2vw,15px)", lineHeight: 1.45, display: "block", opacity: 0.78 }} />
+                </div>
               </div>
             ))}
           </div>
