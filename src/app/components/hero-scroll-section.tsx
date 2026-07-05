@@ -478,20 +478,32 @@ function DesktopHeroSection() {
               />
             </div>
 
-            {/* 4 parágrafos em 2 colunas */}
-            <div style={{ display: "flex", gap: "clamp(32px,4.44vw,64px)", width: "100%", alignItems: "flex-start" }}>
-              <div className="d-met-q1" style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.1em" }}>
-                <Words text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-                  style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(13px,1.25vw,18px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
-                <Words text="As sequoias crescem entrelaçadas umas nas outras. Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor."
-                  style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(13px,1.25vw,18px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
-              </div>
-              <div className="d-met-q2" style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.1em" }}>
-                <Words text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
-                  style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(13px,1.25vw,18px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
-                <Words text="Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem. E tudo que vive merece crescer e ser tratado com a importância que tem."
-                  style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(13px,1.25vw,18px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
-              </div>
+            {/* 4 blocos numerados — linha 1 */}
+            <div className="d-met-q1" style={{ display: "flex", gap: "clamp(20px,3.33vw,48px)", width: "100%", alignItems: "flex-start" }}>
+              {[
+                { n: "1", title: "O mercado está cheio de quem promete resolver.", desc: "Poucos são os que estão fundamentados o suficiente para isso." },
+                { n: "2", title: "As sequoias crescem entrelaçadas umas nas outras.", desc: "Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor." },
+              ].map(({ n, title, desc }) => (
+                <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "clamp(6px,0.85vh,10px)" }}>
+                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(40px,5.56vw,80px)", lineHeight: 1.1 }}>{n}</span>
+                  <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(14px,1.67vw,24px)", lineHeight: 1.3, display: "block" }} />
+                  <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.39vw,20px)", lineHeight: 1.5, display: "block", opacity: 0.8 }} />
+                </div>
+              ))}
+            </div>
+
+            {/* 4 blocos numerados — linha 2 */}
+            <div className="d-met-q2" style={{ display: "flex", gap: "clamp(20px,3.33vw,48px)", width: "100%", alignItems: "flex-start" }}>
+              {[
+                { n: "3", title: "Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia.", desc: "Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir." },
+                { n: "4", title: "Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem.", desc: "E tudo que vive merece crescer e ser tratado com a importância que tem." },
+              ].map(({ n, title, desc }) => (
+                <div key={n} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "clamp(6px,0.85vh,10px)" }}>
+                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(40px,5.56vw,80px)", lineHeight: 1.1 }}>{n}</span>
+                  <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(14px,1.67vw,24px)", lineHeight: 1.3, display: "block" }} />
+                  <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,1.39vw,20px)", lineHeight: 1.5, display: "block", opacity: 0.8 }} />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -716,19 +728,36 @@ function MobileHeroSection() {
             />
           </div>
 
-          {/* 4 parágrafos empilhados — mobile */}
-          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "0.9em", width: "100%" }}>
-            <Words text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-              style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
-            <Words text="As sequoias crescem entrelaçadas umas nas outras. Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor."
-              style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
+          {/* 4 blocos numerados — mobile, grupo 1 */}
+          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "clamp(10px,2.5vh,16px)", width: "100%" }}>
+            {[
+              { n: "1", title: "O mercado está cheio de quem promete resolver.", desc: "Poucos são os que estão fundamentados o suficiente para isso." },
+              { n: "2", title: "As sequoias crescem entrelaçadas umas nas outras.", desc: "Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor." },
+            ].map(({ n, title, desc }) => (
+              <div key={n} style={{ display: "flex", gap: "clamp(14px,4vw,22px)", alignItems: "flex-start" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(36px,10vw,56px)", lineHeight: 1.0, flexShrink: 0 }}>{n}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.3, display: "block" }} />
+                  <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,3.2vw,15px)", lineHeight: 1.45, display: "block", opacity: 0.78 }} />
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "0.9em", width: "100%" }}>
-            <Words text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
-              style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
-            <Words text="Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem. E tudo que vive merece crescer e ser tratado com a importância que tem."
-              style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.65, display: "block", opacity: 0.88 }} />
+          {/* 4 blocos numerados — mobile, grupo 2 */}
+          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "clamp(10px,2.5vh,16px)", width: "100%" }}>
+            {[
+              { n: "3", title: "Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia.", desc: "Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir." },
+              { n: "4", title: "Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem.", desc: "E tudo que vive merece crescer e ser tratado com a importância que tem." },
+            ].map(({ n, title, desc }) => (
+              <div key={n} style={{ display: "flex", gap: "clamp(14px,4vw,22px)", alignItems: "flex-start" }}>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(36px,10vw,56px)", lineHeight: 1.0, flexShrink: 0 }}>{n}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <Words text={title} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,4vw,18px)", lineHeight: 1.3, display: "block" }} />
+                  <Words text={desc} style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,3.2vw,15px)", lineHeight: 1.45, display: "block", opacity: 0.78 }} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
