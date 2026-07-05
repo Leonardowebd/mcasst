@@ -43,14 +43,14 @@ const ITEMS = [
     bullets: ["Conselho as Service", "Reunião mensal", "Canal direto para aconselhamento"],
   },
   {
-    title: "MAM — Mentoria Avançada Mascatis",
+    title: "MAM — MENTORIA AVANÇADA MASCATIS",
     bg: "/services/mentoria.webp", bgMob: "/services/mentoria-m.webp",
     mobDesc: "Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio.",
     para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige mais do que esforço. Exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio. Não é passo a passo, é condução de quem une conhecimento técnico e experiência real aplicada ao seu negócio.",
     bullets: ["Estratégia", "Marketing", "Vendas"],
   },
   {
-    title: "PRM — Plano de Reestruturação Mascatis",
+    title: "PRM — PLANO DE REESTRUTURAÇÃO MASCATIS",
     bg: "/services/prm.webp", bgMob: "/services/prm-m.webp",
     mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
     para: "Quando o negócio está travado e ou endividado e você não sabe por onde começar, o primeiro passo é entender o que está acontecendo de verdade. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa. O empresário executa sabendo o que fazer, em qual ordem e por quê.",
@@ -338,21 +338,16 @@ function MobileSessao() {
 /* ═══════════════════════════════════════════════════════════════════════
    DESKTOP — original scroll-driven sticky accordion
 ═══════════════════════════════════════════════════════════════════════ */
-function AccordionDescription({ para, bullets }: { para: string; bullets: string[] }) {
+function AccordionDescription({ desc }: { desc: string }) {
   return (
-    <div style={{
+    <p style={{
       fontFamily: MET, fontStyle: "italic", fontWeight: 200,
       fontSize: "clamp(13px, 1.11vw, 16px)",
       color: "rgba(255,255,255,0.88)", lineHeight: 1.55,
-      marginTop: 12, letterSpacing: "0.025em",
+      marginTop: 12, marginBottom: 0, letterSpacing: "0.025em",
     }}>
-      <p style={{ margin: "0 0 10px" }}>{para}</p>
-      <ul style={{ paddingLeft: 20, margin: 0, listStyleType: "disc" }}>
-        {bullets.map((b, i) => (
-          <li key={i} style={{ marginBottom: i < bullets.length - 1 ? 4 : 0 }}>{b}</li>
-        ))}
-      </ul>
-    </div>
+      {desc}
+    </p>
   );
 }
 
@@ -436,7 +431,7 @@ function DesktopSessao() {
                   transition: "grid-template-rows 0.55s cubic-bezier(0.22,1,0.36,1)",
                 }}>
                   <div style={{ overflow: "hidden", minHeight: 0 }}>
-                    <AccordionDescription para={item.para} bullets={item.bullets} />
+                    <AccordionDescription desc={item.mobDesc} />
                   </div>
                 </div>
               </div>
