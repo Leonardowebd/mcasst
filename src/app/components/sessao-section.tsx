@@ -416,7 +416,7 @@ function DesktopSessao() {
                 <p style={{
                   fontFamily: MET, fontStyle: "italic",
                   fontWeight: isActive ? 700 : 400,
-                  fontSize: isActive ? "clamp(36px,4.44vw,64px)" : "clamp(14px,1.25vw,18px)",
+                  fontSize: isActive ? "clamp(30px,3.61vw,52px)" : "clamp(14px,1.25vw,18px)",
                   color: "white", lineHeight: 1.05, margin: 0,
                   letterSpacing: isActive ? "0.01em" : "0.12em",
                   opacity: isActive ? 1 : 0.45,
