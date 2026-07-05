@@ -43,14 +43,14 @@ const ITEMS = [
     bullets: ["Conselho as Service", "Reunião mensal", "Canal direto para aconselhamento"],
   },
   {
-    title: "MAM",
+    title: "MAM — Mentoria Avançada Mascatis",
     bg: "/services/mentoria.webp", bgMob: "/services/mentoria-m.webp",
     mobDesc: "Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio.",
     para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige mais do que esforço. Exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio. Não é passo a passo, é condução de quem une conhecimento técnico e experiência real aplicada ao seu negócio.",
     bullets: ["Estratégia", "Marketing", "Vendas"],
   },
   {
-    title: "PRM",
+    title: "PRM — Plano de Reestruturação Mascatis",
     bg: "/services/prm.webp", bgMob: "/services/prm-m.webp",
     mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
     para: "Quando o negócio está travado e ou endividado e você não sabe por onde começar, o primeiro passo é entender o que está acontecendo de verdade. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa. O empresário executa sabendo o que fazer, em qual ordem e por quê.",
