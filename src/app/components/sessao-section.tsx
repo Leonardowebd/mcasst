@@ -142,11 +142,11 @@ function MobileSessao() {
       {/* Sticky viewport */}
       <div style={{ position: "sticky", top: 0, height: "100svh", overflow: "hidden", backgroundColor: "#111" }}>
 
-        {/* ── Top half: imagens visíveis (não-blur) ── */}
+        {/* ── Top: imagens visíveis (não-blur) — menor para dar espaço ao texto ── */}
         {ITEMS.map((item, i) => (
           <div key={i} style={{
             position: "absolute", top: 0, left: 0, right: 0,
-            height: "50svh",
+            height: "36svh",
             opacity: i === activeIdx ? 1 : 0,
             transition: "opacity 0.6s cubic-bezier(0.4,0,0.2,1)",
             willChange: "opacity",
@@ -157,11 +157,11 @@ function MobileSessao() {
           </div>
         ))}
 
-        {/* ── Bottom half: cópia da imagem atrás do blur ── */}
+        {/* ── Bottom: cópia da imagem atrás do blur — mais alto, área do texto ── */}
         {ITEMS.map((item, i) => (
           <div key={i} style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
-            height: "50svh",
+            height: "64svh",
             opacity: i === activeIdx ? 1 : 0,
             transition: "opacity 0.6s cubic-bezier(0.4,0,0.2,1)",
             willChange: "opacity",
@@ -174,14 +174,14 @@ function MobileSessao() {
 
         {/* Gradient leve só no topo */}
         <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: "50svh", pointerEvents: "none",
+          position: "absolute", top: 0, left: 0, right: 0, height: "36svh", pointerEvents: "none",
           background: "linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.04) 100%)",
         }} />
 
-        {/* ── Painel glass inferior ── */}
+        {/* ── Painel glass inferior — mais alto para caber texto completo ── */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          height: "50%",
+          height: "64%",
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
           background: "rgba(28,28,28,0.58)",
