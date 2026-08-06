@@ -29,7 +29,7 @@ const ITEMS = [
     bullets: ["Performance com tráfego pago", "Social Media com conteúdo e criativos de conversão direta", "Plano de Ações de Marketing", "Plano de Ações de Branding"],
   },
   {
-    title: "VSE — VENDA SEM ESFORÇO",
+    title: "VENDA SEM ESFORÇO",
     bg: "/services/vse.webp", bgMob: "/services/vse-m.webp",
     mobDesc: "Semiótica, mecanismo e comercial documentados. Do primeiro contato ao fechamento.",
     para: "Você sabe para onde quer ir. O que falta é o como. O VSE não é sobre o momento da venda. É sobre a experiência completa do público com o seu negócio, do primeiro contato ao fechamento. Semiótica, mecanismo e comercial documentados e prontos para operar. Sozinho, com equipe própria ou com quem contratar depois.",
@@ -43,14 +43,14 @@ const ITEMS = [
     bullets: ["Conselho as Service", "Reunião mensal", "Canal direto para aconselhamento"],
   },
   {
-    title: "MAM — MENTORIA AVANÇADA MASCATIS",
+    title: "MENTORIA AVANÇADA MASCATIS",
     bg: "/services/mentoria.webp", bgMob: "/services/mentoria-m.webp",
     mobDesc: "Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio.",
     para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige mais do que esforço. Exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio. Não é passo a passo, é condução de quem une conhecimento técnico e experiência real aplicada ao seu negócio.",
     bullets: ["Estratégia", "Marketing", "Vendas"],
   },
   {
-    title: "PRM — PLANO DE REESTRUTURAÇÃO MASCATIS",
+    title: "PLANO DE REESTRUTURAÇÃO MASCATIS",
     bg: "/services/prm.webp", bgMob: "/services/prm-m.webp",
     mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
     para: "Quando o negócio está travado e ou endividado e você não sabe por onde começar, o primeiro passo é entender o que está acontecendo de verdade. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa. O empresário executa sabendo o que fazer, em qual ordem e por quê.",
