@@ -30,6 +30,12 @@ const VIDEOS = [
 const W = 1440;
 const H = 841;
 
+/* tynk.ai player letterboxes source videos that aren't native 9:16 (visible
+   as black bars top/bottom). We don't control the source video or the
+   player's internal CSS, so we zoom + crop the iframe itself to push the
+   bars outside the visible box. Tune this if the crop is too tight/loose. */
+const VIDEO_ZOOM = 1.35;
+
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
@@ -162,13 +168,18 @@ function DesktopCarousel() {
                 borderRadius: 8,
                 overflow: "hidden",
                 backgroundColor: "#111",
+                position: "relative",
               }}>
                 <iframe
                   src={url}
                   title={`Depoimento ${i + 1}`}
-                  width="100%"
-                  height="100%"
-                  style={{ display: "block", border: "none" }}
+                  style={{
+                    position: "absolute", top: "50%", left: "50%",
+                    width: `${(VIDEO_ZOOM * 100).toFixed(0)}%`,
+                    height: `${(VIDEO_ZOOM * 100).toFixed(0)}%`,
+                    transform: "translate(-50%, -50%)",
+                    display: "block", border: "none",
+                  }}
                   allow="autoplay; fullscreen; encrypted-media"
                   allowFullScreen
                 />
@@ -336,13 +347,18 @@ function MobileCarousel() {
           flexShrink: 0,
           borderRadius: 8, overflow: "hidden",
           backgroundColor: "#111",
+          position: "relative",
         }}>
           <iframe
             src={VIDEOS[idx]}
             title={`Depoimento ${idx + 1}`}
-            width="100%"
-            height="100%"
-            style={{ display: "block", border: "none" }}
+            style={{
+              position: "absolute", top: "50%", left: "50%",
+              width: `${(VIDEO_ZOOM * 100).toFixed(0)}%`,
+              height: `${(VIDEO_ZOOM * 100).toFixed(0)}%`,
+              transform: "translate(-50%, -50%)",
+              display: "block", border: "none",
+            }}
             allow="autoplay; fullscreen; encrypted-media"
             allowFullScreen
           />
