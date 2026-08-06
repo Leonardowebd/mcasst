@@ -714,7 +714,7 @@ function MobileHeroSection() {
         <div ref={phase2Ref} style={{
           position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none",
           display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-          gap: "clamp(16px,4vh,28px)",
+          gap: "clamp(8px,1.8vh,16px)",
           padding: "0 20px",
         }}>
           {/* Top header — centered */}
@@ -722,31 +722,31 @@ function MobileHeroSection() {
             <Words
               className="m-met-title"
               text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: "normal", display: "block" }}
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(19px,5.4vw,28px)", lineHeight: "normal", display: "block" }}
             />
           </div>
 
           {/* 4 parágrafos empilhados — mobile, headline maior + body menor */}
-          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "1em", width: "100%" }}>
+          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "0.5em", width: "100%" }}>
             {[
               { headline: "O mercado está cheio de quem promete resolver.", body: "Poucos são os que estão fundamentados o suficiente para isso." },
               { headline: "As sequoias crescem entrelaçadas umas nas outras.", body: "Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor." },
             ].map(({ headline, body }, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(16px,4.6vw,20px)", lineHeight: 1.3, display: "block" }} />
-                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,3.4vw,15px)", lineHeight: 1.25, display: "block" }} />
+                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10.5px,2.7vw,12px)", lineHeight: 1.4, display: "block", opacity: 0.78 }} />
               </div>
             ))}
           </div>
 
-          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "1em", width: "100%" }}>
+          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "0.5em", width: "100%" }}>
             {[
               { headline: "Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia.", body: "Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir." },
               { headline: "Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem.", body: "E tudo que vive merece crescer e ser tratado com a importância que tem." },
             ].map(({ headline, body }, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(16px,4.6vw,20px)", lineHeight: 1.3, display: "block" }} />
-                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,3.4vw,15px)", lineHeight: 1.25, display: "block" }} />
+                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10.5px,2.7vw,12px)", lineHeight: 1.4, display: "block", opacity: 0.78 }} />
               </div>
             ))}
           </div>
