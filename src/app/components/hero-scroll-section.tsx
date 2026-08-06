@@ -600,9 +600,9 @@ function MobileHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.25) 65%,rgba(0,0,0,.72) 100%)",
         }} />
 
-        {/* Phase 1 center text (A) — also anchors stats+CTA below */}
+        {/* Phase 1 center text (A) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "34%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -613,45 +613,49 @@ function MobileHeroSection() {
               Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
           </div>
+        </div>
 
-          {/* stats + CTA — below headline, GSAP-animated independently */}
-          <div ref={phase1BottomRef} style={{
-            position: "absolute",
-            filter: "blur(0px)",
-            top: "calc(100% + clamp(20px,3.5vh,32px))",
-            left: "50%", transform: "translateX(-50%)",
-            width: "min(95vw, 420px)",
-            display: "flex", flexDirection: "column",
-            alignItems: "center", gap: "clamp(16px,2.8vh,24px)",
-            color: "white",
-          }}>
-            {/* Stats: horizontal */}
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "clamp(18px,6vw,36px)", flexWrap: "wrap" }}>
-              {[
-                { bold: "400+",    light: "empresas atendidas" },
-                { bold: "R$407M+", light: "em resultados gerados" },
-                { bold: "10+",     light: "anos de mercado" },
-              ].map(({ bold, light }) => (
-                <div key={bold} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                  <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1 }}>{bold}</span>
-                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,3vw,13px)", opacity: 0.70, lineHeight: 1.3, textAlign: "center" }}>{light}</span>
-                </div>
-              ))}
-            </div>
-            {/* CTA with shimmer */}
-            <a href={WHATSAPP_URL}
-              target="_blank" rel="noopener noreferrer"
-              className="gold-cta"
-              style={{
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                padding: "13px 28px", border: `1px solid rgba(${GOLD_RGB}, 0.5)`,
-                cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
-              }}>
-              <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
-                Entrar em contato
-              </span>
-            </a>
+        {/* stats + CTA — pinned at a fixed position independent of the headline's
+            own height, so a long headline wrapping to 3-4 lines on narrow phones
+            never overlaps it (was previously anchored to "calc(100% + gap)" of
+            the headline box, which broke when the headline grew taller). */}
+        <div ref={phase1BottomRef} style={{
+          position: "absolute",
+          filter: "blur(0px)",
+          top: "60%",
+          left: "50%", transform: "translateX(-50%)",
+          width: "min(95vw, 420px)",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", gap: "clamp(16px,2.8vh,24px)",
+          color: "white",
+          pointerEvents: "none",
+        }}>
+          {/* Stats: horizontal */}
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "clamp(18px,6vw,36px)", flexWrap: "wrap" }}>
+            {[
+              { bold: "400+",    light: "empresas atendidas" },
+              { bold: "R$407M+", light: "em resultados gerados" },
+              { bold: "10+",     light: "anos de mercado" },
+            ].map(({ bold, light }) => (
+              <div key={bold} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1 }}>{bold}</span>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,3vw,13px)", opacity: 0.70, lineHeight: 1.3, textAlign: "center" }}>{light}</span>
+              </div>
+            ))}
           </div>
+          {/* CTA with shimmer */}
+          <a href={WHATSAPP_URL}
+            target="_blank" rel="noopener noreferrer"
+            className="gold-cta"
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              padding: "13px 28px", border: `1px solid rgba(${GOLD_RGB}, 0.5)`,
+              cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
+            }}>
+            <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
+              Entrar em contato
+            </span>
+          </a>
         </div>
 
         {/* Phase 1b — swapped text (B) */}
@@ -714,7 +718,7 @@ function MobileHeroSection() {
         <div ref={phase2Ref} style={{
           position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none",
           display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-          gap: "clamp(8px,1.8vh,16px)",
+          gap: "clamp(16px,4vh,28px)",
           padding: "0 20px",
         }}>
           {/* Top header — centered */}
@@ -722,31 +726,31 @@ function MobileHeroSection() {
             <Words
               className="m-met-title"
               text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(19px,5.4vw,28px)", lineHeight: "normal", display: "block" }}
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: "normal", display: "block" }}
             />
           </div>
 
           {/* 4 parágrafos empilhados — mobile, headline maior + body menor */}
-          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "0.5em", width: "100%" }}>
+          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "1em", width: "100%" }}>
             {[
               { headline: "O mercado está cheio de quem promete resolver.", body: "Poucos são os que estão fundamentados o suficiente para isso." },
               { headline: "As sequoias crescem entrelaçadas umas nas outras.", body: "Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor." },
             ].map(({ headline, body }, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,3.4vw,15px)", lineHeight: 1.25, display: "block" }} />
-                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10.5px,2.7vw,12px)", lineHeight: 1.4, display: "block", opacity: 0.78 }} />
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(16px,4.6vw,20px)", lineHeight: 1.3, display: "block" }} />
+                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
               </div>
             ))}
           </div>
 
-          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "0.5em", width: "100%" }}>
+          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "1em", width: "100%" }}>
             {[
               { headline: "Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia.", body: "Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir." },
               { headline: "Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem.", body: "E tudo que vive merece crescer e ser tratado com a importância que tem." },
             ].map(({ headline, body }, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(13px,3.4vw,15px)", lineHeight: 1.25, display: "block" }} />
-                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(10.5px,2.7vw,12px)", lineHeight: 1.4, display: "block", opacity: 0.78 }} />
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(16px,4.6vw,20px)", lineHeight: 1.3, display: "block" }} />
+                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
               </div>
             ))}
           </div>
