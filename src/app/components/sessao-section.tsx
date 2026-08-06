@@ -24,57 +24,49 @@ const ITEMS = [
   {
     title: "ASSESSORIA DE CRESCIMENTO",
     bg: "/services/assessoria.webp", bgMob: "/services/assessoria-m.webp",
-    mobDesc: "Parceiro estratégico que antecipa problemas, executa com método e profundidade.",
     para: "O parceiro estratégico de execução que antecipa problemas, executa com método, alto padrão e profundidade. Você traz a demanda. A Mascatis interpreta, executa e entrega resultado. Ter bom gosto e fazer bem feito é da nossa cultura. Porque crescer exige ter ao lado quem já sabe o caminho e está comprometido com o resultado tanto quanto você.",
     bullets: ["Performance com tráfego pago", "Social Media com conteúdo e criativos de conversão direta", "Plano de Ações de Marketing", "Plano de Ações de Branding"],
   },
   {
     title: "VENDA SEM ESFORÇO",
     bg: "/services/vse.webp", bgMob: "/services/vse-m.webp",
-    mobDesc: "Semiótica, mecanismo e comercial documentados. Do primeiro contato ao fechamento.",
     para: "Você sabe para onde quer ir. O que falta é o como. O VSE não é sobre o momento da venda. É sobre a experiência completa do público com o seu negócio, do primeiro contato ao fechamento. Semiótica, mecanismo e comercial documentados e prontos para operar. Sozinho, com equipe própria ou com quem contratar depois.",
     bullets: ["Semiótica: como você deve ser percebido em cada ponto de contato", "Mecanismo: estrutura que gera previsibilidade de captação", "Comercial: processo fundamentado que converte"],
   },
   {
     title: "CONSELHEIRO DE NEGÓCIOS",
     bg: "/services/conselheiro.webp", bgMob: "/services/conselheiro-m.webp",
-    mobDesc: "Alguém de fora que já viu esse filme antes, fala com clareza, sem interesse emocional.",
     para: "Tem decisão que não dá pra discutir com sócio. Não dá pra levar pra família. Às vezes só precisa de alguém de fora que já viu esse filme antes, fala com clareza o que enxerga e não tem interesse emocional no resultado. Uma conversa no momento certo vale mais do que meses de execução no caminho errado.",
     bullets: ["Conselho as Service", "Reunião mensal", "Canal direto para aconselhamento"],
   },
   {
     title: "MENTORIA AVANÇADA MASCATIS",
     bg: "/services/mentoria.webp", bgMob: "/services/mentoria-m.webp",
-    mobDesc: "Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio.",
     para: "Para quem já tem negócio funcionando e sabe que o próximo nível exige mais do que esforço. Exige direção. Acesso ao Capital Intelectual de Tácio Ladeia aplicado diretamente ao seu negócio. Não é passo a passo, é condução de quem une conhecimento técnico e experiência real aplicada ao seu negócio.",
     bullets: ["Estratégia", "Marketing", "Vendas"],
   },
   {
     title: "PLANO DE REESTRUTURAÇÃO MASCATIS",
     bg: "/services/prm.webp", bgMob: "/services/prm-m.webp",
-    mobDesc: "Diagnóstico completo e plano de ação. Sabendo o que fazer, em qual ordem e por quê.",
     para: "Quando o negócio está travado e ou endividado e você não sabe por onde começar, o primeiro passo é entender o que está acontecendo de verdade. A Mascatis entra, faz o diagnóstico completo, constrói o plano de ação e valida cada etapa. O empresário executa sabendo o que fazer, em qual ordem e por quê.",
     bullets: ["Diagnóstico em 8 áreas do negócio", "Plano de ação validado", "Suporte para você executar com autonomia"],
   },
   {
     title: "PARCERIAS ESTRATÉGICAS",
     bg: "/services/parcerias.webp", bgMob: "/services/parcerias-m.webp",
-    mobDesc: "Parceiros validados pelo tempo e pela confiança que só a experiência real constrói.",
     para: "Quando o negócio precisa de algo além do nosso escopo, a indicação não é aleatória. São parceiros construídos ao longo de anos, validados pelo tempo e pela confiança que só a experiência real constrói. A rede já existe. E cada parceiro dentro dela foi escolhido com o mesmo critério que aplicamos em tudo que fazemos.",
     bullets: ["Jurídico", "Contabilidade", "BPO Financeiro", "RH estratégico", "Tecnologias e AIs", "Softwares para PMEs"],
   },
   {
     title: "EDUCAÇÃO",
     bg: "/services/educacao.webp", bgMob: "/services/educacao-m.webp",
-    mobDesc: "Informação prática e fundamentada. A porta de entrada mais acessível ao ecossistema.",
     para: "Nosso braço educacional para democratizar o acesso a informação prática, real e fundamentada. Cursos, e-books, templates e playbooks que ensinam empreendedores a organizar, diagnosticar e melhorar seus negócios com autonomia. Conteúdos diretos, objetivos e práticos. A porta de entrada mais acessível ao nosso ecossistema.",
     bullets: ["Cursos", "E-books", "Templates", "Playbooks"],
   },
   {
-    title: "CO-PRODUÇÃO",
+    title: "CO-PRODUÇÃO EM PRODUTOS DIGITAIS",
     bg: "/services/coproducao.webp", bgMob: "/services/coproducao-m.webp",
-    mobDesc: "Você traz o conhecimento. A Mascatis transforma em produto, audiência e receita.",
-    para: "Todo especialista tem algo valioso para ensinar. Nem todos sabem como transformar isso em produto, audiência e receita. Você traz o conhecimento. A Mascatis traz a estrutura e a expertise no processo das vendas online. Juntos, transformamos conhecimento em vendas.",
+    para: "Todo especialista tem algo valioso para ensinar. Nem todos sabem como transformar isso em produto, audiência e receita. Você traz o conhecimento. A Mascatis traz a estrutura e a expertise no processo das vendas online. Juntos, transformamos conhecimento em vendas, sejam eles:",
     bullets: ["E-books", "Cursos", "Mentorias", "Workshops"],
   },
 ];
@@ -161,7 +153,7 @@ function MobileSessao() {
           }}>
             <img src={item.bgMob} alt=""
               loading={i === 0 ? "eager" : "lazy"}
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block", filter: "grayscale(100%)" }} />
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block" }} />
           </div>
         ))}
 
@@ -176,7 +168,7 @@ function MobileSessao() {
           }}>
             <img src={item.bgMob} alt=""
               loading="lazy"
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block", filter: "grayscale(100%)" }} />
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block" }} />
           </div>
         ))}
 
@@ -256,28 +248,40 @@ function MobileSessao() {
                   flexShrink: 0,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "center",
-                  padding: "16px 28px 12px",
+                  justifyContent: "flex-start",
+                  padding: "16px 28px 16px",
                   boxSizing: "border-box",
+                  overflowY: "auto",
                 }}>
                   <p style={{
                     fontFamily: MET, fontStyle: "italic", fontWeight: 700,
-                    fontSize: "clamp(32px, 9vw, 52px)",
-                    color: "white", lineHeight: 1.05, margin: "0 0 10px", letterSpacing: "0.01em",
+                    fontSize: "clamp(26px, 7.5vw, 40px)",
+                    color: "white", lineHeight: 1.08, margin: "0 0 10px", letterSpacing: "0.01em",
                   }}>
                     {item.title}
                   </p>
                   <p style={{
-                    fontFamily: ROEL,
-                    fontStyle: "normal",
-                    fontWeight: 400,
-                    fontSize: "clamp(13px, 3.8vw, 17px)",
-                    color: "rgba(255,255,255,0.82)",
-                    lineHeight: 1.55,
-                    margin: 0,
+                    fontFamily: MET, fontStyle: "italic", fontWeight: 200,
+                    fontSize: "clamp(12.5px, 3.6vw, 15px)",
+                    color: "rgba(255,255,255,0.88)",
+                    lineHeight: 1.5,
+                    margin: "0 0 10px",
+                    letterSpacing: "0.02em",
                   }}>
-                    {item.mobDesc}
+                    {item.para}
                   </p>
+                  <ul style={{
+                    paddingLeft: 18, margin: 0, listStyleType: "disc",
+                    fontFamily: MET, fontStyle: "italic", fontWeight: 200,
+                    fontSize: "clamp(12.5px, 3.6vw, 15px)",
+                    color: "rgba(255,255,255,0.88)",
+                    lineHeight: 1.5,
+                    letterSpacing: "0.02em",
+                  }}>
+                    {item.bullets.map((b, bi) => (
+                      <li key={bi} style={{ marginBottom: bi < item.bullets.length - 1 ? 4 : 0 }}>{b}</li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
@@ -338,16 +342,21 @@ function MobileSessao() {
 /* ═══════════════════════════════════════════════════════════════════════
    DESKTOP — original scroll-driven sticky accordion
 ═══════════════════════════════════════════════════════════════════════ */
-function AccordionDescription({ desc }: { desc: string }) {
+function AccordionDescription({ para, bullets }: { para: string; bullets: string[] }) {
   return (
-    <p style={{
+    <div style={{
       fontFamily: MET, fontStyle: "italic", fontWeight: 200,
       fontSize: "clamp(13px, 1.11vw, 16px)",
       color: "rgba(255,255,255,0.88)", lineHeight: 1.55,
-      marginTop: 12, marginBottom: 0, letterSpacing: "0.025em",
+      marginTop: 12, letterSpacing: "0.025em",
     }}>
-      {desc}
-    </p>
+      <p style={{ margin: "0 0 10px" }}>{para}</p>
+      <ul style={{ paddingLeft: 20, margin: 0, listStyleType: "disc" }}>
+        {bullets.map((b, i) => (
+          <li key={i} style={{ marginBottom: i < bullets.length - 1 ? 4 : 0 }}>{b}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -431,7 +440,7 @@ function DesktopSessao() {
                   transition: "grid-template-rows 0.55s cubic-bezier(0.22,1,0.36,1)",
                 }}>
                   <div style={{ overflow: "hidden", minHeight: 0 }}>
-                    <AccordionDescription desc={item.mobDesc} />
+                    <AccordionDescription para={item.para} bullets={item.bullets} />
                   </div>
                 </div>
               </div>
