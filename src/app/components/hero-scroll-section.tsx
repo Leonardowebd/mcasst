@@ -2,20 +2,20 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "../hooks/use-is-mobile";
-import { WHATSAPP_URL } from "../lib/constants";
+import { WHATSAPP_URL, GOLD_RGB } from "../lib/constants";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const NUM_FRAMES = 60;
+const NUM_FRAMES = 161;
 const WRAPPER_VH = 750;   /* A→B→C→D→E swaps + metodologia */
 const MOBILE_VH  = 640;   /* mobile equivalent */
 const MET  = "'Metropolis', sans-serif";
 const ROEL = "'Rounded Elegance', sans-serif";
 
-const INITIAL_BATCH = 15;
+const INITIAL_BATCH = 24;
 
 /* ── useStaticFrames ─────────────────────────────────────────────────── */
-function useStaticFrames() {
+function useStaticFrames(onFrameLoaded?: React.RefObject<(i: number) => void>) {
   const framesRef = useRef<(ImageBitmap | null)[]>(new Array(NUM_FRAMES).fill(null));
   const [ready, setReady] = useState(false);
 
@@ -23,24 +23,46 @@ function useStaticFrames() {
     let cancelled = false;
 
     async function loadFrame(i: number) {
+      if (framesRef.current[i]) return;
       const name = `frame_${String(i + 1).padStart(3, "0")}.webp`;
       try {
         const r = await fetch(`/frames/${name}`);
         if (!r.ok || cancelled) return;
         const blob = await r.blob();
         if (!blob.size || !blob.type.startsWith("image/") || cancelled) return;
-        framesRef.current[i] = await createImageBitmap(blob);
+        const bmp = await createImageBitmap(blob);
+        if (cancelled) { bmp.close(); return; }
+        framesRef.current[i] = bmp;
+        /* Repaint immediately if this is the frame currently on screen — so the
+           final frames snap to full fidelity even if the scroll already stopped
+           at the end before they finished streaming. */
+        onFrameLoaded?.current?.(i);
       } catch {}
     }
 
+    /* Concurrency pool — streams many frames at once (HTTP/2 multiplexes) so the
+       whole sequence, including the tail, is ready fast. Sequential awaiting made
+       the last frames arrive last, so scrolling to the end showed a stale, lower
+       fidelity nearby frame instead of the true final frame. */
+    async function runPool(indices: number[], concurrency: number) {
+      let cursor = 0;
+      const workers = Array.from({ length: Math.min(concurrency, indices.length) }, async () => {
+        while (!cancelled && cursor < indices.length) {
+          await loadFrame(indices[cursor++]);
+        }
+      });
+      await Promise.all(workers);
+    }
+
     (async () => {
-      await Promise.all(Array.from({ length: INITIAL_BATCH }, (_, i) => loadFrame(i)));
+      /* Eager first batch so the hero can paint right away. */
+      await runPool(Array.from({ length: INITIAL_BATCH }, (_, i) => i), INITIAL_BATCH);
       if (!cancelled && framesRef.current.some(Boolean)) setReady(true);
 
-      for (let i = INITIAL_BATCH; i < NUM_FRAMES; i++) {
-        if (cancelled) break;
-        await loadFrame(i);
-      }
+      /* Stream the remainder with healthy parallelism. */
+      const rest: number[] = [];
+      for (let i = INITIAL_BATCH; i < NUM_FRAMES; i++) rest.push(i);
+      await runPool(rest, 12);
     })();
 
     return () => {
@@ -48,7 +70,7 @@ function useStaticFrames() {
       framesRef.current.forEach(b => b?.close());
       framesRef.current = new Array(NUM_FRAMES).fill(null);
     };
-  }, []);
+  }, [onFrameLoaded]);
 
   return { framesRef, ready };
 }
@@ -59,36 +81,46 @@ function drawCover(ctx: CanvasRenderingContext2D, bmp: ImageBitmap, cw: number, 
   ctx.drawImage(bmp, (cw - bmp.width * s) / 2, (ch - bmp.height * s) / 2, bmp.width * s, bmp.height * s);
 }
 
-function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
+/* Nearest loaded frame to `idx` (used while later frames are still streaming). */
+function nearestLoaded(frames: (ImageBitmap | null)[], idx: number): ImageBitmap | null {
+  if (frames[idx]) return frames[idx];
+  for (let d = 1; d < NUM_FRAMES; d++) {
+    if (idx - d >= 0 && frames[idx - d]) return frames[idx - d];
+    if (idx + d < NUM_FRAMES && frames[idx + d]) return frames[idx + d];
+  }
+  return null;
+}
+
+function useCanvas(framesRef: React.RefObject<(ImageBitmap | null)[]>, ready: boolean) {
   const canvasRef    = useRef<HTMLCanvasElement>(null);
   const ctxRef       = useRef<CanvasRenderingContext2D | null>(null);
   const lastTarget   = useRef(-1);   /* last frame index actually painted */
   const lastProgress = useRef(0);    /* keeps current scroll progress for redraws */
 
-  /* Paint a specific frame index (skips nothing — caller decides). */
+  const getCtx = (c: HTMLCanvasElement) => {
+    if (!ctxRef.current) {
+      const ctx = c.getContext("2d", { alpha: false });
+      if (ctx) ctx.imageSmoothingQuality = "high";
+      ctxRef.current = ctx;
+    }
+    return ctxRef.current;
+  };
+
+  /* Paint a single frame index — clean snapping, no cross-fade. Blending two
+     distinct frames ghosts during motion, so we draw exactly one crisp frame. */
   const paint = useCallback((target: number) => {
     const c = canvasRef.current; if (!c || !c.width || !c.height) return;
-    if (!ctxRef.current) ctxRef.current = c.getContext("2d");
-    const ctx = ctxRef.current; if (!ctx) return;
-    const frames = framesRef.current;
-
-    let bmp = frames[target];
-    const exact = !!bmp;
-    if (!bmp) {
-      for (let d = 1; d < NUM_FRAMES; d++) {
-        if (target - d >= 0 && frames[target - d]) { bmp = frames[target - d]; break; }
-        if (target + d < NUM_FRAMES && frames[target + d]) { bmp = frames[target + d]; break; }
-      }
-    }
+    const ctx = getCtx(c); if (!ctx) return;
+    const bmp = nearestLoaded(framesRef.current, target);
     if (!bmp) return;
-    /* Only "lock" the target when we drew the exact frame; otherwise allow a
-       redraw once the real frame finishes loading. */
-    lastTarget.current = exact ? target : -1;
+    /* Only lock the index when the exact frame was drawn; otherwise allow a
+       redraw once the real frame finishes streaming in. */
+    lastTarget.current = framesRef.current[target] ? target : -1;
     drawCover(ctx, bmp, c.width, c.height);
   }, [framesRef]);
 
-  /* Called every ScrollTrigger tick — bails out when the frame hasn't changed,
-     which is the common case (60 frames spread over hundreds of vh). */
+  /* Called every ScrollTrigger tick. Driven by the scrubbed timeline, so the
+     index advances at an eased, even cadence instead of tracking raw scroll. */
   const drawFrame = useCallback((p: number) => {
     lastProgress.current = p;
     const target = Math.min(Math.round(p * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
@@ -98,9 +130,13 @@ function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
 
   useEffect(() => {
     const c = canvasRef.current; if (!c) return;
+    /* Backing store follows the device pixel ratio (capped at the 1080p source)
+       so the sequence stays crisp on retina displays. */
     const ro = new ResizeObserver(() => {
-      c.width = c.offsetWidth; c.height = c.offsetHeight;
-      ctxRef.current = c.getContext("2d");
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      c.width  = Math.round(c.offsetWidth  * dpr);
+      c.height = Math.round(c.offsetHeight * dpr);
+      ctxRef.current = null;
       lastTarget.current = -1;
       paint(Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1));
     });
@@ -116,7 +152,19 @@ function useCanvas(framesRef: React.RefObject<ImageBitmap[]>, ready: boolean) {
     }
   }, [ready, paint]);
 
-  return { canvasRef, drawFrame };
+  /* Called when a frame finishes streaming in. If it's the exact frame the
+     scroll is currently sitting on (and we're showing a stale neighbour), snap
+     it to full fidelity. This is what makes the very last frame land even when
+     the user has already stopped at the bottom. */
+  const repaintCurrent = useCallback((i: number) => {
+    const target = Math.min(Math.round(lastProgress.current * (NUM_FRAMES - 1)), NUM_FRAMES - 1);
+    if (i !== target) return;
+    if (lastTarget.current === target) return;
+    if (!framesRef.current[target]) return;
+    paint(target);
+  }, [paint, framesRef]);
+
+  return { canvasRef, drawFrame, repaintCurrent };
 }
 
 /* ── Mouse parallax ──────────────────────────────────────────────────────
@@ -172,169 +220,21 @@ function reveal(tl: gsap.core.Timeline, root: Element, selector: string, start: 
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   InfinitySymbol — Figma PNG (visual) + SVG overlay (textPath animado)
-═══════════════════════════════════════════════════════════════════════ */
-const INF_DUAL_PATH =
-  "M929.5 219.5 C929.5 113.714 854.678 28.5 734.475 28.5 " +
-  "C706.088 28.5001 676.735 39.8907 648.011 58.3154 " +
-  "C619.375 76.683 592.342 101.416 568.879 126.553 " +
-  "C545.464 151.638 525.92 176.783 512.218 195.686 " +
-  "C505.376 205.124 500.012 212.977 496.373 218.446 " +
-  "C496.132 218.808 495.9 219.16 495.675 219.5 " +
-  "C495.9 219.84 496.132 220.192 496.373 220.554 " +
-  "C500.012 226.023 505.376 233.876 512.218 243.314 " +
-  "C525.92 262.217 545.464 287.362 568.879 312.447 " +
-  "C592.342 337.584 619.375 362.317 648.011 380.685 " +
-  "C676.735 399.109 706.088 410.5 734.475 410.5 " +
-  "C854.678 410.5 929.5 325.286 929.5 219.5 Z " +
-  "M28.5 219.5 C28.5 325.286 103.322 410.5 223.525 410.5 " +
-  "C251.912 410.5 281.265 399.109 309.989 380.685 " +
-  "C338.625 362.317 365.658 337.584 389.121 312.447 " +
-  "C412.536 287.362 432.08 262.217 445.782 243.314 " +
-  "C452.624 233.876 457.988 226.023 461.627 220.554 " +
-  "C461.867 220.192 462.099 219.84 462.324 219.5 " +
-  "C462.099 219.16 461.867 218.808 461.627 218.446 " +
-  "C457.988 212.977 452.624 205.124 445.782 195.686 " +
-  "C432.08 176.783 412.536 151.638 389.121 126.553 " +
-  "C365.658 101.416 338.625 76.683 309.989 58.3154 " +
-  "C281.265 39.8907 251.912 28.5001 223.525 28.5 " +
-  "C103.322 28.5 28.5 113.714 28.5 219.5 Z " +
-  "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
-  "C698.737 438.5 664.094 424.266 632.894 404.253 " +
-  "C601.604 384.183 572.785 357.666 548.41 331.553 " +
-  "C523.987 305.388 503.708 279.283 489.548 259.748 " +
-  "C485.531 254.207 482.001 249.183 479 244.826 " +
-  "C475.999 249.183 472.469 254.207 468.452 259.748 " +
-  "C454.292 279.283 434.013 305.388 409.59 331.553 " +
-  "C385.215 357.666 356.396 384.183 325.106 404.253 " +
-  "C293.906 424.266 259.263 438.5 223.525 438.5 " +
-  "C87.232 438.5 0.5 340.116 0.5 219.5 " +
-  "C0.5 98.8838 87.232 0.5 223.525 0.5 " +
-  "C259.263 0.5001 293.906 14.7345 325.106 34.7471 " +
-  "C356.396 54.8169 385.215 81.3341 409.59 107.447 " +
-  "C434.013 133.612 454.292 159.717 468.452 179.252 " +
-  "C472.469 184.793 475.999 189.816 479 194.173 " +
-  "C482.001 189.816 485.531 184.793 489.548 179.252 " +
-  "C503.708 159.717 523.987 133.612 548.41 107.447 " +
-  "C572.785 81.3341 601.604 54.8169 632.894 34.7471 " +
-  "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
-  "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
-
-const INF_PATH =
-  "M957.5 219.5 C957.5 340.116 870.768 438.5 734.475 438.5 " +
-  "C698.737 438.5 664.094 424.266 632.894 404.253 " +
-  "C601.604 384.183 572.785 357.666 548.41 331.553 " +
-  "C523.987 305.388 503.708 279.283 489.548 259.748 " +
-  "C485.531 254.207 482.001 249.183 479 244.826 " +
-  "C475.999 249.183 472.469 254.207 468.452 259.748 " +
-  "C454.292 279.283 434.013 305.388 409.59 331.553 " +
-  "C385.215 357.666 356.396 384.183 325.106 404.253 " +
-  "C293.906 424.266 259.263 438.5 223.525 438.5 " +
-  "C87.232 438.5 0.5 340.116 0.5 219.5 " +
-  "C0.5 98.8838 87.232 0.5 223.525 0.5 " +
-  "C259.263 0.5001 293.906 14.7345 325.106 34.7471 " +
-  "C356.396 54.8169 385.215 81.3341 409.59 107.447 " +
-  "C434.013 133.612 454.292 159.717 468.452 179.252 " +
-  "C472.469 184.793 475.999 189.816 479 194.173 " +
-  "C482.001 189.816 485.531 184.793 489.548 179.252 " +
-  "C503.708 159.717 523.987 133.612 548.41 107.447 " +
-  "C572.785 81.3341 601.604 54.8169 632.894 34.7471 " +
-  "C664.094 14.7345 698.737 0.5001 734.475 0.5 " +
-  "C870.768 0.5 957.5 98.8838 957.5 219.5 Z";
-
-const INF_PHRASE =
-  "  Plano de Ação  ·  Diagnóstico  ·  Alavancagem de resultados  ·  ";
-
-const INF_DUR = 45;
-
-const _INF_CMDS = INF_PATH
-  .replace(/^M[\d.]+ [\d.]+ /, "")
-  .replace(/ Z$/, "");
-const INF_PATH_2X = INF_PATH.replace(/ Z$/, "") + " " + _INF_CMDS + " Z";
-
-function InfinitySymbol({ width = "min(55vw, 680px)" }: { width?: string }) {
-  const pathRef = useRef<SVGPathElement>(null);
-  const tp1Ref  = useRef<SVGTextPathElement>(null);
-  const tp2Ref  = useRef<SVGTextPathElement>(null);
-  const tp3Ref  = useRef<SVGTextPathElement>(null);
-
-  useEffect(() => {
-    const path = pathRef.current;
-    const tps  = [tp1Ref.current, tp2Ref.current, tp3Ref.current];
-    if (!path || tps.some(r => !r)) return;
-
-    let raf: number;
-
-    const start = () => {
-      const pathLen2x = path.getTotalLength();
-      const pathLen   = pathLen2x / 2;
-      if (!pathLen) return;
-
-      const speed = pathLen / (INF_DUR * 60);
-      const offsets = [0, pathLen / 3, (2 * pathLen) / 3];
-
-      const tick = () => {
-        offsets.forEach((_, i) => {
-          offsets[i] = (offsets[i] + speed) % pathLen;
-          tps[i]!.setAttribute(
-            "startOffset",
-            `${((offsets[i] / pathLen2x) * 100).toFixed(3)}%`
-          );
-        });
-        raf = requestAnimationFrame(tick);
-      };
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    (document.fonts?.ready ?? Promise.resolve()).then(start);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const textProps = {
-    fill: "white",
-    fontSize: "21",
-    fontFamily: MET,
-    fontStyle: "italic",
-    letterSpacing: "1.2",
-    opacity: "0.9",
-    dominantBaseline: "central",
-  } as const;
-
-  return (
-    <svg
-      viewBox="0 0 958 439"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ width, height: "auto", display: "block", overflow: "visible" }}
-    >
-      <path
-        d={INF_DUAL_PATH}
-        fill="none"
-        stroke="rgba(255,255,255,0.75)"
-        strokeWidth="1"
-      />
-      <defs>
-        <path ref={pathRef} id="inf-anim-path" d={INF_PATH_2X} />
-      </defs>
-      <text {...textProps}>
-        <textPath ref={tp1Ref} href="#inf-anim-path" startOffset="0%">
-          {INF_PHRASE}
-        </textPath>
-      </text>
-      <text {...textProps}>
-        <textPath ref={tp2Ref} href="#inf-anim-path" startOffset="16.666%">
-          {INF_PHRASE}
-        </textPath>
-      </text>
-      <text {...textProps}>
-        <textPath ref={tp3Ref} href="#inf-anim-path" startOffset="33.333%">
-          {INF_PHRASE}
-        </textPath>
-      </text>
-    </svg>
-  );
+/* ── Blur-reveal swap between two stacked text layers (scrubbed) ─────────
+   Incoming layer un-blurs while rising + settling its scale; the outgoing one
+   blurs out and lifts away. Short, snappy easing keeps each swap quick, the
+   cinematic blur giving the background a more dynamic, fluid feel on scroll. */
+const SWAP_DUR = 0.05;
+function blurSwap(tl: gsap.core.Timeline, outEl: Element, inEl: Element, at: number) {
+  tl.to(outEl,
+    { autoAlpha: 0, filter: "blur(10px)", y: -16, ease: "power1.in", duration: SWAP_DUR },
+    at);
+  tl.fromTo(inEl,
+    { autoAlpha: 0, filter: "blur(13px)", y: 24, scale: 0.965 },
+    { autoAlpha: 1, filter: "blur(0px)", y: 0, scale: 1, ease: "power2.out", duration: SWAP_DUR + 0.012 },
+    at + 0.004);
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════
    DesktopHeroSection
@@ -356,8 +256,10 @@ function DesktopHeroSection() {
   const phase2Ref       = useRef<HTMLDivElement>(null);
   const parallaxRef     = useRef<HTMLDivElement>(null);
   useMouseParallax(parallaxRef);
-  const { framesRef, ready } = useStaticFrames();
-  const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
+  const onLoadedRef = useRef<(i: number) => void>(() => {});
+  const { framesRef, ready } = useStaticFrames(onLoadedRef);
+  const { canvasRef, drawFrame, repaintCurrent } = useCanvas(framesRef, ready);
+  useEffect(() => { onLoadedRef.current = repaintCurrent; }, [repaintCurrent]);
 
   useEffect(() => {
     const wrapper  = wrapperRef.current;
@@ -373,26 +275,16 @@ function DesktopHeroSection() {
     const tl = gsap.timeline();
 
     /* Bottom fades down: 0.04 → 0.10 */
-    tl.to(p1bottom, { opacity: 0, y: "20px", ease: "none", duration: 0.06 }, 0.04);
+    tl.to(p1bottom, { opacity: 0, y: "20px", filter: "blur(6px)", ease: "power1.in", duration: 0.06 }, 0.04);
 
-    /* A → B: 0.13 → 0.19 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.06 }, 0.13);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.13);
+    /* Blur-reveal swaps A → B → C → D → E (quick, cinematic) */
+    blurSwap(tl, p1center, p1b, 0.13);
+    blurSwap(tl, p1b, p1c, 0.26);
+    blurSwap(tl, p1c, p1d, 0.39);
+    blurSwap(tl, p1d, p1e, 0.52);
 
-    /* B → C: 0.26 → 0.32 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.06 }, 0.26);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.26);
-
-    /* C → D: 0.39 → 0.45 */
-    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.06 }, 0.39);
-    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.39);
-
-    /* D → E: 0.52 → 0.58 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.06 }, 0.52);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.52);
-
-    /* E slides up: 0.63 → 0.69 */
-    tl.to(p1e, { opacity: 0, y: "-60px", ease: "none", duration: 0.06 }, 0.63);
+    /* E blurs + slides up: 0.63 */
+    tl.to(p1e, { autoAlpha: 0, filter: "blur(11px)", y: "-60px", ease: "power1.in", duration: 0.06 }, 0.63);
 
     /* Phase 2 fades in: 0.67 → 0.73 */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.67);
@@ -451,28 +343,6 @@ function DesktopHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.23) 45%,rgba(0,0,0,.23) 55%,rgba(0,0,0,.61) 100%)",
         }} />
 
-        {/* ── keyframes for CTA button shimmer ── */}
-        <style>{`
-          @keyframes hero-cta-shimmer {
-            0%   { transform: translateX(-120%) skewX(-18deg); }
-            100% { transform: translateX(320%)  skewX(-18deg); }
-          }
-          .hero-cta-btn {
-            position: relative !important;
-            overflow: hidden !important;
-          }
-          .hero-cta-btn::after {
-            content: '';
-            position: absolute;
-            top: -20%; left: 0;
-            width: 42%; height: 140%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
-            animation: hero-cta-shimmer 3.6s ease-in-out infinite;
-            animation-delay: 0.9s;
-            pointer-events: none;
-          }
-        `}</style>
-
         {/* ── Phase 1 center text (A) — also anchors stats+CTA below ── */}
         <div style={{
           position: "absolute", left: "50%", top: "50%",
@@ -481,7 +351,7 @@ function DesktopHeroSection() {
           pointerEvents: "none",
         }}>
           {/* headline — GSAP target (A) */}
-          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white" }}>
+          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white", filter: "blur(0px)" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: 1.15, margin: 0, letterSpacing: "-0.01em" }}>
               Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
@@ -490,6 +360,7 @@ function DesktopHeroSection() {
           {/* stats + CTA — anchored below headline, GSAP-animated independently */}
           <div ref={phase1BottomRef} style={{
             position: "absolute",
+            filter: "blur(0px)",
             top: "calc(100% + clamp(24px,4vh,44px))",
             left: "50%", transform: "translateX(-50%)",
             width: "min(90vw, 640px)",
@@ -513,9 +384,9 @@ function DesktopHeroSection() {
             {/* CTA with shimmer */}
             <a href={WHATSAPP_URL}
               target="_blank" rel="noopener noreferrer"
-              className="hero-cta-btn"
+              className="gold-cta"
               style={{
-                border: "1px solid rgba(255,255,255,.55)",
+                border: `1px solid rgba(${GOLD_RGB}, 0.5)`,
                 padding: "16px 40px", cursor: "pointer",
                 textDecoration: "none", display: "block",
                 pointerEvents: "auto",
@@ -585,32 +456,53 @@ function DesktopHeroSection() {
 
 
 
-        {/* ── Phase 2 — infinity + metodologia ── */}
-        <div ref={phase2Ref} style={{ position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none" }}>
-
-          {/* Infinity symbol */}
+        {/* ── Phase 2 — Metodologia Sintropia / 3 blocks ── */}
+        <div ref={phase2Ref} style={{
+          position: "absolute", inset: 0, opacity: 0, color: "white", pointerEvents: "none",
+          display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+        }}>
+          {/* Inner wrapper — caps at 1440px so content never stretches on 2K+ screens */}
           <div style={{
-            position: "absolute", left: "50%", top: "42%",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none", zIndex: 0,
+            width: "100%", maxWidth: 1440,
+            padding: "0 clamp(48px,5.56%,80px)",
+            boxSizing: "border-box",
+            display: "flex", flexDirection: "column", alignItems: "center",
+            gap: "clamp(24px,4vh,56px)",
           }}>
-            <InfinitySymbol width="min(58vw, 700px)" />
-          </div>
+            {/* Top header — centered */}
+            <div style={{ textAlign: "center" }}>
+              <Words
+                className="d-met-title"
+                text="Metodologia Sintropia"
+                style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(26px,3.33vw,48px)", lineHeight: "normal", display: "block" }}
+              />
+            </div>
 
-          {/* Metodologia Sintropia title */}
-          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "max-content", maxWidth: "90%", zIndex: 2 }}>
-            <Words className="d-met-title" text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(24px,3.33vw,48px)", lineHeight: 1.2, display: "block" }} />
-          </div>
-
-          {/* Text block below ∞ */}
-          <div style={{ position: "absolute", bottom: "4%", left: "50%", transform: "translateX(-50%)", width: "min(55vw, 790px)", display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vh,16px)", zIndex: 2 }}>
-            <Words className="d-met-q1"
-              text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,2.22vw,32px)", lineHeight: 1.35, display: "block", textAlign: "justify" }} />
-            <Words className="d-met-q2"
-              text="Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir."
-              style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(11px,1.46vw,21px)", lineHeight: 1.55, display: "block", textAlign: "justify", opacity: 0.80 }} />
+            {/* 4 parágrafos em 2 colunas — headline maior + body menor */}
+            <div style={{ display: "flex", gap: "clamp(32px,4.44vw,64px)", width: "100%", alignItems: "flex-start" }}>
+              <div className="d-met-q1" style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.3em" }}>
+                {[
+                  { headline: "O mercado está cheio de quem promete resolver.", body: "Poucos são os que estão fundamentados o suficiente para isso." },
+                  { headline: "As sequoias crescem entrelaçadas umas nas outras.", body: "Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor." },
+                ].map(({ headline, body }, i) => (
+                  <div key={i} style={{ display: "flex", flexDirection: "column", gap: "clamp(4px,0.6vh,8px)" }}>
+                    <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(18px,2.15vw,31px)", lineHeight: 1.25, display: "block" }} />
+                    <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(13px,1.25vw,18px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
+                  </div>
+                ))}
+              </div>
+              <div className="d-met-q2" style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.3em" }}>
+                {[
+                  { headline: "Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia.", body: "Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir." },
+                  { headline: "Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem.", body: "E tudo que vive merece crescer e ser tratado com a importância que tem." },
+                ].map(({ headline, body }, i) => (
+                  <div key={i} style={{ display: "flex", flexDirection: "column", gap: "clamp(4px,0.6vh,8px)" }}>
+                    <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(18px,2.15vw,31px)", lineHeight: 1.25, display: "block" }} />
+                    <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(13px,1.25vw,18px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -631,8 +523,10 @@ function MobileHeroSection() {
   const phase1eRef      = useRef<HTMLDivElement>(null);
   const phase1BottomRef = useRef<HTMLDivElement>(null);
   const phase2Ref       = useRef<HTMLDivElement>(null);
-  const { framesRef, ready } = useStaticFrames();
-  const { canvasRef, drawFrame } = useCanvas(framesRef, ready);
+  const onLoadedRef = useRef<(i: number) => void>(() => {});
+  const { framesRef, ready } = useStaticFrames(onLoadedRef);
+  const { canvasRef, drawFrame, repaintCurrent } = useCanvas(framesRef, ready);
+  useEffect(() => { onLoadedRef.current = repaintCurrent; }, [repaintCurrent]);
 
   useEffect(() => {
     const wrapper  = wrapperRef.current;
@@ -648,26 +542,16 @@ function MobileHeroSection() {
     const tl = gsap.timeline();
 
     /* Bottom fades down: 0.04 → 0.10 */
-    tl.to(p1bottom, { opacity: 0, y: "16px", ease: "none", duration: 0.06 }, 0.04);
+    tl.to(p1bottom, { opacity: 0, y: "16px", filter: "blur(6px)", ease: "power1.in", duration: 0.06 }, 0.04);
 
-    /* A → B: 0.13 → 0.19 */
-    tl.to(p1center, { opacity: 0, ease: "none", duration: 0.06 }, 0.13);
-    tl.fromTo(p1b, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.13);
+    /* Blur-reveal swaps A → B → C → D → E (quick, cinematic) */
+    blurSwap(tl, p1center, p1b, 0.13);
+    blurSwap(tl, p1b, p1c, 0.26);
+    blurSwap(tl, p1c, p1d, 0.39);
+    blurSwap(tl, p1d, p1e, 0.52);
 
-    /* B → C: 0.26 → 0.32 */
-    tl.to(p1b, { opacity: 0, ease: "none", duration: 0.06 }, 0.26);
-    tl.fromTo(p1c, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.26);
-
-    /* C → D: 0.39 → 0.45 */
-    tl.to(p1c, { opacity: 0, ease: "none", duration: 0.06 }, 0.39);
-    tl.fromTo(p1d, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.39);
-
-    /* D → E: 0.52 → 0.58 */
-    tl.to(p1d, { opacity: 0, ease: "none", duration: 0.06 }, 0.52);
-    tl.fromTo(p1e, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.52);
-
-    /* E slides up: 0.63 → 0.69 */
-    tl.to(p1e, { opacity: 0, y: "-50px", ease: "none", duration: 0.06 }, 0.63);
+    /* E blurs + slides up: 0.63 */
+    tl.to(p1e, { autoAlpha: 0, filter: "blur(11px)", y: "-50px", ease: "power1.in", duration: 0.06 }, 0.63);
 
     /* Phase 2: 0.67 → 0.73 */
     tl.fromTo(phase2, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.06 }, 0.67);
@@ -716,84 +600,67 @@ function MobileHeroSection() {
           background: "linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.25) 65%,rgba(0,0,0,.72) 100%)",
         }} />
 
-        {/* ── keyframes for CTA button shimmer (mobile) ── */}
-        <style>{`
-          @keyframes hero-cta-shimmer {
-            0%   { transform: translateX(-120%) skewX(-18deg); }
-            100% { transform: translateX(320%)  skewX(-18deg); }
-          }
-          .hero-cta-btn {
-            position: relative !important;
-            overflow: hidden !important;
-          }
-          .hero-cta-btn::after {
-            content: '';
-            position: absolute;
-            top: -20%; left: 0;
-            width: 42%; height: 140%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
-            animation: hero-cta-shimmer 3.6s ease-in-out infinite;
-            animation-delay: 0.9s;
-            pointer-events: none;
-          }
-        `}</style>
-
-        {/* Phase 1 center text (A) — also anchors stats+CTA below */}
+        {/* Phase 1 center text (A) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "34%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
         }}>
           {/* headline + sub */}
-          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white" }}>
+          <div ref={phase1CenterRef} style={{ textAlign: "center", color: "white", filter: "blur(0px)" }}>
             <p style={{ fontFamily: MET, fontWeight: 600, fontSize: "clamp(24px,7.5vw,36px)", lineHeight: 1.2, margin: 0 }}>
               Ecossistema de Estruturação e Crescimento de Negócios.
             </p>
           </div>
+        </div>
 
-          {/* stats + CTA — below headline, GSAP-animated independently */}
-          <div ref={phase1BottomRef} style={{
-            position: "absolute",
-            top: "calc(100% + clamp(20px,3.5vh,32px))",
-            left: "50%", transform: "translateX(-50%)",
-            width: "min(95vw, 420px)",
-            display: "flex", flexDirection: "column",
-            alignItems: "center", gap: "clamp(16px,2.8vh,24px)",
-            color: "white",
-          }}>
-            {/* Stats: horizontal */}
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "clamp(18px,6vw,36px)", flexWrap: "wrap" }}>
-              {[
-                { bold: "400+",    light: "empresas atendidas" },
-                { bold: "R$407M+", light: "em resultados gerados" },
-                { bold: "10+",     light: "anos de mercado" },
-              ].map(({ bold, light }) => (
-                <div key={bold} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                  <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1 }}>{bold}</span>
-                  <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,3vw,13px)", opacity: 0.70, lineHeight: 1.3, textAlign: "center" }}>{light}</span>
-                </div>
-              ))}
-            </div>
-            {/* CTA with shimmer */}
-            <a href={WHATSAPP_URL}
-              target="_blank" rel="noopener noreferrer"
-              className="hero-cta-btn"
-              style={{
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                padding: "13px 28px", border: "1px solid rgba(255,255,255,.55)",
-                cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
-              }}>
-              <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
-                Entrar em contato
-              </span>
-            </a>
+        {/* stats + CTA — pinned at a fixed position independent of the headline's
+            own height, so a long headline wrapping to 3-4 lines on narrow phones
+            never overlaps it (was previously anchored to "calc(100% + gap)" of
+            the headline box, which broke when the headline grew taller). */}
+        <div ref={phase1BottomRef} style={{
+          position: "absolute",
+          filter: "blur(0px)",
+          top: "60%",
+          left: "50%", transform: "translateX(-50%)",
+          width: "min(95vw, 420px)",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", gap: "clamp(16px,2.8vh,24px)",
+          color: "white",
+          pointerEvents: "none",
+        }}>
+          {/* Stats: horizontal */}
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "clamp(18px,6vw,36px)", flexWrap: "wrap" }}>
+            {[
+              { bold: "400+",    light: "empresas atendidas" },
+              { bold: "R$407M+", light: "em resultados gerados" },
+              { bold: "10+",     light: "anos de mercado" },
+            ].map(({ bold, light }) => (
+              <div key={bold} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <span style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(18px,5.5vw,26px)", lineHeight: 1 }}>{bold}</span>
+                <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(10px,3vw,13px)", opacity: 0.70, lineHeight: 1.3, textAlign: "center" }}>{light}</span>
+              </div>
+            ))}
           </div>
+          {/* CTA with shimmer */}
+          <a href={WHATSAPP_URL}
+            target="_blank" rel="noopener noreferrer"
+            className="gold-cta"
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              padding: "13px 28px", border: `1px solid rgba(${GOLD_RGB}, 0.5)`,
+              cursor: "pointer", textDecoration: "none", pointerEvents: "auto",
+            }}>
+            <span style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", color: "white", whiteSpace: "nowrap", letterSpacing: ".08em" }}>
+              Entrar em contato
+            </span>
+          </a>
         </div>
 
         {/* Phase 1b — swapped text (B) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -807,7 +674,7 @@ function MobileHeroSection() {
 
         {/* Phase 1c — text (C) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -821,7 +688,7 @@ function MobileHeroSection() {
 
         {/* Phase 1d — text (D) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -835,7 +702,7 @@ function MobileHeroSection() {
 
         {/* Phase 1e — text (E) */}
         <div style={{
-          position: "absolute", top: "38%", left: "50%",
+          position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%,-50%)",
           width: "calc(100% - 40px)",
           pointerEvents: "none",
@@ -847,32 +714,45 @@ function MobileHeroSection() {
           </div>
         </div>
 
-        {/* Phase 2 — infinity + metodologia */}
-        <div ref={phase2Ref} style={{ position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none" }}>
-
-          {/* Infinity symbol (mobile) */}
-          <div style={{
-            position: "absolute", left: "50%", top: "42%",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none", zIndex: 0,
-          }}>
-            <InfinitySymbol width="min(88vw, 360px)" />
+        {/* Phase 2 — Metodologia Sintropia / 3 blocks (mobile) */}
+        <div ref={phase2Ref} style={{
+          position: "absolute", inset: 0, color: "white", opacity: 0, pointerEvents: "none",
+          display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+          gap: "clamp(16px,4vh,28px)",
+          padding: "0 20px",
+        }}>
+          {/* Top header — centered */}
+          <div style={{ textAlign: "center" }}>
+            <Words
+              className="m-met-title"
+              text="Metodologia Sintropia"
+              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: "normal", display: "block" }}
+            />
           </div>
 
-          {/* Metodologia title */}
-          <div style={{ position: "absolute", top: "8%", left: "50%", transform: "translateX(-50%)", textAlign: "center", width: "calc(100% - 40px)", zIndex: 2 }}>
-            <Words className="m-met-title" text="Metodologia Sintropia"
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(22px,6.5vw,34px)", lineHeight: 1.2, display: "block" }} />
+          {/* 4 parágrafos empilhados — mobile, headline maior + body menor */}
+          <div className="m-met-q1" style={{ display: "flex", flexDirection: "column", gap: "1em", width: "100%" }}>
+            {[
+              { headline: "O mercado está cheio de quem promete resolver.", body: "Poucos são os que estão fundamentados o suficiente para isso." },
+              { headline: "As sequoias crescem entrelaçadas umas nas outras.", body: "Não é o tamanho das raízes que sustenta. É o ambiente certo ao redor." },
+            ].map(({ headline, body }, i) => (
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(16px,4.6vw,20px)", lineHeight: 1.3, display: "block" }} />
+                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
+              </div>
+            ))}
           </div>
 
-          {/* Text block */}
-          <div style={{ position: "absolute", bottom: "4%", left: 20, right: 20, display: "flex", flexDirection: "column", gap: 12, zIndex: 2 }}>
-            <Words className="m-met-q1"
-              text="O mercado está cheio de quem promete resolver. Poucos são os que estão fundamentados o suficiente para isso."
-              style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(14px,4.5vw,22px)", lineHeight: 1.35, display: "block" }} />
-            <Words className="m-met-q2"
-              text="Mais de 10 anos simplificando o complexo no mundo corporativo: o Método Sintropia. Diagnóstico, plano de ação e avaliação de resultado."
-              style={{ fontFamily: ROEL, fontWeight: 400, fontSize: "clamp(12px,3.5vw,16px)", lineHeight: 1.55, display: "block", opacity: 0.78 }} />
+          <div className="m-met-q2" style={{ display: "flex", flexDirection: "column", gap: "1em", width: "100%" }}>
+            {[
+              { headline: "Foram mais de 10 anos simplificando o que é complexo no mundo corporativo para chegar aqui: o Método Sintropia.", body: "Diagnóstico, plano de ação e avaliação de resultado. Um ciclo que não para porque um negócio não pode parar de evoluir." },
+              { headline: "Porque assim como a água de um rio, a empresa de hoje não é a mesma de ontem.", body: "E tudo que vive merece crescer e ser tratado com a importância que tem." },
+            ].map(({ headline, body }, i) => (
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Words text={headline} style={{ fontFamily: MET, fontStyle: "italic", fontWeight: 600, fontSize: "clamp(16px,4.6vw,20px)", lineHeight: 1.3, display: "block" }} />
+                <Words text={body} style={{ fontFamily: MET, fontWeight: 400, fontSize: "clamp(12px,3.5vw,15px)", lineHeight: 1.6, display: "block", opacity: 0.8 }} />
+              </div>
+            ))}
           </div>
         </div>
 

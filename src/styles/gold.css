@@ -1,0 +1,50 @@
+/* ── Discrete gold accents ─────────────────────────────────────────────────
+   A muted champagne gold used only on the finest interactive details. The
+   `.gold-cta` shimmer is intentionally slow and low-alpha so the gold merely
+   *passes* across a button rather than glinting or dominating. Pairs with the
+   GOLD / GOLD_RGB tokens in app/lib/constants.ts. */
+
+:root {
+  --gold: #c8a86b;
+  --gold-rgb: 200, 168, 107;
+}
+
+/* CTA buttons: a soft gold light that sweeps across, very discreetly. The host
+   element keeps its own border/padding; this only adds the moving highlight. */
+.gold-cta {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.gold-cta::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 38%;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(var(--gold-rgb), 0.32) 50%,
+    transparent 100%
+  );
+  animation: gold-sweep 4.6s ease-in-out infinite;
+  animation-delay: 1s;
+  pointer-events: none;
+}
+
+@keyframes gold-sweep {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(360%) skewX(-18deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-cta::after {
+    animation: none;
+  }
+}

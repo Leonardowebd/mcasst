@@ -21,8 +21,8 @@ export default function App() {
 
       <HeroScrollSection />
       <Suspense fallback={null}>
-        <SobreSection />
         <LogoBarSection />
+        <SobreSection />
         <VideoSection />
         <SessaoSection />
         <GaleriaSection />
